@@ -1,0 +1,99 @@
+﻿<UserControl x:Class="Agricultural_Distributor.GUI.UCCreateTransaction"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:local="clr-namespace:Agricultural_Distributor.GUI"
+             mc:Ignorable="d" 
+             Height="600" Width="960">
+    <UserControl.Resources>
+        <Style x:Key="StyleButtonCofirm" TargetType="Button">
+            <Setter Property="Background" Value="#FF2E8068"/>
+            <Setter Property="Foreground" Value="White"/>
+            <Setter Property="Height" Value="36"/>
+            <Setter Property="Width" Value="209"/>
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="Button">
+                        <Border Background="{TemplateBinding Background}"
+                    BorderBrush="{TemplateBinding BorderBrush}"
+                    BorderThickness="{TemplateBinding BorderThickness}"
+                    CornerRadius="18,18,18,18">
+                            <ContentPresenter HorizontalAlignment="Center"
+                                  VerticalAlignment="Center"/>
+                        </Border>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+
+            <Style.Triggers>
+                <Trigger Property="IsMouseOver" Value="True">
+                    <Setter Property="Background" Value="#FF7F9C93"/>
+                </Trigger>
+
+                <Trigger Property="IsPressed" Value="True">
+                    <Setter Property="Background" Value="#FF1C6751"/>
+                    <Setter Property="Foreground" Value="White"/>
+                </Trigger>
+            </Style.Triggers>
+        </Style>
+
+        <Style x:Key="StyleButtonBack" TargetType="Button">
+            <Setter Property="Background" Value="White"/>
+            <Setter Property="Foreground" Value="#FF2E8068"/>
+            <Setter Property="Height" Value="36"/>
+            <Setter Property="Width" Value="209"/>
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="Button">
+                        <Border Background="{TemplateBinding Background}"
+            BorderBrush="{TemplateBinding BorderBrush}"
+            BorderThickness="{TemplateBinding BorderThickness}"
+            CornerRadius="18,18,18,18">
+                            <ContentPresenter HorizontalAlignment="Center"
+                          VerticalAlignment="Center"/>
+                        </Border>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+
+            <Style.Triggers>
+                <Trigger Property="IsMouseOver" Value="True">
+                    <Setter Property="Background" Value="WhiteSmoke"/>
+                </Trigger>
+
+                <Trigger Property="IsPressed" Value="True">
+                    <Setter Property="Background" Value="#FF1C6751"/>
+                    <Setter Property="Foreground" Value="White"/>
+                </Trigger>
+            </Style.Triggers>
+        </Style>
+    </UserControl.Resources>
+    <Grid Background="White">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="260"/>
+            <RowDefinition/>
+        </Grid.RowDefinitions>
+        <Label Foreground="#FF2E8068" Content="THÔNG TIN KHÁCH HÀNG" FontSize="20" FontWeight="Bold" HorizontalAlignment="Left" Margin="10,10,0,0" VerticalAlignment="Top"/>
+        <Label Content="Số điện thoại:" FontSize="15" FontWeight="Bold" HorizontalAlignment="Left" Margin="10,68,0,0" VerticalAlignment="Top"/>
+        <Label Content="Họ tên:" FontSize="15" FontWeight="Bold" HorizontalAlignment="Left" Margin="10,110,0,0" VerticalAlignment="Top"/>
+        <Label Content="Email:" FontSize="15" FontWeight="Bold" HorizontalAlignment="Left" Margin="10,153,0,0" VerticalAlignment="Top"/>
+        <Label Content="Địa chỉ:" FontSize="15" FontWeight="Bold" HorizontalAlignment="Left" Margin="10,197,0,0" VerticalAlignment="Top"/>
+        <TextBox x:Name="tbPhone" HorizontalAlignment="Left" FontSize="15" Margin="141,72,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="791" PreviewTextInput="tbPhone_PreviewTextInput" TextChanged="tbPhone_TextChanged" LostFocus="tbPhone_LostFocus"/>
+        <TextBox x:Name="tbName" HorizontalAlignment="Left" FontSize="15" Margin="141,114,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="791"/>
+        <TextBox x:Name="tbEmail" HorizontalAlignment="Left" FontSize="15" Margin="141,157,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="791" LostFocus="tbEmail_LostFocus"/>
+        <TextBox x:Name="tbAddress" HorizontalAlignment="Left" FontSize="15" Margin="141,201,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="791"/>
+        <Label Foreground="#FF2E8068" Content="CHI TIẾT HÓA ĐƠN" FontSize="20" FontWeight="Bold" HorizontalAlignment="Left" Margin="10,13,0,0" VerticalAlignment="Top" Grid.Row="1"/>
+        <Label Content="Trạng thái thanh toán:" FontSize="15" FontWeight="Bold" HorizontalAlignment="Left" Margin="10,80,0,0" VerticalAlignment="Top" Grid.Row="1"/>
+        <CheckBox x:Name="cbPayFull" Content="Đã thanh toán" FontSize="15" HorizontalAlignment="Left" Margin="200,91,0,0" Grid.Row="1" VerticalAlignment="Top" Checked="CheckBox_Checked"/>
+        <CheckBox x:Name="cbNotPay" Content="Chưa thanh toán" FontSize="15" HorizontalAlignment="Left" Margin="200,131,0,0" Grid.Row="1" VerticalAlignment="Top" Checked="CheckBox_Checked"/>
+        <CheckBox x:Name="cbParticalPay" Content="Chưa thanh toán đầy đủ" FontSize="15" HorizontalAlignment="Left" Margin="200,172,0,0" Grid.Row="1" VerticalAlignment="Top" Checked="CheckBox_Checked"/>
+        <Label Name="lb1" Content="Thanh toán trước:" FontSize="15" FontWeight="Bold" HorizontalAlignment="Left" Margin="40,212,0,0" VerticalAlignment="Top" Grid.Row="1"/>
+        <TextBox x:Name="tbPaid" HorizontalAlignment="Left" FontSize="15" Margin="200,218,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="362" Grid.Row="1" TextChanged="tbPaid_TextChanged"/>
+        <Label Name="lb2" Content="Còn lại:" FontSize="15" FontWeight="Bold" HorizontalAlignment="Left" Margin="114,264,0,0" VerticalAlignment="Top" Grid.Row="1"/>
+        <TextBox x:Name="tbRestIs" HorizontalAlignment="Left" FontSize="15" Margin="200,270,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="362" Grid.Row="1"/>
+        <Button Style="{StaticResource StyleButtonCofirm}" x:Name="btnCreateTrans" Content="HOÀN THÀNH" FontSize="15" FontWeight="Bold" HorizontalAlignment="Left" Margin="794,279,0,0" Grid.Row="1" VerticalAlignment="Top" Height="37" Width="138" Click="btnCreateTrans_Click"/>
+        <Button Style="{StaticResource StyleButtonBack}" x:Name="btnBack" Content="QUAY LẠI" FontSize="15" FontWeight="Bold" HorizontalAlignment="Left" Margin="646,279,0,0" Grid.Row="1" VerticalAlignment="Top" Height="37" Width="138" Click="btnBack_Click"/>
+
+    </Grid>
+</UserControl>

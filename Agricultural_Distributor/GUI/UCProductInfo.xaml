@@ -1,0 +1,60 @@
+﻿<UserControl x:Class="Agricultural_Distributor.UCProductInfo"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:local="clr-namespace:Agricultural_Distributor"
+             mc:Ignorable="d" 
+             d:DesignHeight="250" d:DesignWidth="470">
+    <Grid>
+        <Border BorderThickness="1" BorderBrush="#00543C" CornerRadius="10" Margin="10,0,11,0" Background="White" Height="230" VerticalAlignment="Center">
+            <Grid Margin="10">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="Auto"/>
+                    <ColumnDefinition Width="260"/>
+                    <ColumnDefinition Width="80"/>
+                </Grid.ColumnDefinitions>
+
+                <Grid Grid.Column="0">
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="160"/>
+                        <RowDefinition Height="50"/>
+                    </Grid.RowDefinitions>
+                    <StackPanel Grid.Row="0" Margin="0,10,0,5" HorizontalAlignment="Center">
+                        <Border BorderThickness="1" BorderBrush="Black" CornerRadius="10" >
+                            <Image x:Name="photo"
+                                   Width="100"
+                                   Height="100"
+                                   Stretch="UniformToFill"
+                                   Source="{Binding ImageSource}"/>
+                        </Border>
+                        <Label Content ="{Binding ProductId}" FontWeight="SemiBold" FontSize="15" HorizontalAlignment="Center" Margin="5" Width="100"></Label>
+                    </StackPanel>
+                </Grid>
+
+                <StackPanel Grid.Column="1">
+                    <TextBlock x:Name="txtName" Text="{Binding Name}" FontWeight="Bold" FontSize="20" Width="238" Height="30" VerticalAlignment="Center" Margin="0,0,0,10" />
+                    <TextBlock x:Name="txtPurchasePrice" Text="{Binding PurchasePrice, StringFormat= 'Giá mua: {0}'}" Width="231" Height="20" Margin="0,0,0,10" FontFamily="Tahoma" FontSize="14"/>
+                    <TextBlock x:Name="txtSellingPrice" Text="{Binding SellingPrice, StringFormat= 'Giá bán: {0}'}" Margin="0,0,0,10" Width="231" Height="20" FontFamily="Tahoma" FontSize="14"/>
+                    <TextBlock x:Name="txtQuantity" Text="{Binding Quantity, StringFormat= 'Số lượng: {0}'}" Width="231" Height="20" Margin="0,0,0,10" FontFamily="Tahoma" FontSize="14"/>
+                    <TextBlock x:Name="txtMeasurementUnit" TextWrapping="Wrap" Text="{Binding MeasurementUnit, StringFormat='Đơn vị: {0}'}" Margin="0,0,0,10" Width="231" Height="20" FontFamily="Tahoma" FontSize="14"/>
+                    <TextBlock x:Name="txtQualityStandard" TextWrapping="Wrap" Text="{Binding QualityStandard, StringFormat= 'Tiêu chuẩn chất lượng: {0}'}" RenderTransformOrigin="0.5,0.5" Width="231" Height="45" Margin="0,0,0,10" FontFamily="Tahoma" FontSize="14"/>
+                    <Border Background="Yellow" BorderThickness="1" BorderBrush="Black" Margin="5">
+                        <TextBlock Text="{Binding .}" Foreground="Black" FontWeight="Bold" TextWrapping="Wrap"/>
+                    </Border>
+                </StackPanel>
+
+                        <Button x:Name="btnUpdate" Grid.Column="2"
+                        Content="Chỉnh sửa"
+                        Background="#33C9A1"
+                        Foreground="White"
+                        Margin="0,173,27,0"
+                        Height="25"
+                        VerticalAlignment="Top"
+                        BorderThickness="0"
+                        FontWeight="Bold"
+                        Cursor="Hand" RenderTransformOrigin="0.55,0.053" FontSize="11" Click="btnUpdate_Click"/>
+            </Grid>
+        </Border>
+    </Grid>
+</UserControl>

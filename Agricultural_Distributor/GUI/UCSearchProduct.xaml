@@ -1,0 +1,80 @@
+﻿<UserControl x:Class="Agricultural_Distributor.GUI.UCSearchProduct"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:local="clr-namespace:Agricultural_Distributor.GUI"
+             mc:Ignorable="d" 
+             d:DesignHeight="188" d:DesignWidth="771">
+    <Grid Background="Transparent">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="38"/>
+            <RowDefinition Height="150"/>
+        </Grid.RowDefinitions>
+        <TextBox Grid.Row="0" x:Name="txtSearch"    
+                 Text="Nhập tên nông sản cần tìm ..."
+                 HorizontalAlignment="Left"
+                 TextWrapping="Wrap" 
+                 FontSize="15"
+                 VerticalContentAlignment="Center" 
+                 VerticalAlignment="Center"
+                 Width="771"
+                 Height="38" 
+                 Padding="15,0,0,0"
+                 BorderThickness="1"
+                 BorderBrush="Black"
+                 TextChanged="txtSearch_TextChanged"
+                 PreviewKeyDown="txtSearch_PreviewKeyDown"
+                 LostFocus="txtSearch_LostFocus"
+                 GotFocus="txtSearch_GotFocus"/>
+        
+        <!--<ListView x:Name="lstSuggestions"
+                 Width="771"
+                 Height="150"
+                 FontSize="15"
+                 Margin="0,40,0,0"
+                 Visibility="Collapsed"
+                 KeyDown="lstSuggestions_KeyDown"
+                 MouseLeftButtonUp="lstSuggestions_MouseLeftButtonUp"
+                 DisplayMemberPath="Name"/>-->
+        
+        <!--<ListView Grid.Row ="1" x:Name="lstSuggestions" d:ItemsSource="{d:SampleData ItemCount=5}" 
+                  ScrollViewer.VerticalScrollBarVisibility="Disabled" ScrollViewer.HorizontalScrollBarVisibility="Disabled"
+                  Margin="0,38,0,0" 
+                  Visibility="Collapsed"
+                  MouseLeftButtonUp="lstSuggestions_MouseLeftButtonUp">
+            <ListView.Resources>
+                <Style TargetType="{x:Type GridViewColumnHeader}">
+                    <Setter Property="Visibility" Value="Collapsed" />
+                </Style>
+            </ListView.Resources>
+            <ListView.View>
+                <GridView>
+                    <GridViewColumn Width="771" DisplayMemberBinding="{Binding Name}"/>
+                </GridView>
+            </ListView.View>
+        </ListView>-->
+        <Popup x:Name="popupSuggestions"
+               PlacementTarget="{Binding ElementName=txtSearch}"
+               Placement="Bottom"
+               StaysOpen="False"
+               AllowsTransparency="True"
+               PopupAnimation="Slide"
+               Width="{Binding ElementName=txtSearch, Path=ActualWidth}"
+               IsOpen="False">
+
+
+        <Border Background="White" BorderBrush="Black" BorderThickness="1">
+                <ListBox x:Name="lstSuggestions" Width="771"
+                             
+                             FontSize="15"
+                             DisplayMemberPath="Name"
+                             MaxHeight="200" 
+                            Focusable="False"
+                             IsTabStop="True"
+                             SelectionChanged="lstSuggestions_SelectionChanged"/>
+        </Border>
+        </Popup>
+        
+    </Grid>
+</UserControl>

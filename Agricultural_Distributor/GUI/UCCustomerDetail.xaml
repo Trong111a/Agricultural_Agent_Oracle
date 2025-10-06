@@ -1,0 +1,58 @@
+﻿<UserControl x:Class="Agricultural_Distributor.UCCustomerDetail"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:local="clr-namespace:Agricultural_Distributor"
+             mc:Ignorable="d" 
+             d:DesignHeight="600" d:DesignWidth="960">
+    <Grid Background="White">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="100"/>
+            <RowDefinition Height="440"/>
+            <RowDefinition Height="60"/>
+        </Grid.RowDefinitions>
+        <Label Grid.Row="0" Content="THÔNG TIN KHÁCH HÀNG" VerticalAlignment="Center" Width="500" Height="50" FontSize="30" FontFamily="Tahoma" FontWeight="SemiBold" BorderThickness="1,0,0,0" HorizontalContentAlignment="Center" VerticalContentAlignment="Center"/>
+
+        <Grid Grid.Row="1">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="250"/>
+                <ColumnDefinition Width="710"/>
+            </Grid.ColumnDefinitions>
+
+            <Grid.RowDefinitions>
+                <RowDefinition Height="110"/>
+                <RowDefinition Height="110"/>
+                <RowDefinition Height="110"/>
+                <RowDefinition Height="110"/>
+            </Grid.RowDefinitions>
+
+            <Label Content="Họ và tên:" HorizontalAlignment="Center"  Width="180" Height="46" FontSize="22" FontWeight="SemiBold" VerticalAlignment="Center" Margin="80,0,0,0"/>
+            <TextBox x:Name="txtCustomerName" Grid.Row="0" Grid.Column="1" Width="600" Height="50" Margin="20,2,87,0" VerticalAlignment="Center" BorderBrush="Black" BorderThickness="1" FontSize="22"/>
+
+            <Label Grid.Row ="1" Grid.Column="0" Content="Số điện thoại:" HorizontalAlignment="Left"  Width="180" Height="46" FontSize="22" FontWeight="SemiBold" Margin="80,0,0,0" VerticalAlignment="Center"/>
+            <TextBox x:Name="txtPhoneNumber" Grid.Row="1" Grid.Column="1" Width="600" Height="50" Margin="20,2,87,0" VerticalAlignment="Center" BorderBrush="Black" BorderThickness="1" FontSize="22"/>
+
+            <Label Grid.Row ="2" Grid.Column="0" Content="Email:" HorizontalAlignment="Left"  Width="180" Height="46" FontSize="22" FontWeight="SemiBold" Margin="80,0,0,0" VerticalAlignment="Center"/>
+            <TextBox x:Name="txtEmail" Grid.Row="2" Grid.Column="1" Width="600" Height="50" Margin="20,2,87,0" VerticalAlignment="Center" BorderBrush="Black" BorderThickness="1" FontSize="22"/>
+
+            <Label Grid.Row ="3" Grid.Column="0" Content="Địa chỉ:" HorizontalAlignment="Left"  Width="180" Height="46" FontSize="22" FontWeight="SemiBold" Margin="80,0,0,0" VerticalAlignment="Center"/>
+            <TextBox x:Name="txtCustomerAddress" Grid.Row="3" Grid.Column="1" Width="600" Height="50" Margin="20,2,87,0" VerticalAlignment="Center" BorderBrush="Black" BorderThickness="1" FontSize="22"/>
+        </Grid>
+        <Grid Grid.Row="2">
+            <Button x:Name="btnUpdate"
+                Content="Chỉnh sửa"
+                FontSize="22"
+                FontWeight="Bold"
+                Height="50"
+                Width="157"        
+                HorizontalAlignment="Left"
+                VerticalAlignment="Center"
+                Background="#33C9A1"
+                Foreground="White"
+                BorderThickness="1"
+                BorderBrush="Black" Margin="705,0,0,0" RenderTransformOrigin="0.25,0.549" Click="btnUpdate_Click"/>
+        </Grid>
+
+    </Grid>
+</UserControl>

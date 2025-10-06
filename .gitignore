@@ -1,0 +1,16 @@
+# Build folders
+bin/
+obj/
+*.exe
+*.dll
+*.pdb
+*.cache
+*.log
+*.baml
+*.g.cs
+*.g.i.cs
+
+# VS specific
+.vs/
+*.user
+*.suo

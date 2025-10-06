@@ -1,0 +1,122 @@
+﻿<UserControl x:Class="Agricultural_Distributor.GUI.UCCheckWorkSchedule"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:local="clr-namespace:Agricultural_Distributor.GUI"
+             mc:Ignorable="d" 
+             d:DesignHeight="600" d:DesignWidth="960">
+    <UserControl.Resources>
+        <Style x:Key="StyleButton" TargetType="Button">
+            <Setter Property="Background" Value="#FF2E8068"/>
+            <Setter Property="Foreground" Value="White"/>
+            <Setter Property="Height" Value="36"/>
+            <Setter Property="Width" Value="209"/>
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="Button">
+                        <Border Background="{TemplateBinding Background}"
+                    BorderBrush="{TemplateBinding BorderBrush}"
+                    BorderThickness="{TemplateBinding BorderThickness}"
+                    CornerRadius="18,18,18,18">
+                            <ContentPresenter HorizontalAlignment="Center"
+                                  VerticalAlignment="Center"/>
+                        </Border>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+
+            <Style.Triggers>
+                <Trigger Property="IsMouseOver" Value="True">
+                    <Setter Property="Background" Value="#FF7F9C93"/>
+                </Trigger>
+
+                <Trigger Property="IsPressed" Value="True">
+                    <Setter Property="Background" Value="#FF1C6751"/>
+                    <Setter Property="Foreground" Value="White"/>
+                </Trigger>
+            </Style.Triggers>
+        </Style>
+    </UserControl.Resources>
+    <Grid Background="White">
+        <UserControl 
+            d:DesignHeight="600" d:DesignWidth="960">
+            <Grid Cursor="" Background="#FF35A0E4">
+                <UserControl>
+                    <Grid Background="White">
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="60"/>
+                            <RowDefinition/>
+                        </Grid.RowDefinitions>
+                        <Grid Grid.Row="0">
+                            <Border BorderThickness="0" BorderBrush="Black">
+                                <DatePicker x:Name="dtDateScheduleSearch" HorizontalAlignment="Left" Width="700" Margin="0,0,0,30"/>
+
+                            </Border>
+                        </Grid>
+                        <Grid Grid.Row="1">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="700"/>
+                                <ColumnDefinition/>
+                            </Grid.ColumnDefinitions>
+                            <ListView x:Name="lvSchedules" SelectionChanged="lvProducts_SelectionChanged">
+                                <ListView.View>
+                                    <GridView>
+                                        <GridViewColumn Header="Mã NV" Width="50" DisplayMemberBinding="{Binding EmployeeId}"/>
+                                        <GridViewColumn Header="Tên" Width="150" DisplayMemberBinding="{Binding EmployeeName}"/>
+                                        <GridViewColumn Header="Ngày làm việc" Width="150" DisplayMemberBinding="{Binding DayWork}"/>
+                                        <GridViewColumn Header="Giờ vào" Width="120" DisplayMemberBinding="{Binding TimeCheckIn}"/>
+                                        <GridViewColumn Header="Giờ ra" Width="120" DisplayMemberBinding="{Binding TimeCheckOut}"/>
+                                        <GridViewColumn Header="Hình ảnh" Width="0" DisplayMemberBinding="{Binding LinkPicture}"/>
+                                    </GridView>
+                                </ListView.View>
+                            </ListView>
+                            <ListView x:Name="lvProducts" Foreground="Black" d:ItemsSource="{d:SampleData ItemCount=5}" SelectionChanged="lvProducts_SelectionChanged" Width="700" Margin="0,-31,0,0">
+                                <ListView.View>
+                                    <GridView>
+                                        <GridViewColumn Header="Chọn" Width="50">
+                                            <GridViewColumn.CellTemplate>
+                                                <DataTemplate>
+                                                    <CheckBox IsChecked="{Binding IsSelected, Mode=TwoWay}" />
+                                                </DataTemplate>
+                                            </GridViewColumn.CellTemplate>
+                                        </GridViewColumn>
+                                        <GridViewColumn Header="Mã NV" Width="50" DisplayMemberBinding="{Binding EmployeeId}"/>
+                                        <GridViewColumn Header="Tên" Width="150" DisplayMemberBinding="{Binding EmployeeName}"/>
+                                        <GridViewColumn Header="Giới tính" Width="50" DisplayMemberBinding="{Binding Sex}"/>
+                                        <GridViewColumn Header="Ngày sinh" Width="100" DisplayMemberBinding="{Binding Birthday}"/>
+                                        <GridViewColumn Header="Địa chỉ" Width="100" DisplayMemberBinding="{Binding EmployeeAddress}"/>
+                                        <GridViewColumn Header="Số điện thoại" Width="100" DisplayMemberBinding="{Binding PhoneNumber}"/>
+                                        <GridViewColumn Header="Email" Width="100" DisplayMemberBinding="{Binding Email}"/>
+
+                                    </GridView>
+                                </ListView.View>
+                            </ListView>
+                            <Button Style="{StaticResource StyleButton}" x:Name="btnAddEmployee" Grid.Column="1" Content="Thêm nhân viên" HorizontalAlignment="Center" Margin="0,387,0,0" VerticalAlignment="Top" Click="btnAddEmployee_Click"/>
+
+                        </Grid>
+                        <Label Content="Chỉnh sửa thông tin ca làm" Margin="708,59,0,0" VerticalAlignment="Top" Grid.RowSpan="2" Width="242" HorizontalContentAlignment="Center" HorizontalAlignment="Left" AutomationProperties.IsOffscreenBehavior="FromClip" FontWeight="UltraBold" FontSize="13"/>
+
+                        <Label Content="Giờ vào:" HorizontalAlignment="Left" Margin="713,239,0,0" Grid.Row="1" VerticalAlignment="Top" FontWeight="DemiBold" RenderTransformOrigin="0.598,0.404"/>
+
+                        <Label Content="Giờ ra:" HorizontalAlignment="Left" Margin="713,270,0,0" Grid.Row="1" VerticalAlignment="Top" FontWeight="DemiBold"/>
+                        <TextBox x:Name="txtTimeCheckOut" Margin="774,274,19,0" Grid.Row="1" VerticalAlignment="Top" TextWrapping="Wrap"/>
+                        <Button Style="{StaticResource StyleButton}" x:Name="btnAdd" Content="Thêm" HorizontalAlignment="Left" Margin="724,481,0,0" Grid.Row="1" VerticalAlignment="Top" Click="btnAdd_Click" RenderTransformOrigin="-0.208,-0.501"/>
+                        <Button Style="{StaticResource StyleButton}" x:Name="btnUpdate" Content="Cập nhật" HorizontalAlignment="Left" Margin="724,434,0,0" Grid.Row="1" VerticalAlignment="Top" Click="Button_Click"/>
+                        <Button Style="{StaticResource StyleButton}" x:Name="btnChupAnhMC" Content="Chụp ảnh minh chứng" HorizontalAlignment="Left" Margin="724,340,0,0" Grid.Row="1" VerticalAlignment="Top" Click="Button_Click_2"/>
+                        <Image x:Name="CapturedImage" HorizontalAlignment="Left" Height="114" Margin="741,26,0,0" Grid.Row="1" VerticalAlignment="Top" Width="181"/>
+                        <Label Content="Mã NV" HorizontalAlignment="Left" Margin="715,172,0,0" Grid.Row="1" VerticalAlignment="Top" FontWeight="DemiBold" RenderTransformOrigin="0.57,0.443"/>
+                        <TextBox x:Name="txtTimeCheckIn" Margin="774,243,19,0" Grid.Row="1" VerticalAlignment="Top" TextWrapping="Wrap"/>
+                        <Label Content="Tên NV" HorizontalAlignment="Left" Margin="715,203,0,0" Grid.Row="1" VerticalAlignment="Top" FontWeight="DemiBold" RenderTransformOrigin="0.57,0.443"/>
+                        <Label x:Name="lbManv" Content="Mã nhân viên" HorizontalAlignment="Left" Margin="774,172,0,0" Grid.Row="1" VerticalAlignment="Top" RenderTransformOrigin="0.461,0.482"/>
+                        <Label x:Name="lbNamenv" Content="Tên nhân viên" HorizontalAlignment="Left" Margin="774,198,0,0" Grid.Row="1" VerticalAlignment="Top" RenderTransformOrigin="0.461,0.482"/>
+
+                    </Grid>
+                </UserControl>
+
+            </Grid>
+        </UserControl>
+        <Button Style="{StaticResource StyleButton}" x:Name="btnSearch" Content="Tìm Kiếm" FontSize="15" FontWeight="Bold" Height="40" Margin="709,10,10,550" Click="btnCreateOrder_Click"/>
+
+    </Grid>
+</UserControl>

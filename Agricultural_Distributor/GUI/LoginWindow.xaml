@@ -1,0 +1,56 @@
+﻿<Window x:Class="Agricultural_Distributor.GUI.LoginWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:Agricultural_Distributor.GUI"
+        WindowStartupLocation="CenterScreen"
+        mc:Ignorable="d"
+        Title="Login" Height="500" Width="650">
+    <Grid Background="#33C9A1">
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="130*" />
+            <ColumnDefinition Width="33*"/>
+            <ColumnDefinition Width="18*" />
+            <ColumnDefinition Width="307*"/>
+            <ColumnDefinition Width="163*" />
+        </Grid.ColumnDefinitions>
+
+        <Image HorizontalAlignment="Left" Height="227" VerticalAlignment="Top" Width="209" Source="/Images/logo.png" Grid.ColumnSpan="4" Margin="-28,-16,0,0"/>
+
+        <Border Margin="9,138,138,61" Background="White" CornerRadius="10" Padding="30" Grid.ColumnSpan="3" Grid.Column="2">
+            <StackPanel VerticalAlignment="Center">
+
+                <StackPanel Margin="0,0,0,20">
+                    <TextBlock Text="Tên đăng nhập" FontSize="14" Foreground="Gray"/>
+                    <DockPanel Width="281">
+                        <Image x:Name="ImageUser" Source="/Images/user.png" Width="20" Height="20" Margin="0,0,5,0" DockPanel.Dock="Left"/>
+                        <TextBox x:Name="txtUsername" Width="250" BorderThickness="0" Background="Transparent" Padding="5" Foreground="Black"/>
+                    </DockPanel>
+                    <Rectangle Height="1" Fill="Gray" />
+                </StackPanel>
+
+
+                <StackPanel Margin="0,0,0,20">
+                    <TextBlock Text="Mật khẩu" FontSize="14" Foreground="Gray"/>
+                    <DockPanel Width="281">
+                        <Image x:Name="ImageEye" Source="/Images/eye.png" Width="20" Height="20" Margin="0,0,5,0" Visibility="Collapsed" DockPanel.Dock="Left" Cursor="Hand" MouseDown="ImageEye_MouseDown"/>
+                        <Image x:Name="ImageCloseEye" Source="/Images/closeEye.png" Width="20" Height="20" Margin="0,0,5,0" DockPanel.Dock="Left" Cursor="Hand" MouseDown="ImageCloseEye_MouseDown"/>
+
+
+                        <PasswordBox x:Name="passwordBox" Width="230" BorderThickness="0" Background="Transparent" Padding="5" PasswordChanged="passwordBox_PasswordChanged"/>
+
+                        <TextBox x:Name="txtPasswordVisible" Width="230" BorderThickness="0" Background="Transparent" Padding="5" Visibility="Collapsed" Foreground="Black"/>
+                    </DockPanel>
+                    <Rectangle Height="1" Fill="Gray" />
+                </StackPanel>
+
+                <StackPanel Orientation="Horizontal" HorizontalAlignment="Right" Margin="0,10,0,0">
+                    <Button x:Name="btnForgot" Content="Quên mật khẩu?" Background="Transparent" Foreground="#00A65A" BorderBrush="{x:Null}" FontWeight="Bold" Cursor="Hand" Padding="10,5" Width="145" Click="btnForgot_Click"/>
+                    <Button x:Name="btnLogin" Content="ĐĂNG NHẬP →" Width="149" Height="40" Background="#00A65A" Foreground="White" FontWeight="Bold" BorderBrush="{x:Null}" Cursor="Hand" Padding="10,5" Click="btnLogin_Click"/>
+                </StackPanel>
+            </StackPanel>
+        </Border>
+        <Label Content="AGRICULTURAL DISTRIBUTOR AGENT" HorizontalAlignment="Left" VerticalAlignment="Top" FontSize="20" Grid.ColumnSpan="4" FontFamily="Gill Sans Ultra Bold Condensed" Width="474" Grid.Column="1" Margin="10,71,0,0"/>
+    </Grid>
+</Window>

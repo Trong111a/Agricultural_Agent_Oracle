@@ -1,0 +1,12 @@
+-- SYSDBA
+CREATE TABLESPACE agricultural_data
+DATAFILE 'agricultural_data.dbf' SIZE 100M AUTOEXTEND ON NEXT 50M MAXSIZE UNLIMITED;
+
+
+
+CREATE USER agricultural_agent IDENTIFIED BY 123456
+DEFAULT TABLESPACE agricultural_data
+QUOTA UNLIMITED ON agricultural_data; 
+
+
+GRANT CONNECT, RESOURCE, CREATE VIEW TO agricultural_agent; 

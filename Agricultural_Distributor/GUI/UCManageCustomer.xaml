@@ -1,0 +1,101 @@
+﻿<UserControl x:Class="Agricultural_Distributor.UCManageCustomer"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:local="clr-namespace:Agricultural_Distributor"
+             mc:Ignorable="d" 
+             d:DesignHeight="600" d:DesignWidth="960">
+    <UserControl.Resources>
+        <Style x:Key="StyleButton" TargetType="Button">
+            <Setter Property="Background" Value="#FF2E8068"/>
+            <Setter Property="Foreground" Value="White"/>
+            <Setter Property="Height" Value="36"/>
+            <Setter Property="Width" Value="209"/>
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="Button">
+                        <Border Background="{TemplateBinding Background}"
+                    BorderBrush="{TemplateBinding BorderBrush}"
+                    BorderThickness="{TemplateBinding BorderThickness}"
+                    CornerRadius="18,18,18,18">
+                            <ContentPresenter HorizontalAlignment="Center"
+                                  VerticalAlignment="Center"/>
+                        </Border>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+
+            <Style.Triggers>
+                <Trigger Property="IsMouseOver" Value="True">
+                    <Setter Property="Background" Value="#FF7F9C93"/>
+                </Trigger>
+
+                <Trigger Property="IsPressed" Value="True">
+                    <Setter Property="Background" Value="#FF1C6751"/>
+                    <Setter Property="Foreground" Value="White"/>
+                </Trigger>
+            </Style.Triggers>
+        </Style>
+    </UserControl.Resources>
+    <Grid Background="White">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="60"/>
+            <RowDefinition/>
+        </Grid.RowDefinitions>
+        <Grid Grid.Row="0">
+            <TextBox x:Name ="txtSearch" 
+                     Text="Nhập thông tin cần tìm ..." 
+                     HorizontalAlignment="Left" 
+                     Margin="10,0,0,0" 
+                     TextWrapping="Wrap"                      
+                     KeyDown="txtSearch_KeyDown" 
+                     FontSize="15" 
+                     VerticalContentAlignment="Center"
+                     VerticalAlignment="Center"
+                     Width="771"
+                     Height="38"
+                     Padding="15,0,0,0"
+                     BorderThickness="1"
+                     BorderBrush="Black"
+                     GotFocus="txtSearch_GotFocus"
+                     LostFocus="txtSearch_LostFocus" />
+            <Button Style="{StaticResource StyleButton}" x:Name ="btnExit"
+                    Content="QUAY LẠI"
+                    HorizontalAlignment="Left"
+                    Margin="857,0,0,0"
+                    VerticalAlignment="Center"
+                    Height="38"
+                    Width="70"
+                    Click="btnExit_Click"/>
+        </Grid>
+        <Grid Grid.Row="1">
+
+            <ListView Foreground="Black" x:Name="listCustomers" d:ItemsSource="{d:SampleData ItemCount=5}">
+                <ListView.View>
+                    <GridView>
+                        <GridViewColumn Header="ID" Width="50" DisplayMemberBinding="{Binding CustomerId}"/>
+                        <GridViewColumn Header="Họ và tên" Width="200" DisplayMemberBinding="{Binding CustomerName}"/>
+                        <GridViewColumn Header="Số điện thoại" Width="150" DisplayMemberBinding="{Binding PhoneNumber}"/>
+                        <GridViewColumn Header="Email" Width="200" DisplayMemberBinding="{Binding Email}"/>
+                        <GridViewColumn Header="Địa chỉ" Width="240" DisplayMemberBinding="{Binding CustomerAddress}"/>
+                        <GridViewColumn Width="100">
+                            <GridViewColumn.CellTemplate>
+                                <DataTemplate>
+                                    <Button Style="{StaticResource StyleButton}" Content="Chỉnh sửa"
+                                     Width="80"
+                                     Height="30"
+                                     Click="EditButton_Click"
+                                     Tag="{Binding}" />
+                                </DataTemplate>
+                            </GridViewColumn.CellTemplate>
+                        </GridViewColumn>
+                    </GridView>
+                </ListView.View>
+
+
+            </ListView>
+        </Grid>
+    </Grid>
+
+</UserControl>
