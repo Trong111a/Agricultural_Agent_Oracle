@@ -42,6 +42,7 @@ namespace Agricultural_Distributor.GUI
             LoadProducts();
             SetList();
             lvNewProducts.ItemsSource = lsNew;
+            
         }
 
         private TextBox FindTextBoxInContainer(DependencyObject container)
@@ -101,7 +102,7 @@ namespace Agricultural_Distributor.GUI
 
         private void SetList()
         {
-            for (int i = 0; i <6; i++)
+            for (int i = 0; i < 6; i++)
             {
                 Product product = new Product();
                 lsNew.Add(product);
@@ -264,6 +265,19 @@ namespace Agricultural_Distributor.GUI
                     double temp = ConverPrice(txtTotalPrice.Text);
                     double newProPrice = temp + product.PurchasePrice * product.Quantity;
                     txtTotalPrice.Text = $"Tổng tiền: {newProPrice:N0} đ";
+                    foreach (var item in listProduct)
+                    {
+                        MessageBox.Show(
+                        $"Đã thêm sản phẩm:\n" +
+                        $"- Tên: {item.Name}\n" +
+                        $"- Số lượng: {item.Quantity}\n",
+                        
+                        "Thông báo",
+                        MessageBoxButton.OK,
+                        MessageBoxImage.Information
+                    );
+                    }
+                    
                     MessageBox.Show("Đã thêm sản phẩm vào danh sách!", "Thông báo", MessageBoxButton.OK, MessageBoxImage.Information);
                 }
             }
@@ -298,6 +312,7 @@ namespace Agricultural_Distributor.GUI
             else discount = "";
             if (tbNote.Text != null) note = tbNote.Text;
             else note = "";
+            
             //bool flag = GetOrder(sender, e);
             //if (flag)
             //{
@@ -451,11 +466,6 @@ namespace Agricultural_Distributor.GUI
             {
                 return -1;
             }
-
-        }
-
-        private void lvNewProducts_SelectionChanged(object sender, SelectionChangedEventArgs e)
-        {
 
         }
     }

@@ -55,7 +55,15 @@ namespace Agricultural_Distributor.GUI
                 Receipt receipt = receiptDAO.GetReceipt(receiptId);
                 priceTotalSelect = receipt.PriceTotal;
                 tblDis.Text = receipt.Discount.ToString() + "%";
-                tblNote.Text = receipt.Note.ToString();
+                if (receipt != null && receipt.Note != null)
+                {
+                    tblNote.Text = receipt.Note;
+                }
+                else
+                {
+                    tblNote.Text = ""; // hoặc "Không có ghi chú"
+                }
+               // tblNote.Text = receipt.Note.ToString();
 
                 double priceTotal = receipt.PriceTotal;
 

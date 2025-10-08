@@ -121,3 +121,11 @@ BEGIN
     
 END;
 /
+
+INSERT INTO Employee (employeeName, birthday, sex, employeeAddress, phoneNumber, email, position)
+VALUES ('Admin User', TO_DATE('1990-01-01', 'YYYY-MM-DD'), 'Nam', '123 Admin Street', '0123456789', 'admin@example.com', 1);
+
+INSERT INTO Account (username, pass, email, IsActive, IsAdmin)
+VALUES ('admin', '123', 'admin@example.com', 1, 1);
+
+COMMIT;

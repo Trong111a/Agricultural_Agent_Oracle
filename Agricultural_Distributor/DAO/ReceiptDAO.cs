@@ -1,12 +1,13 @@
-﻿using System;
+﻿using Agricultural_Distributor.Entity;
+using Oracle.ManagedDataAccess.Client;
+using Oracle.ManagedDataAccess.Types;
+using System;
 using System.Collections.Generic;
 using System.Data;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using Agricultural_Distributor.Entity;
 using System.Windows;
-using Oracle.ManagedDataAccess.Client;
 
 namespace Agricultural_Distributor.DAO
 {
@@ -30,20 +31,21 @@ namespace Agricultural_Distributor.DAO
             OracleCommand oraCmd = new("proc_CreateOrder", connectOracle.oraCon);
             oraCmd.CommandType = CommandType.StoredProcedure;
 
-            oraCmd.Parameters.Add("priceTotal", OracleDbType.Double).Value = receipt.PriceTotal;
-            oraCmd.Parameters.Add("typeOfReceipt", OracleDbType.Varchar2).Value = receipt.TypeOfReceipt;
-            oraCmd.Parameters.Add("discount", OracleDbType.Double).Value = receipt.Discount;
+            oraCmd.Parameters.Add("p_priceTotal", OracleDbType.Double).Value = receipt.PriceTotal;
+            oraCmd.Parameters.Add("p_typeOfReceipt", OracleDbType.NVarchar2).Value = receipt.TypeOfReceipt;
+
+            oraCmd.Parameters.Add("p_discount", OracleDbType.Double).Value = receipt.Discount;
 
             if (string.IsNullOrEmpty(receipt.Note))
             {
-                oraCmd.Parameters.Add("note", OracleDbType.Varchar2).Value = DBNull.Value;
+                oraCmd.Parameters.Add("p_note", OracleDbType.NVarchar2).Value = DBNull.Value;
             }
             else
             {
-                oraCmd.Parameters.Add("note", OracleDbType.Varchar2).Value = receipt.Note;
+                oraCmd.Parameters.Add("p_note", OracleDbType.NVarchar2).Value = receipt.Note;
             }
 
-            OracleParameter outputReceiptId = new("receiptId", OracleDbType.Int32, ParameterDirection.Output);
+            OracleParameter outputReceiptId = new("p_receiptId", OracleDbType.Int32, ParameterDirection.Output);
             oraCmd.Parameters.Add(outputReceiptId);
 
             try
@@ -52,7 +54,9 @@ namespace Agricultural_Distributor.DAO
 
                 if (outputReceiptId.Value != DBNull.Value)
                 {
-                    receiptIdValue = Convert.ToInt32(outputReceiptId.Value);
+                    // receiptIdValue = Convert.ToInt32(outputReceiptId.Value);
+                    OracleDecimal oracleDecimalValue = (OracleDecimal)outputReceiptId.Value;
+                    receiptIdValue = oracleDecimalValue.ToInt32();
                 }
                 connectOracle.Disconnect();
 
@@ -164,7 +168,8 @@ namespace Agricultural_Distributor.DAO
             OracleCommand cmd = new("proc_DailyRevenueReport", connectOracle.oraCon);
             cmd.CommandType = CommandType.StoredProcedure;
 
-            cmd.Parameters.Add("ReportDate", OracleDbType.Date).Value = date;
+            cmd.Parameters.Add("p_ReportDate", OracleDbType.Date).Value = date;
+            cmd.Parameters.Add("result_cursor", OracleDbType.RefCursor).Direction = ParameterDirection.Output;
 
             OracleDataAdapter adapter = new(cmd);
             DataTable dt = new();
@@ -180,7 +185,8 @@ namespace Agricultural_Distributor.DAO
             OracleCommand cmd = new("proc_DailyExpenseReport", connectOracle.oraCon);
             cmd.CommandType = CommandType.StoredProcedure;
 
-            cmd.Parameters.Add("ReportDate", OracleDbType.Date).Value = date;
+            cmd.Parameters.Add("p_ReportDate", OracleDbType.Date).Value = date;
+            cmd.Parameters.Add("result_cursor", OracleDbType.RefCursor).Direction = ParameterDirection.Output;
 
             OracleDataAdapter adapter = new(cmd);
             DataTable dt = new();
@@ -196,7 +202,8 @@ namespace Agricultural_Distributor.DAO
             OracleCommand cmd = new("proc_DailyDebtReport", connectOracle.oraCon);
             cmd.CommandType = CommandType.StoredProcedure;
 
-            cmd.Parameters.Add("ReportDate", OracleDbType.Date).Value = date;
+            cmd.Parameters.Add("p_ReportDate", OracleDbType.Date).Value = date;
+            cmd.Parameters.Add("result_cursor", OracleDbType.RefCursor).Direction = ParameterDirection.Output;
 
             OracleDataAdapter adapter = new(cmd);
             DataTable dt = new();

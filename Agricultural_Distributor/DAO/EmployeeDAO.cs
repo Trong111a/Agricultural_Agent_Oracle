@@ -31,8 +31,10 @@ namespace Agricultural_Distributor.DAO
             oraCmd.CommandType = CommandType.Text;
 
    
+            //oraCmd.CommandText = "SELECT employeeId, employeeName, birthday, sex, employeeAddress, phoneNumber, email, IsActive, position " +
+            //                     "FROM Employee WHERE IsActive = 1 AND employeeId <> 1";
             oraCmd.CommandText = "SELECT employeeId, employeeName, birthday, sex, employeeAddress, phoneNumber, email, IsActive, position " +
-                                 "FROM Employee WHERE IsActive = 1 AND employeeId <> 1";
+                                 "FROM Employee WHERE employeeId <> 1";
 
 
             oraCmd.Connection = connectOracle.oraCon;
@@ -48,10 +50,12 @@ namespace Agricultural_Distributor.DAO
                 string PhoneNumber = reader.GetString(5);
 
                 string Email = reader.IsDBNull(6) ? null : reader.GetString(6);
+                int isActive = reader.GetInt32(7);
 
 
                 Employee employee = new(EmployeeId, EmployeeName, Birthday, Sex, EmployeeAddress, PhoneNumber, Email);
                 employees.Add(employee);
+                employee.IsActive = isActive;
             }
             reader.Close();
             connectOracle.Disconnect();
@@ -130,17 +134,27 @@ namespace Agricultural_Distributor.DAO
                                "employeeAddress = :EmployeeAddress, " +
                                "phoneNumber = :PhoneNumber, " +
                                "email = :Email " +
+                               //"isActive" = "1"+
                                "WHERE employeeId = :EmployeeId";
 
                 OracleCommand oraCmd = new(query, connectOracle.oraCon);
 
-                oraCmd.Parameters.Add("EmployeeId", employee.EmployeeId);
-                oraCmd.Parameters.Add("EmployeeName", employee.EmployeeName);
-                oraCmd.Parameters.Add("Birthday", employee.Birthday);
-                oraCmd.Parameters.Add("Sex", employee.Sex);
-                oraCmd.Parameters.Add("EmployeeAddress", employee.EmployeeAddress);
-                oraCmd.Parameters.Add("PhoneNumber", employee.PhoneNumber);
-                oraCmd.Parameters.Add("Email", employee.Email);
+                //oraCmd.Parameters.Add("EmployeeId", Convert.ToInt32(employee.EmployeeId));
+                //oraCmd.Parameters.Add("EmployeeName", employee.EmployeeName);
+                //oraCmd.Parameters.Add("Birthday", employee.Birthday);
+                //oraCmd.Parameters.Add("Sex", employee.Sex);
+                //oraCmd.Parameters.Add("EmployeeAddress", employee.EmployeeAddress);
+                //oraCmd.Parameters.Add("PhoneNumber", employee.PhoneNumber);
+                //oraCmd.Parameters.Add("Email", employee.Email);
+                
+                oraCmd.Parameters.Add("EmployeeName", OracleDbType.NVarchar2).Value = employee.EmployeeName;
+                oraCmd.Parameters.Add("Birthday", OracleDbType.Date).Value = employee.Birthday;
+                oraCmd.Parameters.Add("Sex", OracleDbType.NVarchar2).Value = employee.Sex;
+                oraCmd.Parameters.Add("EmployeeAddress", OracleDbType.NVarchar2).Value = employee.EmployeeAddress;
+                oraCmd.Parameters.Add("PhoneNumber", OracleDbType.Varchar2).Value = employee.PhoneNumber;
+                oraCmd.Parameters.Add("Email", OracleDbType.Varchar2).Value = employee.Email;
+                oraCmd.Parameters.Add("EmployeeId", OracleDbType.Int32).Value = employee.EmployeeId;
+
 
                 int rowsAffected = oraCmd.ExecuteNonQuery();
                 connectOracle.Disconnect();

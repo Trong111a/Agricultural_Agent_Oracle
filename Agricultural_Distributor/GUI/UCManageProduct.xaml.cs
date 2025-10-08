@@ -84,16 +84,16 @@ namespace Agricultural_Distributor
             wDHome.GetUC(uCAddProduct);
         }
 
-        private void LoadSearchContainer()
-        {
-            UCSearchProduct searchBox = new UCSearchProduct(this, uc, wDHome);
-            searchBox.Margin = new Thickness(10, 0, 0, 0);
-            searchBox.VerticalAlignment = VerticalAlignment.Center;
-          //  searchBox.SearchSubmitted += SearchBox_SearchSummited;
+        //private void LoadSearchContainer()
+        //{
+        //    UCSearchProduct searchBox = new UCSearchProduct(this, uc, wDHome);
+        //    searchBox.Margin = new Thickness(10, 0, 0, 0);
+        //    searchBox.VerticalAlignment = VerticalAlignment.Center;
+        //  //  searchBox.SearchSubmitted += SearchBox_SearchSummited;
 
-            SearchContainer.Children.Add(searchBox);
+        //    SearchContainer.Children.Add(searchBox);
 
-        }
+        //}
 
         //private void SearchBox_SearchSummited(ProductDTO productDTO)
         //{

@@ -154,6 +154,7 @@ namespace Agricultural_Distributor.GUI
             foreach(var item in  listProNonId)
             {
                 int? proId = productDAO.AddProduct(item);
+                
                 int quan = item.Quantity;
                 if (proId.HasValue)
                 {

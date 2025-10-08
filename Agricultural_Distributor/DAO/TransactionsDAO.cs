@@ -1,14 +1,7 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Data;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using System.Transactions;
-using System.Windows;
-using Agricultural_Distributor.Entity;
+﻿using Agricultural_Distributor.Entity;
 using Oracle.ManagedDataAccess.Client;
-using Oracle.ManagedDataAccess.Types;
+using System.Data;
+using System.Windows;
 
 namespace Agricultural_Distributor.DAO
 {
@@ -65,7 +58,7 @@ namespace Agricultural_Distributor.DAO
                 oraCmd.CommandText = "SELECT t.transactionId, t.employeeId, t.receiptId, t.customerId FROM Transactions t " +
                     "JOIN Receipt r ON r.receiptId = t.receiptId WHERE r.typeOfReceipt = :typeOfReceipt ORDER BY DateOfImplementation DESC";
 
-                oraCmd.Parameters.Add(":typeOfReceipt", OracleDbType.Varchar2).Value = typeOfReceipt;
+                oraCmd.Parameters.Add("typeOfReceipt", OracleDbType.NVarchar2).Value = typeOfReceipt;
                 oraCmd.Connection = connectOracle.oraCon;
 
                 OracleDataReader reader = oraCmd.ExecuteReader();
@@ -91,12 +84,13 @@ namespace Agricultural_Distributor.DAO
                 OracleCommand oraCmd = new();
                 oraCmd.CommandType = CommandType.Text;
 
-    
-                oraCmd.CommandText = "SELECT t.transactionId, t.employeeId, t.receiptId, t.customerId FROM Transactions t " +
-                    "JOIN Receipt r ON r.receiptId = t.receiptId WHERE TRUNC(t.DateOfImplementation) = TRUNC(:date) AND r.typeOfReceipt = :typeOfReceipt ORDER BY DateOfImplementation DESC";
 
-                oraCmd.Parameters.Add(":typeOfReceipt", OracleDbType.Varchar2).Value = typeOfReceipt;
-                oraCmd.Parameters.Add(":date", OracleDbType.Date).Value = dt.Value.Date;
+                oraCmd.CommandText = "SELECT t.transactionId, t.employeeId, t.receiptId, t.customerId FROM Transactions t " +
+                    "JOIN Receipt r ON r.receiptId = t.receiptId WHERE TRUNC(t.DateOfImplementation) = TRUNC(:p_date) AND r.typeOfReceipt = :typeOfReceipt ORDER BY DateOfImplementation DESC";
+                oraCmd.Parameters.Add("p_date", OracleDbType.Date).Value = dt.Value.Date;
+                oraCmd.Parameters.Add("typeOfReceipt", OracleDbType.NVarchar2).Value = typeOfReceipt;
+
+
                 oraCmd.Connection = connectOracle.oraCon;
 
                 OracleDataReader reader = oraCmd.ExecuteReader();
@@ -143,7 +137,7 @@ namespace Agricultural_Distributor.DAO
             oraCmd.CommandType = CommandType.Text;
             oraCmd.CommandText = "UPDATE Transactions SET repayment = :repay WHERE transactionId = :transId";
 
-    
+
             oraCmd.Parameters.Add(":repay", OracleDbType.Double).Value = repay;
             oraCmd.Parameters.Add(":transId", OracleDbType.Int32).Value = transId;
 
