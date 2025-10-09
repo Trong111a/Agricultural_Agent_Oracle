@@ -5,6 +5,7 @@ using Oracle.ManagedDataAccess.Client;
 using System;
 using System.Collections.Generic;
 using System.Data;
+using System.Diagnostics;
 using System.Linq;
 using System.Text.RegularExpressions;
 using System.Windows;
@@ -26,6 +27,8 @@ namespace Agricultural_Distributor.DAO
         public ProductDAO() { }
 
         public double Total => product.IsSelected ? product.PurchasePrice * product.QuantitySelect : 0;
+
+        //public double Total => product.IsSelected ? product.PurchasePriceSelect * product.QuantitySelect : 0;
 
         public List<Product> LoadProduct()
         {
@@ -143,16 +146,20 @@ namespace Agricultural_Distributor.DAO
                 oraCmd.Parameters.Add("p_qualityStandard", OracleDbType.NVarchar2).Value = product.QualityStandard;
                 oraCmd.Parameters.Add("p_quantityInStock", OracleDbType.Int32).Value = product.Quantity;
 
-                object photoValue;
+                //object photoValue;
+                var photoValue = new OracleParameter("p_photo", OracleDbType.Blob);
                 if (product.Photo == null || product.Photo.Length == 0)
                 {
-                    photoValue = DBNull.Value;
+                    //photoValue = DBNull.Value;
+                    photoValue.Value = DBNull.Value;
                 }
                 else
                 {
-                    photoValue = product.Photo;
+                    //photoValue = product.Photo;
+                    photoValue.Value = product.Photo;
                 }
-                oraCmd.Parameters.Add("p_photo", OracleDbType.Blob).Value = photoValue;
+                //oraCmd.Parameters.Add("p_photo", OracleDbType.Blob).Value = photoValue;
+                oraCmd.Parameters.Add(photoValue);
 
                 oraCmd.Parameters.Add("p_measurementUnit", OracleDbType.NVarchar2).Value = product.MeasurementUnit;
 

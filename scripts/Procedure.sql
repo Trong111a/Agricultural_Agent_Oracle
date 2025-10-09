@@ -38,9 +38,19 @@ BEGIN
         RAISE_APPLICATION_ERROR(-20006, 'Số lượng không hợp lệ (phải >= 0).');
     END IF;
 
-    INSERT INTO PRODUCT (PRODUCTNAME, PURCHASEPRICE, SELLINGPRICE, QUALITYSTANDARD, PHOTO, ISACTIVE)
-    VALUES (v_name, p_purchasePrice, p_sellingPrice, v_qs, p_photo, 1)
-    RETURNING PRODUCTID INTO p_newProductId;
+--    INSERT INTO PRODUCT (PRODUCTNAME, PURCHASEPRICE, SELLINGPRICE, QUALITYSTANDARD, PHOTO, ISACTIVE)
+--    VALUES (v_name, p_purchasePrice, p_sellingPrice, v_qs, p_photo, 1)
+--    RETURNING PRODUCTID INTO p_newProductId;
+    IF p_photo IS NULL THEN
+        INSERT INTO PRODUCT (PRODUCTNAME, PURCHASEPRICE, SELLINGPRICE, QUALITYSTANDARD, ISACTIVE)
+        VALUES (v_name, p_purchasePrice, p_sellingPrice, v_qs, 1)
+        RETURNING PRODUCTID INTO p_newProductId;
+    ELSE
+        INSERT INTO PRODUCT (PRODUCTNAME, PURCHASEPRICE, SELLINGPRICE, QUALITYSTANDARD, PHOTO, ISACTIVE)
+        VALUES (v_name, p_purchasePrice, p_sellingPrice, v_qs, p_photo, 1)
+        RETURNING PRODUCTID INTO p_newProductId;
+    END IF;
+
 
     INSERT INTO WAREHOUSEINFO(PRODUCTID, QUANTITY, MEASUREMENTUNIT)
     VALUES (p_newProductId, p_quantityInStock, v_unit);
