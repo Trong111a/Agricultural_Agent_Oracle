@@ -55,8 +55,8 @@ namespace Agricultural_Distributor.DAO
                 connectOracle.Connect();
                 OracleCommand oraCmd = new();
                 oraCmd.CommandType = CommandType.Text;
-                oraCmd.CommandText = "SELECT t.transactionId, t.employeeId, t.receiptId, t.customerId FROM Transactions t " +
-                    "JOIN Receipt r ON r.receiptId = t.receiptId WHERE r.typeOfReceipt = :typeOfReceipt ORDER BY DateOfImplementation DESC";
+                oraCmd.CommandText = "SELECT t.TRANSACTIONID, t.EMPLOYEEID, t.RECEIPTID, t.CUSTOMERID FROM TRANSACTIONS t " +
+                 "JOIN RECEIPT r ON r.RECEIPTID = t.RECEIPTID WHERE r.TYPEOFRECEIPT = :typeOfReceipt ORDER BY DATEOFIMPLEMENTATION DESC";
 
                 oraCmd.Parameters.Add("typeOfReceipt", OracleDbType.NVarchar2).Value = typeOfReceipt;
                 oraCmd.Connection = connectOracle.oraCon;
@@ -85,8 +85,8 @@ namespace Agricultural_Distributor.DAO
                 oraCmd.CommandType = CommandType.Text;
 
 
-                oraCmd.CommandText = "SELECT t.transactionId, t.employeeId, t.receiptId, t.customerId FROM Transactions t " +
-                    "JOIN Receipt r ON r.receiptId = t.receiptId WHERE TRUNC(t.DateOfImplementation) = TRUNC(:p_date) AND r.typeOfReceipt = :typeOfReceipt ORDER BY DateOfImplementation DESC";
+                oraCmd.CommandText = "SELECT t.TRANSACTIONID, t.EMPLOYEEID, t.RECEIPTID, t.CUSTOMERID FROM TRANSACTIONS t " +
+                "JOIN RECEIPT r ON r.RECEIPTID = t.RECEIPTID WHERE TRUNC(t.DATEOFIMPLEMENTATION) = TRUNC(:p_date) AND r.TYPEOFRECEIPT = :typeOfReceipt ORDER BY DATEOFIMPLEMENTATION DESC";
                 oraCmd.Parameters.Add("p_date", OracleDbType.Date).Value = dt.Value.Date;
                 oraCmd.Parameters.Add("typeOfReceipt", OracleDbType.NVarchar2).Value = typeOfReceipt;
 

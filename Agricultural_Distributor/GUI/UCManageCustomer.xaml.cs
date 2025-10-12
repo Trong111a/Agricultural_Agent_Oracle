@@ -104,5 +104,10 @@ namespace Agricultural_Distributor
             wDHome.GetUC(uc);
 
         }
+
+        private void txtSearch_TextChanged(object sender, TextChangedEventArgs e)
+        {
+
+        }
     }
 }

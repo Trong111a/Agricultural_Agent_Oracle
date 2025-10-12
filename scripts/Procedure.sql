@@ -238,3 +238,27 @@ BEGIN
 END;
 
 
+
+
+-- Bổ sung
+CREATE OR REPLACE PROCEDURE proc_InventoryReport
+(
+    p_report_cursor OUT SYS_REFCURSOR 
+)
+AS
+BEGIN
+    OPEN p_report_cursor FOR
+        SELECT  
+            P.PRODUCTID, 
+            P.PRODUCTNAME,
+            W.QUANTITY,
+            P.SELLINGPRICE,
+            (W.QUANTITY * P.SELLINGPRICE) AS INVENTORYVALUE
+        FROM 
+            PRODUCT P
+        JOIN 
+            WAREHOUSEINFO W ON P.PRODUCTID = W.PRODUCTID
+        WHERE 
+            P.ISACTIVE = 1; 
+END;
+/

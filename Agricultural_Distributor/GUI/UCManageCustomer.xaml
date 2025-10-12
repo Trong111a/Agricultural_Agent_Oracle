@@ -59,7 +59,7 @@
                      BorderThickness="1"
                      BorderBrush="Black"
                      GotFocus="txtSearch_GotFocus"
-                     LostFocus="txtSearch_LostFocus" />
+                     LostFocus="txtSearch_LostFocus" TextChanged="txtSearch_TextChanged" />
             <Button Style="{StaticResource StyleButton}" x:Name ="btnExit"
                     Content="QUAY LẠI"
                     HorizontalAlignment="Left"

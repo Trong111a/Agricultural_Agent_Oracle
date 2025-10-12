@@ -247,6 +247,14 @@ namespace Agricultural_Distributor.GUI
 
         private void AddReceipDetail(int receiptId)
         {
+            // Khởi tạo DAO cần thiết
+            ProductDAO productDAO = new ProductDAO();
+            ReceiptDAO receiptDAO = new ReceiptDAO();
+
+            // ----------------------------------------------------
+            // PHẦN XỬ LÝ ĐƠN BÁN HÀNG (uCCreateOrder != null)
+            // Giả định các sản phẩm bán ra đều đã tồn tại trong DB, không cần logic AddProduct
+            // ----------------------------------------------------
             if (uCCreateOrder != null)
             {
                 foreach (Product pro in uCCreateOrder.productSelect)
@@ -256,29 +264,70 @@ namespace Agricultural_Distributor.GUI
                     receiptDetail.ProductId = pro.ProductId;
                     receiptDetail.ProductName = pro.Name;
                     receiptDetail.Quantity = pro.Quantity;
-                    receiptDetail.UnitPrice = pro.SellingPrice;
+                    receiptDetail.UnitPrice = pro.SellingPrice; // Giá bán
 
-                    ReceiptDAO receiptDAO = new ReceiptDAO();
+                    // ReceiptDAO receiptDAO = new ReceiptDAO(); // Không cần khởi tạo lại DAO trong vòng lặp
                     bool temp = receiptDAO.AddReceiptDetail(receiptDetail);
+                    // Có thể thêm logic kiểm tra 'temp' ở đây
                 }
             }
+            // ----------------------------------------------------
+            // PHẦN XỬ LÝ ĐƠN MUA HÀNG (uCCreateOrder == null)
+            // Cần kiểm tra và lưu sản phẩm MỚI vào DB
+            // ----------------------------------------------------
             else
             {
-                foreach (Product pro in listProId)
+                foreach (Product pro in listProId) // listProId chứa listProduct từ UCPurchaseProduct
                 {
+                    int finalProductId = pro.ProductId;
+
+                    // BƯỚC 1: KIỂM TRA VÀ CHÈN SẢN PHẨM MỚI (ProductId = 0)
+                    if (pro.ProductId == 0)
+                    {
+                        // Cài đặt giá bán tạm thời cho sản phẩm mới (giả sử bằng giá mua)
+                        if (pro.SellingPrice <= 0)
+                        {
+                            pro.SellingPrice = pro.PurchasePrice;
+                        }
+
+                        // Cài đặt Photo mặc định nếu DAO yêu cầu (giả định bạn không cần ảnh cho đơn mua)
+                        pro.Photo = null;
+
+                        // GỌI DAO ĐỂ THÊM SẢN PHẨM VÀ LẤY ID MỚI
+                        int? newProductId = productDAO.AddProduct(pro);
+
+                        if (newProductId.HasValue)
+                        {
+                            finalProductId = newProductId.Value;
+                            pro.ProductId = finalProductId; // Cập nhật ProductId cho đối tượng trong bộ nhớ
+                        }
+                        else
+                        {
+                            // Xử lý lỗi: Không thể chèn sản phẩm mới, bỏ qua chi tiết hóa đơn này
+                            MessageBox.Show($"CẢNH BÁO: Không thể lưu sản phẩm mới '{pro.Name}' vào Database. Chi tiết hóa đơn này bị bỏ qua.");
+                            continue;
+                        }
+                    }
+
+                    // BƯỚC 2: LƯU CHI TIẾT HÓA ĐƠN VỚI ProductId HỢP LỆ
                     ReceiptDetail receiptDetail = new ReceiptDetail();
                     receiptDetail.ReceiptId = receiptId;
-                    receiptDetail.ProductId = pro.ProductId;
-                    receiptDetail.ProductName = pro.Name;
-                    if (pro.QuantitySelect != null && pro.QuantitySelect != 0) receiptDetail.Quantity = pro.QuantitySelect;
-                    else receiptDetail.Quantity = pro.Quantity;
-                    receiptDetail.UnitPrice = pro.PurchasePrice;
+                    receiptDetail.ProductId = finalProductId; // SỬ DỤNG ID HỢP LỆ (cũ hoặc mới)
+                    //receiptDetail.ProductName = pro.Name;
 
-                    ReceiptDAO receiptDAO = new ReceiptDAO();
+                    // Xử lý Quantity (đã có logic tốt)
+                    if (pro.QuantitySelect != null && pro.QuantitySelect != 0)
+                        receiptDetail.Quantity = pro.QuantitySelect;
+                    else
+                        receiptDetail.Quantity = pro.Quantity;
+
+                    receiptDetail.UnitPrice = pro.PurchasePrice; // Giá mua
+
+                    // ReceiptDAO receiptDAO = new ReceiptDAO(); // Không cần khởi tạo lại DAO trong vòng lặp
                     bool temp = receiptDAO.AddReceiptDetail(receiptDetail);
+                    // Có thể thêm logic kiểm tra 'temp' ở đây
                 }
             }
-            
         }
 
         private bool AddCustomer()
