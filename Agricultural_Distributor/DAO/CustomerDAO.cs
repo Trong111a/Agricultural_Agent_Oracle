@@ -264,6 +264,14 @@ namespace Agricultural_Distributor.DAO
         public List<Customer> SearchCustomer(string keyword)
         {
             List<Customer> list = new List<Customer>();
+            string searchParam = "%" + keyword.Trim() + "%";
+
+            string sql =
+                "SELECT CUSTOMERID, CUSTOMERNAME, CUSTOMERADDRESS, PHONENUMBER, EMAIL FROM CUSTOMER " +
+                "WHERE UPPER(CUSTOMERNAME) LIKE UPPER(:keyword) " +
+                "OR PHONENUMBER LIKE :keyword " +
+                "OR CUSTOMERID = TO_NUMBER(CASE WHEN REGEXP_LIKE(:keyword, '^[0-9]+$') THEN :keyword ELSE '-1' END)";
+
             try
             {
                 connectOracle.Connect();
@@ -272,26 +280,37 @@ namespace Agricultural_Distributor.DAO
                 {
                     oraCmd.Connection = connectOracle.oraCon;
                     oraCmd.CommandType = CommandType.Text;
+                    oraCmd.CommandText = sql;
 
- 
-                    oraCmd.CommandText =
-                        "SELECT customerId, customerName, customerAddress, phoneNumber, email FROM Customer " +
-                        "WHERE UPPER(customerName) LIKE UPPER('%' || :keyword || '%') " +
-                        "OR phoneNumber LIKE '%' || :keyword || '%' " +
-                        "OR customerId = TRY_CAST(:keyword AS NUMBER)"; 
-
-                    oraCmd.Parameters.Add("keyword", keyword);
+                    oraCmd.Parameters.Add("keyword", searchParam);
 
                     OracleDataReader reader = oraCmd.ExecuteReader();
+
+                    int customerNameOrd = reader.GetOrdinal("CUSTOMERNAME");
+                    int customerAddressOrd = reader.GetOrdinal("CUSTOMERADDRESS");
+                    int phoneNumberOrd = reader.GetOrdinal("PHONENUMBER");
+                    int emailOrd = reader.GetOrdinal("EMAIL");
+
                     while (reader.Read())
                     {
                         Customer newCustomer = new Customer()
                         {
                             CustomerId = reader.GetInt32(0),
-                            CustomerName = reader["customerName"].ToString(),
-                            CustomerAddress = reader["customerAddress"].ToString(),
-                            PhoneNumber = reader["phoneNumber"].ToString(),
-                            Email = reader.IsDBNull(4) ? null : reader.GetString(4),
+                            CustomerName = reader.IsDBNull(customerNameOrd)
+                                ? string.Empty
+                                : reader.GetString(customerNameOrd),
+
+                            CustomerAddress = reader.IsDBNull(customerAddressOrd)
+                                ? string.Empty
+                                : reader.GetString(customerAddressOrd),
+
+                            PhoneNumber = reader.IsDBNull(phoneNumberOrd)
+                                ? string.Empty
+                                : reader.GetString(phoneNumberOrd),
+
+                            Email = reader.IsDBNull(emailOrd)
+                                ? null
+                                : reader.GetString(emailOrd),
                         };
                         list.Add(newCustomer);
                     }
@@ -300,7 +319,7 @@ namespace Agricultural_Distributor.DAO
             }
             catch (Exception ex)
             {
-                MessageBox.Show(ex.Message);
+                MessageBox.Show($"Lỗi tìm kiếm khách hàng: {ex.Message}");
             }
             finally
             {

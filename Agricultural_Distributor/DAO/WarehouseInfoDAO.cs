@@ -49,6 +49,7 @@ namespace Agricultural_Distributor.DAO
             return warehouseInfo;
         }
 
+
         public DataTable GetInventoryReport()
         {
             connectOracle.Connect();
@@ -56,11 +57,24 @@ namespace Agricultural_Distributor.DAO
             OracleCommand cmd = new("proc_InventoryReport", connectOracle.oraCon);
             cmd.CommandType = CommandType.StoredProcedure;
 
-            OracleDataAdapter adapter = new(cmd);
-            DataTable dt = new();
-            adapter.Fill(dt);
-            connectOracle.Close();
-            return dt;
+            cmd.Parameters.Add("p_report_cursor", OracleDbType.RefCursor).Direction = ParameterDirection.Output;
+
+            try
+            {
+                OracleDataAdapter adapter = new(cmd);
+                DataTable dt = new();
+                adapter.Fill(dt);
+                return dt;
+            }
+            catch (Exception ex)
+            {
+                System.Windows.MessageBox.Show($"Lỗi truy vấn báo cáo tồn kho: {ex.Message}", "Lỗi DAO", System.Windows.MessageBoxButton.OK, System.Windows.MessageBoxImage.Error);
+                return new DataTable(); 
+            }
+            finally
+            {
+                connectOracle.Close();
+            }
         }
     }
 }

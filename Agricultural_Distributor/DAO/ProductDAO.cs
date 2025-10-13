@@ -38,7 +38,7 @@ namespace Agricultural_Distributor.DAO
             OracleCommand oraCmd = new();
             oraCmd.CommandType = CommandType.Text;
             oraCmd.CommandText = "SELECT p.ProductId, p.productName, p.qualityStandard, p.purchasePrice, p.sellingPrice, w.quantity, w.measurementUnit " +
-                                 "FROM Product p JOIN WarehouseInfo w ON p.ProductId = w.productId WHERE IsActive = 1 ORDER BY productName";
+                                 "FROM Product p JOIN WarehouseInfo w ON p.ProductId = w.productId WHERE p.IsActive = 1 ORDER BY productName";
 
             oraCmd.Connection = connectOracle.oraCon;
 
@@ -164,7 +164,7 @@ namespace Agricultural_Distributor.DAO
 
                 oraCmd.Parameters.Add("p_measurementUnit", OracleDbType.NVarchar2).Value = product.MeasurementUnit;
 
-                OracleParameter outputProId = new("p_newProductId", OracleDbType.Int32, ParameterDirection.Output);
+                OracleParameter outputProId = new("p_newProductId", OracleDbType.Decimal, ParameterDirection.Output);
                 oraCmd.Parameters.Add(outputProId);
 
                 oraCmd.ExecuteNonQuery();
@@ -215,12 +215,12 @@ namespace Agricultural_Distributor.DAO
                         }
 
                         product.ProductId = productId;
-                        product.Name = reader["productName"].ToString();
-                        product.PurchasePrice = Convert.ToDouble(reader["purchasePrice"]);
-                        product.SellingPrice = Convert.ToDouble(reader["sellingPrice"]);
-                        product.QualityStandard = reader["qualityStandard"].ToString();
-                        product.MeasurementUnit = reader["measurementUnit"].ToString();
-                        product.Quantity = Convert.ToInt32(reader["quantity"]);
+                        product.Name = reader["PRODUCTNAME"].ToString(); // Sửa thành chữ hoa
+                        product.PurchasePrice = Convert.ToDouble(reader["PURCHASEPRICE"]); // Sửa thành chữ hoa
+                        product.SellingPrice = Convert.ToDouble(reader["SELLINGPRICE"]); // Sửa thành chữ hoa
+                        product.QualityStandard = reader["QUALITYSTANDARD"].ToString(); // Sửa thành chữ hoa
+                        product.MeasurementUnit = reader["MEASUREMENTUNIT"].ToString(); // Sửa thành chữ hoa
+                        product.Quantity = Convert.ToInt32(reader["QUANTITY"]); // Sửa thành chữ hoa
                         product.Photo = photo;
                     }
                     reader.Close();
@@ -265,14 +265,14 @@ namespace Agricultural_Distributor.DAO
                 OracleCommand oraCmd = new("proc_UpdateProduct", connectOracle.oraCon);
                 {
                     oraCmd.CommandType = CommandType.StoredProcedure;
-                        
+
                     oraCmd.Parameters.Add("p_productId", OracleDbType.Int32).Value = product.ProductId;
                     oraCmd.Parameters.Add("p_productName", OracleDbType.NVarchar2).Value = product.Name;
                     oraCmd.Parameters.Add("p_purchasePrice", OracleDbType.Double).Value = product.PurchasePrice;
                     oraCmd.Parameters.Add("p_sellingPrice", OracleDbType.Double).Value = product.SellingPrice;
                     oraCmd.Parameters.Add("p_qualityStandard", OracleDbType.NVarchar2).Value = product.QualityStandard;
                     oraCmd.Parameters.Add("p_quantityInStock", OracleDbType.Int32).Value = product.Quantity;
-                    
+
 
                     if (product.Photo != null)
                     {

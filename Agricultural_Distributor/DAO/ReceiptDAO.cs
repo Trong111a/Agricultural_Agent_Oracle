@@ -77,11 +77,11 @@ namespace Agricultural_Distributor.DAO
             OracleCommand oraCmd = new();
             oraCmd.CommandType = CommandType.Text;
 
-            oraCmd.CommandText = "INSERT INTO ReceiptDetail VALUES(:receiptId, :productId, :productName, :quantity, :unitPrice)";
+            oraCmd.CommandText = "INSERT INTO RECEIPTDETAIL (RECEIPTID, PRODUCTID, QUANTITY, UNITPRICE) " +
+                                 "VALUES(:receiptId, :productId, :quantity, :unitPrice)";
 
             oraCmd.Parameters.Add("receiptId", receiptDetail.ReceiptId);
             oraCmd.Parameters.Add("productId", receiptDetail.ProductId);
-            oraCmd.Parameters.Add("productName", receiptDetail.ProductName);
             oraCmd.Parameters.Add("quantity", receiptDetail.Quantity);
             oraCmd.Parameters.Add("unitPrice", receiptDetail.UnitPrice);
 
@@ -94,9 +94,12 @@ namespace Agricultural_Distributor.DAO
                 MessageBox.Show("cac ok");
                 return result > 0;
             }
-            catch (Exception)
+            catch (Exception ex) 
             {
+
+                MessageBox.Show($"Lỗi thêm chi tiết hóa đơn: {ex.Message}");
                 MessageBox.Show("cac false");
+
                 connectOracle.Disconnect();
                 return false;
             }
@@ -105,29 +108,53 @@ namespace Agricultural_Distributor.DAO
         public List<ReceiptDetail> GetReceiptDetailList(int receiptId)
         {
             List<ReceiptDetail> receiptDetails = new();
-            connectOracle.Connect();
 
-            OracleCommand oraCmd = new();
-            oraCmd.CommandType = CommandType.Text;
-            oraCmd.CommandText = "SELECT receiptId, productId, productName, quantity, unitPrice FROM ReceiptDetail WHERE receiptId = :receiptId";
-
-            oraCmd.Parameters.Add("receiptId", receiptId);
-            oraCmd.Connection = connectOracle.oraCon;
-
-            OracleDataReader reader = oraCmd.ExecuteReader();
-            while (reader.Read())
+            try
             {
+                connectOracle.Connect();
 
-                int proId = reader.GetInt32(1);
-                string proName = reader.GetString(2); 
-                int quantity = reader.GetInt32(3);
-                double unitPrice = reader.GetDouble(4);
+                OracleCommand oraCmd = new();
+                oraCmd.CommandType = CommandType.Text;
 
-                ReceiptDetail receiptDetail = new(proId, proName, quantity, unitPrice);
-                receiptDetails.Add(receiptDetail);
+                oraCmd.CommandText =
+                "SELECT T1.RECEIPTID, T1.PRODUCTID, T2.PRODUCTNAME, T1.QUANTITY, T1.UNITPRICE " +
+                "FROM RECEIPTDETAIL T1 " +
+                "JOIN PRODUCT T2 ON T1.PRODUCTID = T2.PRODUCTID " +
+                "WHERE T1.RECEIPTID = :receiptId";
+
+                oraCmd.Parameters.Add("receiptId", receiptId);
+                oraCmd.Connection = connectOracle.oraCon;
+
+                OracleDataReader reader = oraCmd.ExecuteReader();
+
+                int prodNameOrd = reader.GetOrdinal("PRODUCTNAME");
+                int proIdOrd = reader.GetOrdinal("PRODUCTID"); // THÊM DÒNG NÀY
+                int quantityOrd = reader.GetOrdinal("QUANTITY"); // THÊM DÒNG NÀY
+                int unitPriceOrd = reader.GetOrdinal("UNITPRICE"); // THÊM DÒNG NÀY
+
+                while (reader.Read())
+                {
+                    int proId = reader.GetInt32(proIdOrd);
+                    int quantity = reader.GetInt32(quantityOrd);
+                    double unitPrice = reader.GetDouble(unitPriceOrd);
+
+                    string proName = reader.IsDBNull(prodNameOrd)
+                        ? string.Empty
+                        : reader.GetString(prodNameOrd);
+
+                    ReceiptDetail receiptDetail = new(proId, proName, quantity, unitPrice);
+                    receiptDetails.Add(receiptDetail);
+                }
+                reader.Close();
             }
-            reader.Close();
-            connectOracle.Disconnect();
+            catch (Exception ex)
+            {
+                MessageBox.Show($"Lỗi truy vấn chi tiết phiếu: {ex.Message}");
+            }
+            finally
+            {
+                connectOracle.Disconnect();
+            }
             return receiptDetails;
         }
 

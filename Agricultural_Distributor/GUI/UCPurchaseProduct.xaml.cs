@@ -262,23 +262,11 @@ namespace Agricultural_Distributor.GUI
             {
                 if (ValidateProduct(product))
                 {
-                    listProduct.Add(product);
+
                     double temp = ConverPrice(txtTotalPrice.Text);
                     double newProPrice = temp + product.PurchasePrice * product.Quantity;
                     txtTotalPrice.Text = $"Tổng tiền: {newProPrice:N0} đ";
-                    foreach (var item in listProduct)
-                    {
-                        MessageBox.Show(
-                        $"Đã thêm sản phẩm:\n" +
-                        $"- Tên: {item.Name}\n" +
-                        $"- Số lượng: {item.Quantity}\n",
-                        
-                        "Thông báo",
-                        MessageBoxButton.OK,
-                        MessageBoxImage.Information
-                    );
-                    }
-                    
+
                     MessageBox.Show("Đã thêm sản phẩm vào danh sách!", "Thông báo", MessageBoxButton.OK, MessageBoxImage.Information);
                 }
             }
@@ -313,17 +301,92 @@ namespace Agricultural_Distributor.GUI
             else discount = "";
             if (tbNote.Text != null) note = tbNote.Text;
             else note = "";
-            
-            //bool flag = GetOrder(sender, e);
-            //if (flag)
-            //{
-            //    UCCreateTransaction uCCreateTransaction = new UCCreateTransaction(wDHome, this);
-            //    wDHome.GetUC(uCCreateTransaction);
-            //}
+
+            listProduct.Clear();
+
+            foreach (var product in products)
+            {
+                if (product.IsSelected && product.QuantitySelect > 0)
+                {
+                    product.Quantity = product.QuantitySelect;
+                    listProduct.Add(product);
+                }
+            }
+
+            GetNewProducts();
+
+            if (listProduct.Count == 0)
+            {
+                MessageBox.Show("Vui lòng chọn ít nhất một sản phẩm hoặc thêm sản phẩm mới.");
+                return;
+            }
+
             UCCreateTransaction uCCreateTransaction = new UCCreateTransaction(wDHome, this);
             wDHome.GetUC(uCCreateTransaction);
-
         }
+
+        private bool GetNewProducts()
+        {
+            for (int i = 0; i < lvNewProducts.Items.Count; i++)
+            {
+                if (lvNewProducts.Items[i] is Entity.Product product)
+                {
+                    var container = lvNewProducts.ItemContainerGenerator.ContainerFromIndex(i) as ListViewItem;
+                    if (container == null) continue;
+
+                    var txtName = FindVisualChild<TextBox>(container, "txtName_lsvNew");
+                    var txtQuantity = FindVisualChild<TextBox>(container, "txtQuantity_lsvNew");
+                    var txtPurchasePrice = FindVisualChild<TextBox>(container, "txtPurchasePrice_lsvNew");
+                    var txtMeasurementUnit = FindVisualChild<TextBox>(container, "txtMeasurementUnit_lsvNew");
+                    var txtQualityStandard = FindVisualChild<TextBox>(container, "txtQualityStandard_lsvNew");
+
+                    if (txtName != null && !string.IsNullOrWhiteSpace(txtName.Text))
+                    {
+                        product.Name = txtName.Text;
+                        product.QualityStandard = txtQualityStandard?.Text;
+
+                        if (txtQuantity == null || !int.TryParse(txtQuantity.Text, out int quantity) || quantity <= 0)
+                        {
+                            if (!string.IsNullOrWhiteSpace(txtName.Text))
+                            {
+                                MessageBox.Show($"Sản phẩm mới '{product.Name}': Số lượng phải là số nguyên dương.");
+                                FocusTxt(txtQuantity);
+                            }
+                            return false;
+                        }
+                        product.Quantity = quantity;
+
+                        if (txtPurchasePrice == null || !double.TryParse(txtPurchasePrice.Text, out double price) || price <= 0)
+                        {
+                            if (!string.IsNullOrWhiteSpace(txtName.Text))
+                            {
+                                MessageBox.Show($"Sản phẩm mới '{product.Name}': Giá mua phải là số dương.");
+                                FocusTxt(txtPurchasePrice);
+                            }
+                            return false; 
+                        }
+                        product.PurchasePrice = price;
+                        if (txtMeasurementUnit == null || string.IsNullOrWhiteSpace(txtMeasurementUnit.Text) || !Regex.IsMatch(txtMeasurementUnit.Text, @"^[a-zA-Z]+$"))
+                        {
+                            if (!string.IsNullOrWhiteSpace(txtName.Text))
+                            {
+                                MessageBox.Show($"Sản phẩm mới '{product.Name}': Đơn vị đo phải chỉ chứa chữ cái.");
+                                FocusTxt(txtMeasurementUnit);
+                            }
+                            return false; 
+                        }
+                        product.MeasurementUnit = txtMeasurementUnit.Text;
+
+                        if (!listProduct.Contains(product))
+                        {
+                            listProduct.Add(product);
+                        }
+                    }
+                }
+            }
+            return true; 
+        }
+
         private void txtName_LostFocus(object sender, RoutedEventArgs e)
         {
             var txtName = sender as TextBox;

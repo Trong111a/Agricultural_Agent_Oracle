@@ -1,51 +1,46 @@
 ﻿using Agricultural_Distributor.CreateService;
-using System.Configuration;
-using System.Data;
+using System; 
 using System.Windows;
+using System.Windows.Threading; 
 
 namespace Agricultural_Distributor
 {
-    /// <summary>
-    /// Interaction logic for App.xaml
-    /// </summary>
     public partial class App : Application
     {
-        private static System.Timers.Timer timer;
+        private static DispatcherTimer dispatcherTimer;
+
         protected override void OnStartup(StartupEventArgs e)
         {
             base.OnStartup(e);
 
-            timer = new System.Timers.Timer();
-            timer.Interval = GetIntervalUntilTime();
-            timer.Elapsed += Timer_Elapsed;
-            timer.AutoReset = false;
-            timer.Start();
+            dispatcherTimer = new DispatcherTimer();
+            dispatcherTimer.Interval = TimeSpan.FromMilliseconds(GetIntervalUntilTime());
 
-            Console.WriteLine("Timer set to trigger at: " + DateTime.Now.AddMilliseconds(timer.Interval));
+            dispatcherTimer.Tick += DispatcherTimer_Tick;
+            dispatcherTimer.Start();
+
+            Console.WriteLine("Timer set to trigger at: " + DateTime.Now.Add(dispatcherTimer.Interval));
         }
 
-        private void Timer_Elapsed(object sender, System.Timers.ElapsedEventArgs e)
+        private void DispatcherTimer_Tick(object sender, EventArgs e)
         {
-            Application.Current.Dispatcher.Invoke(() =>
-            {
-                ReportService service = new ReportService();
-                service.SendDailyReports();
-            });
+            ReportService service = new ReportService();
+            service.SendDailyReports();
 
-            ((System.Timers.Timer)sender).Interval = TimeSpan.FromDays(1).TotalMilliseconds;
-            ((System.Timers.Timer)sender).Start();
+            Console.WriteLine($"Report sent at: {DateTime.Now}");
+            ((DispatcherTimer)sender).Interval = TimeSpan.FromDays(1);
+
         }
 
         private double GetIntervalUntilTime()
         {
             DateTime now = DateTime.Now;
-            DateTime todayTime = now.Date.AddHours(0).AddMinutes(28);
+            DateTime todayTime = now.Date.AddHours(17).AddMinutes(7);
+
             if (now > todayTime)
-                todayTime = todayTime.AddDays(1); 
+                todayTime = todayTime.AddDays(1);
 
             return (todayTime - now).TotalMilliseconds;
         }
-
     }
-
 }

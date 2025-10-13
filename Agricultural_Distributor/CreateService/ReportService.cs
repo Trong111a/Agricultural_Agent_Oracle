@@ -42,16 +42,18 @@ namespace Agricultural_Distributor.CreateService
             sb.AppendLine($"<h2 style='color: #2e6c80; text-align: center;'>BÁO CÁO HẰNG NGÀY - {DateTime.Today:dd/MM/yyyy}</h2>");
 
             sb.AppendLine("<h3 style='color:#2e6c80;'>Doanh Thu</h3>");
-            sb.AppendLine(GenerateHtmlTable(revenue, new[] { "ReceiptID", "FinalAmount" }, new[] { "Mã Hóa Đơn", "Tổng Tiền (VND)" }));
+            sb.AppendLine(GenerateHtmlTable(revenue, new[] { "RECEIPTID", "FINALAMOUNT" }, new[] { "Mã Hóa Đơn", "Tổng Tiền (VND)" }));
+
 
             sb.AppendLine("<h3 style='color:#2e6c80;'>Chi Phí</h3>");
-            sb.AppendLine(GenerateHtmlTable(expense, new[] { "ReceiptID", "FinalAmount" }, new[] { "Mã Hóa Đơn", "Tổng Tiền (VND)" }));
+            sb.AppendLine(GenerateHtmlTable(expense, new[] { "RECEIPTID", "FINALAMOUNT" }, new[] { "Mã Hóa Đơn", "Tổng Tiền (VND)" }));
+
 
             sb.AppendLine("<h3 style='color:#2e6c80;'>Hóa Đơn Còn Nợ</h3>");
-            sb.AppendLine(GenerateHtmlTable(debt, new[] { "ReceiptID", "FinalAmount", "Repayment", "RemainingDebt" },new[] { "Mã Hóa Đơn", "Tổng Tiền (VND)", "Đã Trả (VND)", "Còn Nợ (VND)" }));
+            sb.AppendLine(GenerateHtmlTable(debt, new[] { "RECEIPTID", "FINALAMOUNT", "REPAYMENT", "REMAININGDEBT" }, new[] { "Mã Hóa Đơn", "Tổng Tiền (VND)", "Đã Trả (VND)", "Còn Nợ (VND)" }));
 
             sb.AppendLine("<h3 style='color:#2e6c80;'>Hàng Tồn Kho</h3>");
-            sb.AppendLine(GenerateHtmlTable(inventory, new[] { "ProductName", "Quantity" }, new[] { "Sản Phẩm", "Số Lượng Còn" }));
+            sb.AppendLine(GenerateHtmlTable(inventory, new[] { "PRODUCTNAME", "QUANTITY" }, new[] { "Sản Phẩm", "Số Lượng Còn" }));
 
             sb.AppendLine("</body></html>");
 
