@@ -137,6 +137,7 @@ namespace Agricultural_Distributor.GUI
                 var txtPurPrice = FindTextBoxInContainer(container, "txtPurPrice_lsvProducts");
                 if (txtPurPrice != null) 
                 {
+                    
                     txtPurPrice.IsEnabled = true;
                 }
 
@@ -182,7 +183,7 @@ namespace Agricultural_Distributor.GUI
                     txtPurPrice.Text = product.PurPriceOriginal.ToString();
                     txtPurPrice.IsEnabled = false;
                 }
-
+                product.PurchasePrice = product.PurPriceOriginal;
                 UpdateTotalPrice();
                 listProduct.Remove(product);
             }
@@ -431,7 +432,9 @@ namespace Agricultural_Distributor.GUI
                     FocusTxt(txtQuantity);
                 }
                 else {
-                    product.Quantity = quantity;
+                    product.QuantitySelect = quantity;
+                    product.Quantity = product.QuantitySelect;
+                    //product.Quantity = quantity;
                 }
             }
         }
@@ -502,6 +505,7 @@ namespace Agricultural_Distributor.GUI
                 if (double.TryParse(txt.Text, out double price) && price > 0)
                 {
                     product.PurchasePriceSelect = price;
+                    
                 }
                 else
                 {
@@ -510,6 +514,7 @@ namespace Agricultural_Distributor.GUI
                     FocusTxt(txt);
                 }
             }
+            UpdateTotalPrice();
         }
 
         private double ConverPrice(string priceStr)

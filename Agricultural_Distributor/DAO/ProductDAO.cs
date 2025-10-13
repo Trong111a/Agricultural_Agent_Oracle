@@ -133,6 +133,7 @@ namespace Agricultural_Distributor.DAO
 
         public int? AddProduct(Product product)
         {
+            MessageBox.Show("ahihi: ");
             int? proId = null;
             try
             {
@@ -172,6 +173,7 @@ namespace Agricultural_Distributor.DAO
                 {
                     proId = Convert.ToInt32(outputProId.Value.ToString());
                 }
+                //MessageBox.Show("ahihi: " + proId.ToString());
 
                 return proId;
             }
