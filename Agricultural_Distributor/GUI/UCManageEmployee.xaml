@@ -63,7 +63,7 @@
                                 <GridViewColumn Header="Địa chỉ" Width="100" DisplayMemberBinding="{Binding EmployeeAddress}"/>
                                 <GridViewColumn Header="Số điện thoại" Width="100" DisplayMemberBinding="{Binding PhoneNumber}"/>
                                 <GridViewColumn Header="Email" Width="100" DisplayMemberBinding="{Binding Email}"/>
-                                <GridViewColumn Header="Tình trạng" Width="100" DisplayMemberBinding="{Binding Email}"/>
+                                <GridViewColumn Header="Tình trạng" Width="100" DisplayMemberBinding="{Binding Status}"/>
 
                             </GridView>
                         </ListView.View>

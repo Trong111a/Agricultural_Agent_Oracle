@@ -110,41 +110,41 @@
                         </GridView>
                     </ListView.View>
                 </ListView>
-                <ListView Grid.Row="1" x:Name="lvNewProducts" d:ItemsSource="{d:SampleData ItemCount=5}" SelectionChanged="lvNewProducts_SelectionChanged">
+                <ListView Grid.Row="1" x:Name="lvNewProducts" d:ItemsSource="{d:SampleData ItemCount=5}">
                     <ListView.View>
                         <GridView>
                             <GridViewColumn Header="Tên nông sản" Width="180">
                                 <GridViewColumn.CellTemplate>
                                     <DataTemplate>
-                                        <TextBox x:Name="txtName" LostFocus="txtName_LostFocus" Width="170"/>
+                                        <TextBox x:Name="txtName" LostFocus="txtName_LostFocus" Width="170" Text="{Binding Name}"/>
                                     </DataTemplate>
                                 </GridViewColumn.CellTemplate>
                             </GridViewColumn>
                             <GridViewColumn Header="Số lượng" Width="100">
                                 <GridViewColumn.CellTemplate>
                                     <DataTemplate>
-                                        <TextBox x:Name="txtQuantity" LostFocus="txtQuantity_LostFocus" Width="90"/>
+                                        <TextBox x:Name="txtQuantity" LostFocus="txtQuantity_LostFocus" Width="90" Text="{Binding Quantity}"/>
                                     </DataTemplate>
                                 </GridViewColumn.CellTemplate>
                             </GridViewColumn>
                             <GridViewColumn Header="Giá mua" Width="100">
                                 <GridViewColumn.CellTemplate>
                                     <DataTemplate>
-                                        <TextBox x:Name="txtPurchasePrice" LostFocus="txtPurchasePrice_LostFocus" Width="90"/>
+                                        <TextBox x:Name="txtPurchasePrice" LostFocus="txtPurchasePrice_LostFocus" Width="90" Text="{Binding PurchasePrice}"/>
                                     </DataTemplate>
                                 </GridViewColumn.CellTemplate>
                             </GridViewColumn>
                             <GridViewColumn Header="Tiêu chuẩn chất lượng"  Width="130">
                                 <GridViewColumn.CellTemplate>
                                     <DataTemplate>
-                                        <TextBox x:Name="txtQualityStandard" LostFocus="txtQualityStandard_LostFocus" Width="120"/>
+                                        <TextBox x:Name="txtQualityStandard" LostFocus="txtQualityStandard_LostFocus" Width="120" Text="{Binding QualityStandard}"/>
                                     </DataTemplate>
                                 </GridViewColumn.CellTemplate>
                             </GridViewColumn>
                             <GridViewColumn Header="Đơn vị đo lường" Width="100">
                                 <GridViewColumn.CellTemplate>
                                     <DataTemplate>
-                                        <TextBox x:Name="txtMeasurementUnit" LostFocus="txtMeasurementUnit_LostFocus" Width="90"/>
+                                        <TextBox x:Name="txtMeasurementUnit" LostFocus="txtMeasurementUnit_LostFocus" Width="90" Text="{Binding MeasurementUnit}"/>
                                     </DataTemplate>
                                 </GridViewColumn.CellTemplate>
                             </GridViewColumn>

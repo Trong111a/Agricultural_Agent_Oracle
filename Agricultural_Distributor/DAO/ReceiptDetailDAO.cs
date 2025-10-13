@@ -38,30 +38,30 @@ namespace Agricultural_Distributor.DAO
             return false;
         }
 
-        public void UpdateQuanReceiptDetail(ReceiptDetail receiptDetail, int quan)
-        {
-            try
-            {
-                connectOracle.Connect();
-                using (OracleCommand oraCmd = new("proc_UpdateQuanReceiptDetail", connectOracle.oraCon))
-                {
-                    oraCmd.CommandType = CommandType.StoredProcedure;
+        //public void UpdateQuanReceiptDetail(ReceiptDetail receiptDetail, int quan)
+        //{
+        //    try
+        //    {
+        //        connectOracle.Connect();
+        //        using (OracleCommand oraCmd = new("proc_UpdateQuanReceiptDetail", connectOracle.oraCon))
+        //        {
+        //            oraCmd.CommandType = CommandType.StoredProcedure;
 
-                    oraCmd.Parameters.Add("recpId", OracleDbType.Varchar2).Value = receiptDetail.ReceiptId;
-                    oraCmd.Parameters.Add("prodId", OracleDbType.Varchar2).Value = receiptDetail.ProductId;
-                    oraCmd.Parameters.Add("quantity", OracleDbType.Int32).Value = quan;
+        //            oraCmd.Parameters.Add("recpId", OracleDbType.Varchar2).Value = receiptDetail.ReceiptId;
+        //            oraCmd.Parameters.Add("prodId", OracleDbType.Varchar2).Value = receiptDetail.ProductId;
+        //            oraCmd.Parameters.Add("quantity", OracleDbType.Int32).Value = quan;
 
-                    oraCmd.ExecuteNonQuery();
-                }
-            }
-            catch (Exception ex)
-            {
-                MessageBox.Show(ex.Message);
-            }
-            finally
-            {
-                connectOracle.Close();
-            }
-        }
+        //            oraCmd.ExecuteNonQuery();
+        //        }
+        //    }
+        //    catch (Exception ex)
+        //    {
+        //        MessageBox.Show(ex.Message);
+        //    }
+        //    finally
+        //    {
+        //        connectOracle.Close();
+        //    }
+        //}
     }
 }

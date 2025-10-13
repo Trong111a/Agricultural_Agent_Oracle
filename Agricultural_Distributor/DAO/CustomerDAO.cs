@@ -1,11 +1,12 @@
-﻿using System;
+﻿using Agricultural_Distributor.Entity;
+using Oracle.ManagedDataAccess.Client;
+using Oracle.ManagedDataAccess.Types;
+using System;
 using System.Collections.Generic;
 using System.Data;
 using System.Linq;
 using System.Text.RegularExpressions;
 using System.Windows;
-using Oracle.ManagedDataAccess.Client;
-using Agricultural_Distributor.Entity;
 
 namespace Agricultural_Distributor.DAO
 {
@@ -70,12 +71,12 @@ namespace Agricultural_Distributor.DAO
                 "INSERT INTO Customer (customerName, customerAddress, phoneNumber, email) " +
                 "VALUES (:name, :address, :phone, :email) RETURNING customerId INTO :customerId";
 
-            oraCmd.Parameters.Add("name", customer.CustomerName);
-            oraCmd.Parameters.Add("address", customer.CustomerAddress);
-            oraCmd.Parameters.Add("phone", customer.PhoneNumber);
-            oraCmd.Parameters.Add("email", customer.Email);
+            oraCmd.Parameters.Add("name", OracleDbType.NVarchar2).Value =  customer.CustomerName;
+            oraCmd.Parameters.Add("address", OracleDbType.Varchar2).Value =  customer.CustomerAddress;
+            oraCmd.Parameters.Add("phone", OracleDbType.Varchar2).Value =  customer.PhoneNumber;
+            oraCmd.Parameters.Add("email", OracleDbType.Varchar2).Value =  customer.Email;
 
-            OracleParameter outputIdParam = new OracleParameter("customerId", OracleDbType.Int32, ParameterDirection.Output);
+            OracleParameter outputIdParam = new OracleParameter("customerId", OracleDbType.Decimal, ParameterDirection.Output);
             oraCmd.Parameters.Add(outputIdParam);
 
             oraCmd.Connection = connectOracle.oraCon;
@@ -87,7 +88,7 @@ namespace Agricultural_Distributor.DAO
                 int newCustomerId = 0;
                 if (outputIdParam.Value != DBNull.Value)
                 {
-                    newCustomerId = Convert.ToInt32(outputIdParam.Value);
+                    newCustomerId = ((OracleDecimal)outputIdParam.Value).ToInt32();
                 }
 
                 connectOracle.Disconnect();

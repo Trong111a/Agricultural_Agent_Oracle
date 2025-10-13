@@ -200,6 +200,7 @@ namespace Agricultural_Distributor
             {
                 if (int.TryParse(txt.Text, out int quantity))
                 {
+                    //quantity -= product.QuantitySelect;
                     product.QuantitySelect = quantity;
                     
                 }

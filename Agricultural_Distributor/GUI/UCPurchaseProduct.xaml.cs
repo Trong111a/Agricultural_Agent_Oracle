@@ -42,6 +42,7 @@ namespace Agricultural_Distributor.GUI
             LoadProducts();
             SetList();
             lvNewProducts.ItemsSource = lsNew;
+            
         }
 
         private TextBox FindTextBoxInContainer(DependencyObject container)
@@ -101,7 +102,7 @@ namespace Agricultural_Distributor.GUI
 
         private void SetList()
         {
-            for (int i = 0; i <6; i++)
+            for (int i = 0; i < 6; i++)
             {
                 Product product = new Product();
                 lsNew.Add(product);
@@ -136,6 +137,7 @@ namespace Agricultural_Distributor.GUI
                 var txtPurPrice = FindTextBoxInContainer(container, "txtPurPrice_lsvProducts");
                 if (txtPurPrice != null) 
                 {
+                    
                     txtPurPrice.IsEnabled = true;
                 }
 
@@ -181,7 +183,7 @@ namespace Agricultural_Distributor.GUI
                     txtPurPrice.Text = product.PurPriceOriginal.ToString();
                     txtPurPrice.IsEnabled = false;
                 }
-
+                product.PurchasePrice = product.PurPriceOriginal;
                 UpdateTotalPrice();
                 listProduct.Remove(product);
             }
@@ -264,6 +266,19 @@ namespace Agricultural_Distributor.GUI
                     double temp = ConverPrice(txtTotalPrice.Text);
                     double newProPrice = temp + product.PurchasePrice * product.Quantity;
                     txtTotalPrice.Text = $"Tổng tiền: {newProPrice:N0} đ";
+                    foreach (var item in listProduct)
+                    {
+                        MessageBox.Show(
+                        $"Đã thêm sản phẩm:\n" +
+                        $"- Tên: {item.Name}\n" +
+                        $"- Số lượng: {item.Quantity}\n",
+                        
+                        "Thông báo",
+                        MessageBoxButton.OK,
+                        MessageBoxImage.Information
+                    );
+                    }
+                    
                     MessageBox.Show("Đã thêm sản phẩm vào danh sách!", "Thông báo", MessageBoxButton.OK, MessageBoxImage.Information);
                 }
             }
@@ -298,6 +313,7 @@ namespace Agricultural_Distributor.GUI
             else discount = "";
             if (tbNote.Text != null) note = tbNote.Text;
             else note = "";
+            
             //bool flag = GetOrder(sender, e);
             //if (flag)
             //{
@@ -353,7 +369,9 @@ namespace Agricultural_Distributor.GUI
                     FocusTxt(txtQuantity);
                 }
                 else {
-                    product.Quantity = quantity;
+                    product.QuantitySelect = quantity;
+                    product.Quantity = product.QuantitySelect;
+                    //product.Quantity = quantity;
                 }
             }
         }
@@ -424,6 +442,7 @@ namespace Agricultural_Distributor.GUI
                 if (double.TryParse(txt.Text, out double price) && price > 0)
                 {
                     product.PurchasePriceSelect = price;
+                    
                 }
                 else
                 {
@@ -432,6 +451,7 @@ namespace Agricultural_Distributor.GUI
                     FocusTxt(txt);
                 }
             }
+            UpdateTotalPrice();
         }
 
         private double ConverPrice(string priceStr)
@@ -451,11 +471,6 @@ namespace Agricultural_Distributor.GUI
             {
                 return -1;
             }
-
-        }
-
-        private void lvNewProducts_SelectionChanged(object sender, SelectionChangedEventArgs e)
-        {
 
         }
     }
