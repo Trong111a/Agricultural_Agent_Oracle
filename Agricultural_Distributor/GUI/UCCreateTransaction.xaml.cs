@@ -71,6 +71,7 @@ namespace Agricultural_Distributor.GUI
             tbRestIs.Text = $"{priceRes:N0} đ";
             btnBack.Visibility = Visibility.Collapsed;
             FillListProduct();
+            MessageBox.Show(this.uCPurchase.listProduct.Count().ToString());
         }
 
         private void btnBack_Click(object sender, RoutedEventArgs e)
@@ -148,6 +149,8 @@ namespace Agricultural_Distributor.GUI
             }
         }
 
+        //BUG 
+
         private void listProAfterAdd()
         {
             ProductDAO productDAO = new ProductDAO();
@@ -166,7 +169,7 @@ namespace Agricultural_Distributor.GUI
             }
         }
         
-
+        //BUG
         private void btnCreateTrans_Click(object sender, RoutedEventArgs e)
         {
             if (tbPhone.Text.Length > 0 && tbName.Text.Length > 0 && tbEmail.Text.Length > 0 && tbAddress.Text.Length > 0 && tbPaid.Text.Length > 0)
