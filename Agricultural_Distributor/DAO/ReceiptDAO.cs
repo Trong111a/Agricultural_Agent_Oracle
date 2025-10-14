@@ -54,7 +54,6 @@ namespace Agricultural_Distributor.DAO
 
                 if (outputReceiptId.Value != DBNull.Value)
                 {
-                    // receiptIdValue = Convert.ToInt32(outputReceiptId.Value);
                     OracleDecimal oracleDecimalValue = (OracleDecimal)outputReceiptId.Value;
                     receiptIdValue = oracleDecimalValue.ToInt32();
                 }
@@ -72,7 +71,6 @@ namespace Agricultural_Distributor.DAO
 
         public bool AddReceiptDetail(ReceiptDetail receiptDetail)
         {
-            MessageBox.Show("day ne " + receiptDetail.ProductId.ToString());
             connectOracle.Connect();
             OracleCommand oraCmd = new();
             oraCmd.CommandType = CommandType.Text;
@@ -86,77 +84,101 @@ namespace Agricultural_Distributor.DAO
             oraCmd.Parameters.Add("unitPrice", receiptDetail.UnitPrice);
 
             oraCmd.Connection = connectOracle.oraCon;
-            MessageBox.Show("cac");
             try
             {
                 int result = oraCmd.ExecuteNonQuery();
                 connectOracle.Disconnect();
-                MessageBox.Show("cac ok");
                 return result > 0;
             }
             catch (Exception ex) 
             {
-
-                MessageBox.Show($"Lỗi thêm chi tiết hóa đơn: {ex.Message}");
-                MessageBox.Show("cac false");
-
                 connectOracle.Disconnect();
                 return false;
             }
         }
 
+        // public List<ReceiptDetail> GetReceiptDetailList(int receiptId)
+        // {
+        //     List<ReceiptDetail> receiptDetails = new();
+
+        //     try
+        //     {
+        //         connectOracle.Connect();
+
+        //         OracleCommand oraCmd = new();
+        //         oraCmd.CommandType = CommandType.Text;
+
+        //         oraCmd.CommandText =
+        //         "SELECT T1.RECEIPTID, T1.PRODUCTID, T2.PRODUCTNAME, T1.QUANTITY, T1.UNITPRICE " +
+        //         "FROM RECEIPTDETAIL T1 " +
+        //         "JOIN PRODUCT T2 ON T1.PRODUCTID = T2.PRODUCTID " +
+        //         "WHERE T1.RECEIPTID = :receiptId";
+
+        //         oraCmd.Parameters.Add("receiptId", receiptId);
+        //         oraCmd.Connection = connectOracle.oraCon;
+
+        //         OracleDataReader reader = oraCmd.ExecuteReader();
+
+        //         int prodNameOrd = reader.GetOrdinal("PRODUCTNAME");
+        //         int proIdOrd = reader.GetOrdinal("PRODUCTID"); // THÊM DÒNG NÀY
+        //         int quantityOrd = reader.GetOrdinal("QUANTITY"); // THÊM DÒNG NÀY
+        //         int unitPriceOrd = reader.GetOrdinal("UNITPRICE"); // THÊM DÒNG NÀY
+
+        //         while (reader.Read())
+        //         {
+        //             int proId = reader.GetInt32(proIdOrd);
+        //             int quantity = reader.GetInt32(quantityOrd);
+        //             double unitPrice = reader.GetDouble(unitPriceOrd);
+
+        //             string proName = reader.IsDBNull(prodNameOrd)
+        //                 ? string.Empty
+        //                 : reader.GetString(prodNameOrd);
+
+        //             ReceiptDetail receiptDetail = new(proId, proName, quantity, unitPrice);
+        //             receiptDetails.Add(receiptDetail);
+        //         }
+        //         reader.Close();
+        //     }
+        //     catch (Exception ex)
+        //     {
+        //         MessageBox.Show($"Lỗi truy vấn chi tiết phiếu: {ex.Message}");
+        //     }
+        //     finally
+        //     {
+        //         connectOracle.Disconnect();
+        //     }
+        //     return receiptDetails;
+        // }
         public List<ReceiptDetail> GetReceiptDetailList(int receiptId)
         {
             List<ReceiptDetail> receiptDetails = new();
+            connectOracle.Connect();
 
-            try
+            OracleCommand oraCmd = new();
+            oraCmd.CommandType = CommandType.Text;
+            oraCmd.CommandText = "SELECT receiptId, productId, productName, quantity, unitPrice FROM ReceiptDetail WHERE receiptId = :receiptId";
+
+            oraCmd.Parameters.Add("receiptId", receiptId);
+            oraCmd.Connection = connectOracle.oraCon;
+
+            OracleDataReader reader = oraCmd.ExecuteReader();
+            while (reader.Read())
             {
-                connectOracle.Connect();
 
-                OracleCommand oraCmd = new();
-                oraCmd.CommandType = CommandType.Text;
+                int proId = reader.GetInt32(1);
+                string proName = reader.GetString(2); 
+                int quantity = reader.GetInt32(3);
+                double unitPrice = reader.GetDouble(4);
 
-                oraCmd.CommandText =
-                "SELECT T1.RECEIPTID, T1.PRODUCTID, T2.PRODUCTNAME, T1.QUANTITY, T1.UNITPRICE " +
-                "FROM RECEIPTDETAIL T1 " +
-                "JOIN PRODUCT T2 ON T1.PRODUCTID = T2.PRODUCTID " +
-                "WHERE T1.RECEIPTID = :receiptId";
-
-                oraCmd.Parameters.Add("receiptId", receiptId);
-                oraCmd.Connection = connectOracle.oraCon;
-
-                OracleDataReader reader = oraCmd.ExecuteReader();
-
-                int prodNameOrd = reader.GetOrdinal("PRODUCTNAME");
-                int proIdOrd = reader.GetOrdinal("PRODUCTID"); // THÊM DÒNG NÀY
-                int quantityOrd = reader.GetOrdinal("QUANTITY"); // THÊM DÒNG NÀY
-                int unitPriceOrd = reader.GetOrdinal("UNITPRICE"); // THÊM DÒNG NÀY
-
-                while (reader.Read())
-                {
-                    int proId = reader.GetInt32(proIdOrd);
-                    int quantity = reader.GetInt32(quantityOrd);
-                    double unitPrice = reader.GetDouble(unitPriceOrd);
-
-                    string proName = reader.IsDBNull(prodNameOrd)
-                        ? string.Empty
-                        : reader.GetString(prodNameOrd);
-
-                    ReceiptDetail receiptDetail = new(proId, proName, quantity, unitPrice);
-                    receiptDetails.Add(receiptDetail);
-                }
-                reader.Close();
+                ReceiptDetail receiptDetail = new(proId, proName, quantity, unitPrice);
+                receiptDetails.Add(receiptDetail);
             }
-            catch (Exception ex)
-            {
-                MessageBox.Show($"Lỗi truy vấn chi tiết phiếu: {ex.Message}");
-            }
-            finally
-            {
-                connectOracle.Disconnect();
-            }
+            reader.Close();
+            connectOracle.Disconnect();
             return receiptDetails;
         }
+
+
 
         public Receipt GetReceipt(int receiptId)
         {
