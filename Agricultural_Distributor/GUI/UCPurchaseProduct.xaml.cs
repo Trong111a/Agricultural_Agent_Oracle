@@ -154,7 +154,7 @@ namespace Agricultural_Distributor.GUI
                 if (product.IsSelected == true)
                 {
                     ProductDAO productDAO = new ProductDAO(product);
-                    total += productDAO.Total;
+                    total += productDAO.GetTotal(result);
                 }
             }
             txtTotalPrice.Text = $"Tổng tiền: {total:N0} đ";
@@ -266,18 +266,7 @@ namespace Agricultural_Distributor.GUI
                     double temp = ConverPrice(txtTotalPrice.Text);
                     double newProPrice = temp + product.PurchasePrice * product.Quantity;
                     txtTotalPrice.Text = $"Tổng tiền: {newProPrice:N0} đ";
-                    foreach (var item in listProduct)
-                    {
-                        MessageBox.Show(
-                        $"Đã thêm sản phẩm:\n" +
-                        $"- Tên: {item.Name}\n" +
-                        $"- Số lượng: {item.Quantity}\n",
-                        
-                        "Thông báo",
-                        MessageBoxButton.OK,
-                        MessageBoxImage.Information
-                    );
-                    }
+                   
                     
                     MessageBox.Show("Đã thêm sản phẩm vào danh sách!", "Thông báo", MessageBoxButton.OK, MessageBoxImage.Information);
                 }

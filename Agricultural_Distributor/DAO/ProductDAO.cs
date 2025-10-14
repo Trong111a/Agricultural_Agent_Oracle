@@ -26,7 +26,7 @@ namespace Agricultural_Distributor.DAO
 
         public ProductDAO() { }
 
-        public double Total => product.IsSelected ? product.PurchasePrice * product.QuantitySelect : 0;
+        //public double Total => product.IsSelected ? product.PurchasePrice * product.QuantitySelect : 0;
 
         //public double Total => product.IsSelected ? product.PurchasePriceSelect * product.QuantitySelect : 0;
 
@@ -133,33 +133,33 @@ namespace Agricultural_Distributor.DAO
 
         public int? AddProduct(Product product)
         {
-            MessageBox.Show("ahihi: ");
             int? proId = null;
             try
             {
                 connectOracle.Connect();
 
-                OracleCommand oraCmd = new("PROC_ADDPRODUCT", connectOracle.oraCon);
-                oraCmd.CommandType = CommandType.StoredProcedure;
+                OracleCommand oraCmd = new("PROC_ADDPRODUCT", connectOracle.oraCon)
+                {
+                    CommandType = CommandType.StoredProcedure,
+                    BindByName = true
+                };
+
                 oraCmd.Parameters.Add("p_productName", OracleDbType.NVarchar2).Value = product.Name;
                 oraCmd.Parameters.Add("p_purchasePrice", OracleDbType.Double).Value = product.PurchasePrice;
                 oraCmd.Parameters.Add("p_sellingPrice", OracleDbType.Double).Value = product.SellingPrice;
                 oraCmd.Parameters.Add("p_qualityStandard", OracleDbType.NVarchar2).Value = product.QualityStandard;
                 oraCmd.Parameters.Add("p_quantityInStock", OracleDbType.Int32).Value = product.Quantity;
 
-                //object photoValue;
+        
                 var photoValue = new OracleParameter("p_photo", OracleDbType.Blob);
                 if (product.Photo == null || product.Photo.Length == 0)
                 {
-                    //photoValue = DBNull.Value;
                     photoValue.Value = DBNull.Value;
                 }
                 else
                 {
-                    //photoValue = product.Photo;
                     photoValue.Value = product.Photo;
                 }
-                //oraCmd.Parameters.Add("p_photo", OracleDbType.Blob).Value = photoValue;
                 oraCmd.Parameters.Add(photoValue);
 
                 oraCmd.Parameters.Add("p_measurementUnit", OracleDbType.NVarchar2).Value = product.MeasurementUnit;
@@ -172,11 +172,11 @@ namespace Agricultural_Distributor.DAO
                 if (outputProId.Value != DBNull.Value)
                 {
                     proId = Convert.ToInt32(outputProId.Value.ToString());
+                    
                 }
-                //MessageBox.Show("ahihi: " + proId.ToString());
-
                 return proId;
             }
+           
             catch (Exception ex)
             {
                 MessageBox.Show($"Lỗi thêm sản phẩm: {ex.Message}");
@@ -296,6 +296,23 @@ namespace Agricultural_Distributor.DAO
             {
                 connectOracle.Close();
             }
+        }
+        public double GetTotal(string typeOfReceipt)
+        {
+            if (!product.IsSelected)
+            {
+                return 0;
+            }
+
+            if (typeOfReceipt == "Bán")
+            {
+                return product.SellingPrice * product.QuantitySelect;
+            }
+            else if (typeOfReceipt == "Mua")
+            {
+                return product.PurchasePrice * product.QuantitySelect;
+            }
+            return 0;
         }
 
         //public void DeleteProduct(int productId)

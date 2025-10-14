@@ -163,7 +163,7 @@ namespace Agricultural_Distributor
                 if (product.IsSelected == true)
                 {
                     ProductDAO productDAO = new ProductDAO(product);
-                    total += productDAO.Total;
+                    total += productDAO.GetTotal(result);
                 }
             }
             txtTotalPrice.Text = $"Tổng tiền: {total:N0} đ";

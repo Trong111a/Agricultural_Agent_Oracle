@@ -54,7 +54,6 @@ namespace Agricultural_Distributor.DAO
 
                 if (outputReceiptId.Value != DBNull.Value)
                 {
-                    // receiptIdValue = Convert.ToInt32(outputReceiptId.Value);
                     OracleDecimal oracleDecimalValue = (OracleDecimal)outputReceiptId.Value;
                     receiptIdValue = oracleDecimalValue.ToInt32();
                 }
@@ -72,7 +71,6 @@ namespace Agricultural_Distributor.DAO
 
         public bool AddReceiptDetail(ReceiptDetail receiptDetail)
         {
-            MessageBox.Show("day ne " + receiptDetail.ProductId.ToString());
             connectOracle.Connect();
             OracleCommand oraCmd = new();
             oraCmd.CommandType = CommandType.Text;
@@ -86,17 +84,14 @@ namespace Agricultural_Distributor.DAO
             oraCmd.Parameters.Add("unitPrice", receiptDetail.UnitPrice);
 
             oraCmd.Connection = connectOracle.oraCon;
-            MessageBox.Show("cac");
             try
             {
                 int result = oraCmd.ExecuteNonQuery();
                 connectOracle.Disconnect();
-                MessageBox.Show("cac ok");
                 return result > 0;
             }
             catch (Exception)
             {
-                MessageBox.Show("cac false");
                 connectOracle.Disconnect();
                 return false;
             }

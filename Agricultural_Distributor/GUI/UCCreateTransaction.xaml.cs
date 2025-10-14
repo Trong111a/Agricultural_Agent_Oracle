@@ -127,11 +127,14 @@ namespace Agricultural_Distributor.GUI
         {
             foreach (Product item in uCPurchase.listProduct)
             {
-                if (item.ProductId != null)
+                if (item.ProductId != 0)
                 {
                     listProId.Add(item);
                 }
-                else listProNonId.Add(item);
+                else
+                {
+                    listProNonId.Add(item);
+                }
             }
             if (listProId.Count > 0) UpdateProId();
             if (listProNonId.Count > 0) listProAfterAdd();
@@ -149,27 +152,22 @@ namespace Agricultural_Distributor.GUI
             }
         }
 
-        //BUG 
-
         private void listProAfterAdd()
         {
             ProductDAO productDAO = new ProductDAO();
 
             foreach (var item in listProNonId)
             {
-                //item.Quantity = item.QuantitySelect;
                 int? proId = productDAO.AddProduct(item);
 
-                //int quan = item.Quantity;
                 if (proId.HasValue)
                 {
                     item.ProductId = proId.Value;
                     listProId.Add(item);
-                }
+                }            
             }
         }
         
-        //BUG
         private void btnCreateTrans_Click(object sender, RoutedEventArgs e)
         {
             if (tbPhone.Text.Length > 0 && tbName.Text.Length > 0 && tbEmail.Text.Length > 0 && tbAddress.Text.Length > 0 && tbPaid.Text.Length > 0)
@@ -179,8 +177,7 @@ namespace Agricultural_Distributor.GUI
                 else check = UpdateCustomer();
                 if (check)
                 {
-                    listProAfterAdd();
-
+                  
                     Receipt receipt = new Receipt();
                     if (uCCreateOrder != null)
                     {
@@ -193,8 +190,6 @@ namespace Agricultural_Distributor.GUI
                     }
                     else
                     {
-                        
-
                         receipt.TypeOfReceipt = uCPurchase.result;
                         receipt.ProductList = JsonConvert.SerializeObject(listProId);
                         if (uCPurchase.discount != "") receipt.Discount = Convert.ToDouble(uCPurchase.discount);
@@ -241,18 +236,6 @@ namespace Agricultural_Distributor.GUI
 
                         if (transactionsDAO.CreateTrans())
                         {
-                            foreach (var item in listProId)
-                            {
-                                MessageBox.Show(
-                                $"Đã thêm sản phẩm:\n" +
-                                $"- Tên: {item.ProductId}\n" +
-                                $"- Số lượng: {item.Quantity}\n",
-
-                                "Thông báo",
-                                MessageBoxButton.OK,
-                                MessageBoxImage.Information
-                            );
-                            }
                             MessageBox.Show("Tạo đơn hàng thành công!", "Thông báo", MessageBoxButton.OK, MessageBoxImage.Information);
 
                             UCManageProduct uCManageProduct = new UCManageProduct(wDHome);
