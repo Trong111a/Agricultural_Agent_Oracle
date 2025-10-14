@@ -215,13 +215,14 @@ namespace Agricultural_Distributor.DAO
                         }
 
                         product.ProductId = productId;
-                        product.Name = reader["PRODUCTNAME"].ToString(); // Sửa thành chữ hoa
-                        product.PurchasePrice = Convert.ToDouble(reader["PURCHASEPRICE"]); // Sửa thành chữ hoa
-                        product.SellingPrice = Convert.ToDouble(reader["SELLINGPRICE"]); // Sửa thành chữ hoa
-                        product.QualityStandard = reader["QUALITYSTANDARD"].ToString(); // Sửa thành chữ hoa
-                        product.MeasurementUnit = reader["MEASUREMENTUNIT"].ToString(); // Sửa thành chữ hoa
-                        product.Quantity = Convert.ToInt32(reader["QUANTITY"]); // Sửa thành chữ hoa
+                        product.Name = reader["productName"].ToString();
+                        product.PurchasePrice = Convert.ToDouble(reader["purchasePrice"]);
+                        product.SellingPrice = Convert.ToDouble(reader["sellingPrice"]);
+                        product.QualityStandard = reader["qualityStandard"].ToString();
+                        product.MeasurementUnit = reader["measurementUnit"].ToString();
+                        product.Quantity = Convert.ToInt32(reader["quantity"]);
                         product.Photo = photo;
+
                     }
                     reader.Close();
                 }

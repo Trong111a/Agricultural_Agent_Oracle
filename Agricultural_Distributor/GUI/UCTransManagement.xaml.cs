@@ -44,79 +44,50 @@ namespace Agricultural_Distributor.GUI
 
         private void lv_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
-            if (sender is ListView currentListView)
+            if (sender is ListView listview && listview.SelectedItem is Transactions selectedItem)
             {
-                if (currentListView.SelectedItem != null)
+                lvDetail.ItemsSource = null;
+                int receiptId = selectedItem.ReceiptId;
+                int transId = selectedItem.TransactionId;
+                transIdSelect = transId;
+                ReceiptDAO receiptDAO = new ReceiptDAO();
+                lvDetail.ItemsSource = receiptDAO.GetReceiptDetailList(receiptId);
+                Receipt receipt = receiptDAO.GetReceipt(receiptId);
+                priceTotalSelect = receipt.PriceTotal;
+                tblDis.Text = receipt.Discount.ToString() + "%";
+                if (receipt != null && receipt.Note != null)
                 {
-                    if (currentListView == lvPur)
-                    {
-                        if (lvSell.SelectedItem != null)
-                        {
-                            lvSell.SelectedItem = null;
-                        }
-                    }
-                    else if (currentListView == lvSell)
-                    {
-                        if (lvPur.SelectedItem != null)
-                        {
-                            lvPur.SelectedItem = null;
-                        }
-                    }
-                }
-
-                if (currentListView.SelectedItem is Transactions selectedItem)
-                {
-                    lvDetail.ItemsSource = null;
-
-                    int receiptId = selectedItem.ReceiptId;
-                    int transId = selectedItem.TransactionId;
-                    transIdSelect = transId;
-
-                    ReceiptDAO receiptDAO = new ReceiptDAO();
-                    lvDetail.ItemsSource = receiptDAO.GetReceiptDetailList(receiptId);
-                    Receipt receipt = receiptDAO.GetReceipt(receiptId);
-
-                    priceTotalSelect = receipt.PriceTotal;
-                    tblDis.Text = receipt.Discount.ToString() + "%";
-                    tblNote.Text = (receipt != null && receipt.Note != null) ? receipt.Note : "";
-
-                    double priceTotal = receipt.PriceTotal;
-
-                    TransactionsDAO transactionDAO = new TransactionsDAO();
-                    int repay = transactionDAO.GetRepayment(transId);
-
-                    if (repay == priceTotal)
-                    {
-                        tblStatusTrans.Text = "Đã thanh toán";
-                        tblStatusTrans.Foreground = (Brush)new BrushConverter().ConvertFromString("#FF2E8068");
-                        tblPaid.Text = FormatCurrencyVN(priceTotal.ToString());
-                        tblLeft.Text = FormatCurrencyVN("0");
-                        btnConfirmTrans.IsEnabled = false;
-                        btnConfirmTrans.Background = Brushes.Transparent;
-                        btnConfirmTrans.Foreground = (Brush)new BrushConverter().ConvertFromString("#FF2E8068");
-                    }
-                    else
-                    {
-                        tblStatusTrans.Text = "Chưa thanh toán";
-                        tblStatusTrans.Foreground = new SolidColorBrush(Colors.Red);
-                        tblPaid.Text = FormatCurrencyVN(repay.ToString());
-                        tblLeft.Text = FormatCurrencyVN((priceTotal - repay).ToString());
-                        btnConfirmTrans.IsEnabled = true;
-                        btnConfirmTrans.Background = (Brush)new BrushConverter().ConvertFromString("#FF2E8068");
-                        btnConfirmTrans.Foreground = (Brush)new BrushConverter().ConvertFromString("#FFFFFF");
-                    }
+                    tblNote.Text = receipt.Note;
                 }
                 else
                 {
-                    lvDetail.ItemsSource = null;
-                    tblDis.Text = "";
-                    tblNote.Text = "";
-                    tblStatusTrans.Text = "";
-                    tblPaid.Text = "";
-                    tblLeft.Text = "";
+                    tblNote.Text = ""; // hoặc "Không có ghi chú"
+                }
+                // tblNote.Text = receipt.Note.ToString();
+
+                double priceTotal = receipt.PriceTotal;
+
+                TransactionsDAO transactionDAO = new TransactionsDAO();
+                int repay = transactionDAO.GetRepayment(transId);
+                if (repay == priceTotal)
+                {
+                    tblStatusTrans.Text = "Đã thanh toán";
+                    tblStatusTrans.Foreground = (Brush)new BrushConverter().ConvertFromString("#FF2E8068");
+                    tblPaid.Text = FormatCurrencyVN(priceTotal.ToString());
+                    tblLeft.Text = FormatCurrencyVN("0");
                     btnConfirmTrans.IsEnabled = false;
                     btnConfirmTrans.Background = Brushes.Transparent;
                     btnConfirmTrans.Foreground = (Brush)new BrushConverter().ConvertFromString("#FF2E8068");
+                }
+                else
+                {
+                    tblStatusTrans.Text = "Chưa thanh toán";
+                    tblStatusTrans.Foreground = new SolidColorBrush(Colors.Red);
+                    tblPaid.Text = FormatCurrencyVN(repay.ToString());
+                    tblLeft.Text = FormatCurrencyVN((priceTotal - repay).ToString());
+                    btnConfirmTrans.IsEnabled = true;
+                    btnConfirmTrans.Background = (Brush)new BrushConverter().ConvertFromString("#FF2E8068");
+                    btnConfirmTrans.Foreground = (Brush)new BrushConverter().ConvertFromString("#FFFFFF");
                 }
             }
         }
@@ -145,32 +116,15 @@ namespace Agricultural_Distributor.GUI
 
         private void btnConfirmTrans_Click(object sender, RoutedEventArgs e)
         {
-
-            MessageBoxResult result = MessageBox.Show(
-                "Bạn có chắc chắn muốn xác nhận hóa đơn này đã được thanh toán đầy đủ không?",
-                "Xác nhận Thanh Toán",
-                MessageBoxButton.OKCancel,
-                MessageBoxImage.Warning);
-
+            MessageBoxResult result = MessageBox.Show("Bạn không thể thay đổi lại trạng thái của hóa đơn!", "Xác nhận", MessageBoxButton.OKCancel, MessageBoxImage.Warning);
             if (result == MessageBoxResult.OK)
             {
                 TransactionsDAO transactionsDAO = new TransactionsDAO();
                 if (transactionsDAO.ConfirmTrans(transIdSelect, priceTotalSelect))
                 {
-                    MessageBox.Show("Xác nhận thanh toán thành công!");
-
-                    tblStatusTrans.Text = "Đã thanh toán";
-                    tblPaid.Text = FormatCurrencyVN(priceTotalSelect.ToString()); 
-                    tblLeft.Text = FormatCurrencyVN("0"); 
-
-                    btnConfirmTrans.IsEnabled = false;
-                    btnConfirmTrans.Background = Brushes.Transparent;
-                    btnConfirmTrans.Foreground = (Brush)new BrushConverter().ConvertFromString("#FF2E8068");
-                    GetTrans();
-                }
-                else
-                {
-                    MessageBox.Show("Xác nhận thanh toán thất bại. Vui lòng kiểm tra lại.");
+                    tblStatusTrans.Text = "Đa thanh toán";
+                    tblPaid.Text = priceTotalSelect.ToString();
+                    tblLeft.Text = 0 + " nvđ";
                 }
             }
         }

@@ -25,7 +25,7 @@ namespace Agricultural_Distributor.GUI
     /// </summary>
     public partial class UCPurchaseProduct : UserControl
     {
-       // internal List<Entity.Product> productSelect = new();
+        // internal List<Entity.Product> productSelect = new();
         private List<Entity.Product> products = new();
 
         internal List<Entity.Product> listProduct = new List<Entity.Product>();
@@ -42,7 +42,7 @@ namespace Agricultural_Distributor.GUI
             LoadProducts();
             SetList();
             lvNewProducts.ItemsSource = lsNew;
-            
+
         }
 
         private TextBox FindTextBoxInContainer(DependencyObject container)
@@ -135,9 +135,9 @@ namespace Agricultural_Distributor.GUI
                 }
 
                 var txtPurPrice = FindTextBoxInContainer(container, "txtPurPrice_lsvProducts");
-                if (txtPurPrice != null) 
+                if (txtPurPrice != null)
                 {
-                    
+
                     txtPurPrice.IsEnabled = true;
                 }
 
@@ -262,10 +262,12 @@ namespace Agricultural_Distributor.GUI
             {
                 if (ValidateProduct(product))
                 {
-
+                    listProduct.Add(product);
                     double temp = ConverPrice(txtTotalPrice.Text);
                     double newProPrice = temp + product.PurchasePrice * product.Quantity;
                     txtTotalPrice.Text = $"Tổng tiền: {newProPrice:N0} đ";
+
+
                     MessageBox.Show("Đã thêm sản phẩm vào danh sách!", "Thông báo", MessageBoxButton.OK, MessageBoxImage.Information);
                 }
             }
@@ -293,7 +295,7 @@ namespace Agricultural_Distributor.GUI
             return true;
         }
 
-    
+
         private void btnCreateList_Click(object sender, RoutedEventArgs e)
         {
             if (tbDiscount.Text != null) discount = tbDiscount.Text;
@@ -301,91 +303,16 @@ namespace Agricultural_Distributor.GUI
             if (tbNote.Text != null) note = tbNote.Text;
             else note = "";
 
-            listProduct.Clear();
-
-            foreach (var product in products)
-            {
-                if (product.IsSelected && product.QuantitySelect > 0)
-                {
-                    product.Quantity = product.QuantitySelect;
-                    listProduct.Add(product);
-                }
-            }
-
-            GetNewProducts();
-
-            if (listProduct.Count == 0)
-            {
-                MessageBox.Show("Vui lòng chọn ít nhất một sản phẩm hoặc thêm sản phẩm mới.");
-                return;
-            }
-
+            //bool flag = GetOrder(sender, e);
+            //if (flag)
+            //{
+            //    UCCreateTransaction uCCreateTransaction = new UCCreateTransaction(wDHome, this);
+            //    wDHome.GetUC(uCCreateTransaction);
+            //}
             UCCreateTransaction uCCreateTransaction = new UCCreateTransaction(wDHome, this);
             wDHome.GetUC(uCCreateTransaction);
+
         }
-
-        private bool GetNewProducts()
-        {
-            for (int i = 0; i < lvNewProducts.Items.Count; i++)
-            {
-                if (lvNewProducts.Items[i] is Entity.Product product)
-                {
-                    var container = lvNewProducts.ItemContainerGenerator.ContainerFromIndex(i) as ListViewItem;
-                    if (container == null) continue;
-
-                    var txtName = FindVisualChild<TextBox>(container, "txtName_lsvNew");
-                    var txtQuantity = FindVisualChild<TextBox>(container, "txtQuantity_lsvNew");
-                    var txtPurchasePrice = FindVisualChild<TextBox>(container, "txtPurchasePrice_lsvNew");
-                    var txtMeasurementUnit = FindVisualChild<TextBox>(container, "txtMeasurementUnit_lsvNew");
-                    var txtQualityStandard = FindVisualChild<TextBox>(container, "txtQualityStandard_lsvNew");
-
-                    if (txtName != null && !string.IsNullOrWhiteSpace(txtName.Text))
-                    {
-                        product.Name = txtName.Text;
-                        product.QualityStandard = txtQualityStandard?.Text;
-
-                        if (txtQuantity == null || !int.TryParse(txtQuantity.Text, out int quantity) || quantity <= 0)
-                        {
-                            if (!string.IsNullOrWhiteSpace(txtName.Text))
-                            {
-                                MessageBox.Show($"Sản phẩm mới '{product.Name}': Số lượng phải là số nguyên dương.");
-                                FocusTxt(txtQuantity);
-                            }
-                            return false;
-                        }
-                        product.Quantity = quantity;
-
-                        if (txtPurchasePrice == null || !double.TryParse(txtPurchasePrice.Text, out double price) || price <= 0)
-                        {
-                            if (!string.IsNullOrWhiteSpace(txtName.Text))
-                            {
-                                MessageBox.Show($"Sản phẩm mới '{product.Name}': Giá mua phải là số dương.");
-                                FocusTxt(txtPurchasePrice);
-                            }
-                            return false; 
-                        }
-                        product.PurchasePrice = price;
-                        if (txtMeasurementUnit == null || string.IsNullOrWhiteSpace(txtMeasurementUnit.Text) || !Regex.IsMatch(txtMeasurementUnit.Text, @"^[a-zA-Z]+$"))
-                        {
-                            if (!string.IsNullOrWhiteSpace(txtName.Text))
-                            {
-                                MessageBox.Show($"Sản phẩm mới '{product.Name}': Đơn vị đo phải chỉ chứa chữ cái.");
-                                FocusTxt(txtMeasurementUnit);
-                            }
-                            return false; 
-                        }
-                        product.MeasurementUnit = txtMeasurementUnit.Text;
-
-                        if (!listProduct.Contains(product))
-                        {
-                            listProduct.Add(product);
-                        }
-                    }
-                }
-            }
-            return true; 
-        }
-
         private void txtName_LostFocus(object sender, RoutedEventArgs e)
         {
             var txtName = sender as TextBox;
@@ -421,7 +348,7 @@ namespace Agricultural_Distributor.GUI
                     MessageBox.Show("Không được bỏ trống ô này");
                     txtQuantity.Text = "0";
                     int quantity = int.Parse(txtQuantity.Text);
-                    FocusTxt(txtQuantity);                   
+                    FocusTxt(txtQuantity);
                 }
                 else if (!int.TryParse(txtQuantity.Text, out int quantity) || quantity < 0)
                 {
@@ -430,7 +357,8 @@ namespace Agricultural_Distributor.GUI
                     quantity = 0;
                     FocusTxt(txtQuantity);
                 }
-                else {
+                else
+                {
                     product.QuantitySelect = quantity;
                     product.Quantity = product.QuantitySelect;
                     //product.Quantity = quantity;
@@ -449,7 +377,7 @@ namespace Agricultural_Distributor.GUI
                     txtPurchasePrice.Text = "0";
                     double price = double.Parse(txtPurchasePrice.Text);
                     FocusTxt(txtPurchasePrice);
-                    
+
                 }
                 else if (!double.TryParse(txtPurchasePrice.Text, out double purchasePrice) || purchasePrice < 0)
                 {
@@ -461,7 +389,7 @@ namespace Agricultural_Distributor.GUI
                 else
                 {
                     product.PurchasePrice = purchasePrice;
-                }               
+                }
             }
         }
 
@@ -504,7 +432,7 @@ namespace Agricultural_Distributor.GUI
                 if (double.TryParse(txt.Text, out double price) && price > 0)
                 {
                     product.PurchasePriceSelect = price;
-                    
+
                 }
                 else
                 {
