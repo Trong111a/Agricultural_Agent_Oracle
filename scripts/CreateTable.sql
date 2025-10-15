@@ -69,6 +69,7 @@ CREATE TABLE Receipt (
 CREATE TABLE ReceiptDetail (
     receiptId NUMBER(10) NOT NULL,
     productId NUMBER(10) NOT NULL,
+    productName NVARCHAR2(100) NOT NULL,
     quantity NUMBER(10) NOT NULL,
     unitPrice FLOAT DEFAULT 0 NOT NULL,
     PRIMARY KEY(receiptId, productId),
