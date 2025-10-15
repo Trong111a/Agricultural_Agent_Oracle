@@ -24,11 +24,18 @@ namespace Agricultural_Distributor.Entity
         public TimeSpan TimeCheckOut { get => timeCheckOut; set => timeCheckOut = value; }
         public string LinkPicture { get => linkPicture; set => linkPicture = value; }
 
-        public Schedule() { }
-
-        public Schedule(int scheduleId, int employeeId, string employeeName, DateTime dayWork, TimeSpan timeCheckIn, TimeSpan timeCheckOut, string linkPicture)
+        public Schedule(int employeeId, DateTime dayWork, TimeSpan timeCheckIn, TimeSpan timeCheckOut, string linkPicture)
         {
-            ScheduleId = scheduleId;
+            EmployeeId = employeeId;
+            DayWork = dayWork;
+            TimeCheckIn = timeCheckIn;
+            TimeCheckOut = timeCheckOut;
+            LinkPicture = linkPicture;
+        }
+
+        public Schedule(int ScheduleId, int employeeId, string employeeName, DateTime dayWork, TimeSpan timeCheckIn, TimeSpan timeCheckOut, string linkPicture)
+        {
+            ScheduleId = ScheduleId;
             EmployeeId = employeeId;
             EmployeeName = employeeName;
             DayWork = dayWork;

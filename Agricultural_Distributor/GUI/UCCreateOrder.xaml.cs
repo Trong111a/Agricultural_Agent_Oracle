@@ -200,9 +200,16 @@ namespace Agricultural_Distributor
             {
                 if (int.TryParse(txt.Text, out int quantity))
                 {
+                    if (quantity > product.Quantity)
+                    {
+                        MessageBox.Show("Không đủ hàng");
+                        txt.Text = "";
+                    }
+                    else product.QuantitySelect = quantity;
                     //quantity -= product.QuantitySelect;
-                    product.QuantitySelect = quantity;
-                    
+
+
+
                 }
                 else
                 {

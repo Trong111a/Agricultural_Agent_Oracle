@@ -35,13 +35,15 @@ namespace Agricultural_Distributor.GUI
             {
                 cbPosition.Visibility = Visibility.Visible;
                 lbPosition.Visibility = Visibility.Visible;
+                cbPosition.Text = "";
             }
             else
             {
                 cbPosition.Visibility = Visibility.Hidden;
                 lbPosition.Visibility = Visibility.Hidden;
+                delete.Visibility = Visibility.Hidden;
             }
-            cbPosition.Text = "";
+
             LoadEmployee();
         }
         private List<Entity.Employee> employees = new();
@@ -71,8 +73,8 @@ namespace Agricultural_Distributor.GUI
                 txtAddress.Text = selectedEmployee.EmployeeAddress;
                 txtPhoneNumber.Text = selectedEmployee.PhoneNumber;
                 txtEmail.Text = selectedEmployee.Email;
-
-                
+                if (selectedEmployee.Position == 1) cbPosition.Text = "Quản lý";
+                else cbPosition.Text = "Nhân viên";
             }
         }
         private void CheckBox_Checked(object sender, RoutedEventArgs e)
@@ -109,6 +111,7 @@ namespace Agricultural_Distributor.GUI
         {
             EmployeeDAO employeeDAO = new EmployeeDAO();
             employeeDAO.deleteEmployee(empId);
+            employeeDAO.deleteAccount(empId);
             LoadEmployee();
         }
     }

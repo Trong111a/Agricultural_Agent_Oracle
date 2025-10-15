@@ -51,9 +51,10 @@ namespace Agricultural_Distributor.DAO
 
                 string Email = reader.IsDBNull(6) ? null : reader.GetString(6);
                 int isActive = reader.GetInt32(7);
+                int position = reader.GetInt32(8);
 
 
-                Employee employee = new(EmployeeId, EmployeeName, Birthday, Sex, EmployeeAddress, PhoneNumber, Email);
+                Employee employee = new(EmployeeId, EmployeeName, Birthday, Sex, EmployeeAddress, PhoneNumber, Email, position);
                 employees.Add(employee);
                 employee.IsActive = isActive;
             }
@@ -93,7 +94,7 @@ namespace Agricultural_Distributor.DAO
                 oraCmd.Parameters.Add("email", employee.Email);
                 oraCmd.Parameters.Add("isActive", 1);
 
-                int positionValue = (position == "Quản lý") ? 1 : 0;
+                int positionValue = (position == "Quản lý") ? 1 : 2;
                 oraCmd.Parameters.Add("position", positionValue);
 
                 int rowsAffected = oraCmd.ExecuteNonQuery();
@@ -191,6 +192,32 @@ namespace Agricultural_Distributor.DAO
             catch (Exception ex)
             {
                 MessageBox.Show("Lỗi khi cập nhật trạng thái nhân viên: " + ex.Message);
+                connectOracle.Disconnect();
+                return false;
+            }
+        }
+
+        public bool deleteAccount(int id)
+        {
+            try
+            {
+                connectOracle.Connect();
+
+                string query = "UPDATE Account SET IsActive = 0 WHERE Id = :id";
+
+                using (OracleCommand oraCmd = new(query, connectOracle.oraCon))
+                {
+                    oraCmd.Parameters.Add("Id", id);
+
+
+                    int rowsAffected = oraCmd.ExecuteNonQuery();
+                    connectOracle.Disconnect();
+                    return rowsAffected > 0;
+                }
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show("Lỗi khi cập nhật trạng thái tài khoản: " + ex.Message);
                 connectOracle.Disconnect();
                 return false;
             }

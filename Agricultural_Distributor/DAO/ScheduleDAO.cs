@@ -55,11 +55,20 @@ namespace Agricultural_Distributor.DAO
                 int EmployeeId = reader.GetInt32(1);
                 string EmployeeName = reader.GetString(2);
                 DateTime DateWork = reader.GetDateTime(3);
-                DateTime CheckInDateTime = reader.GetDateTime(4);
-                DateTime CheckOutDateTime = reader.GetDateTime(5);
 
-                TimeSpan TimeCheckIn = CheckInDateTime.TimeOfDay;
-                TimeSpan TimeCheckOut = CheckOutDateTime.TimeOfDay;
+                OracleIntervalDS CheckInInterval = (OracleIntervalDS)reader.GetOracleValue(4);
+                OracleIntervalDS CheckOutInterval = (OracleIntervalDS)reader.GetOracleValue(5);
+
+                TimeSpan TimeCheckIn = new TimeSpan(
+                    CheckInInterval.Days * 24 + CheckInInterval.Hours,
+                    CheckInInterval.Minutes,
+                    CheckInInterval.Seconds);
+
+                TimeSpan TimeCheckOut = new TimeSpan(
+                    CheckOutInterval.Days * 24 + CheckOutInterval.Hours,
+                    CheckOutInterval.Minutes,
+                    CheckOutInterval.Seconds);
+
 
                 string LinkPicture = reader.IsDBNull(6) ? null : reader.GetString(6);
 
@@ -83,7 +92,7 @@ namespace Agricultural_Distributor.DAO
             SELECT COUNT(*) FROM Schedule 
             WHERE employeeid = :employeeid AND TRUNC(datework) = TRUNC(:datework)", connectOracle.oraCon))
                 {
-                    checkCmd.Parameters.Add(":employeeid", OracleDbType.Varchar2).Value = schedule.EmployeeId;
+                    checkCmd.Parameters.Add(":employeeid", OracleDbType.Int32).Value = schedule.EmployeeId;
                     checkCmd.Parameters.Add(":datework", OracleDbType.Date).Value = today;
 
                     int count = Convert.ToInt32(checkCmd.ExecuteScalar());
@@ -94,15 +103,15 @@ namespace Agricultural_Distributor.DAO
                     }
                 }
                 using (OracleCommand cmd = new(@"
-            INSERT INTO schedule (employeeid, employeename, datework, timecheckin, timecheckout, linkpicture)
-            VALUES (:employeeid, :employeename, :datework, :timecheckin, :timecheckout, :linkpicture)", connectOracle.oraCon))
+                    INSERT INTO schedule (employeeid, datework, timecheckin, timecheckout, linkpicture)
+                    VALUES (:employeeid, :datework, :timecheckin, :timecheckout, :linkpicture)", connectOracle.oraCon))
                 {
                     cmd.Parameters.Add(":employeeid", OracleDbType.Varchar2).Value = schedule.EmployeeId;
-                    cmd.Parameters.Add(":employeename", OracleDbType.Varchar2).Value = schedule.EmployeeName;
+                    //cmd.Parameters.Add(":employeename", OracleDbType.Varchar2).Value = schedule.EmployeeName;
                     cmd.Parameters.Add(":datework", OracleDbType.Date).Value = today;
 
-                    cmd.Parameters.Add(":timecheckin", OracleDbType.Varchar2).Value = schedule.TimeCheckIn.ToString();
-                    cmd.Parameters.Add(":timecheckout", OracleDbType.Varchar2).Value = schedule.TimeCheckOut.ToString();
+                    cmd.Parameters.Add(":timecheckin", OracleDbType.IntervalDS).Value = schedule.TimeCheckIn;
+                    cmd.Parameters.Add(":timecheckout", OracleDbType.IntervalDS).Value = schedule.TimeCheckOut;
 
                     cmd.Parameters.Add(":linkpicture", OracleDbType.Varchar2).Value = "";
 
@@ -124,14 +133,16 @@ namespace Agricultural_Distributor.DAO
         {
             connectOracle.Connect();
 
-            string query = @"UPDATE Schedule 
-                    SET timecheckin = :timecheckin, timecheckout = :timecheckout 
+            string query = @" UPDATE Schedule SET timecheckin = TO_DSINTERVAL(:timecheckin), timecheckout = TO_DSINTERVAL(:timecheckout) 
                     WHERE employeeid = :employeeid AND TRUNC(datework) = TRUNC(:datework)";
+
 
             using (OracleCommand cmd = new(query, connectOracle.oraCon))
             {
-                cmd.Parameters.Add(":timecheckin", OracleDbType.Varchar2).Value = timeCheckIn.ToString();
-                cmd.Parameters.Add(":timecheckout", OracleDbType.Varchar2).Value = timeCheckOut.ToString();
+                //cmd.Parameters.Add(":timecheckin", OracleDbType.Varchar2).Value = timeCheckIn.ToString();
+                //cmd.Parameters.Add(":timecheckout", OracleDbType.Varchar2).Value = timeCheckOut.ToString();
+                cmd.Parameters.Add("timecheckin", OracleDbType.Varchar2).Value = ToIntervalString(timeCheckIn);
+                cmd.Parameters.Add("timecheckout", OracleDbType.Varchar2).Value = ToIntervalString(timeCheckOut);
 
                 cmd.Parameters.Add(":employeeid", OracleDbType.Int32).Value = employeeId;
                 cmd.Parameters.Add(":datework", OracleDbType.Date).Value = dateWork;
@@ -139,6 +150,11 @@ namespace Agricultural_Distributor.DAO
                 cmd.ExecuteNonQuery();
             }
             connectOracle.Close();
+        }
+        string ToIntervalString(TimeSpan ts)
+        {
+            return string.Format("+{0} {1:D2}:{2:D2}:{3:D2}",
+                                 (int)ts.TotalDays, ts.Hours, ts.Minutes, ts.Seconds);
         }
 
         public void insertPicture(int employeeId, DateTime dateWork, string imagePath)

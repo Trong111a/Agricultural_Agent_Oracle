@@ -16,6 +16,7 @@ namespace Agricultural_Distributor.Entity
         private string phoneNumber;
         private string email;
         private int isActive;
+        private int position;
 
         public int EmployeeId { get => employeeId; set => employeeId = value; }
         public string EmployeeName { get => employeeName; set => employeeName = value; }
@@ -30,6 +31,7 @@ namespace Agricultural_Distributor.Entity
         public string Status => IsActive == 1 ? "Đang làm" : "Đã nghỉ";
 
         public bool IsSelected { get; set; }
+        public int Position { get => position; set => position = value; }
 
         public Employee() { }
 
@@ -42,6 +44,18 @@ namespace Agricultural_Distributor.Entity
             EmployeeAddress = employeeAddress;
             PhoneNumber = phoneNumber;
             Email = email;
+        }
+
+        public Employee(int employeeId, string employeeName, DateTime birthday, string sex, string employeeAddress, string phoneNumber, string email, int position)
+        {
+            EmployeeId = employeeId;
+            EmployeeName = employeeName;
+            Birthday = birthday;
+            Sex = sex;
+            EmployeeAddress = employeeAddress;
+            PhoneNumber = phoneNumber;
+            Email = email;
+            Position = position;
         }
 
     }

@@ -61,6 +61,23 @@ namespace Agricultural_Distributor.GUI
         bool isSelect = false;
         private void lvProducts_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
+            BitmapImage bitmapImage = new BitmapImage();
+            imagePath = "";
+            if (Uri.IsWellFormedUriString(imagePath, UriKind.Absolute))
+            {
+                bitmapImage.BeginInit();
+                bitmapImage.UriSource = new Uri(imagePath, UriKind.Absolute);
+                bitmapImage.EndInit();
+            }
+            else
+            {
+                bitmapImage.BeginInit();
+                bitmapImage.UriSource = new Uri(imagePath, UriKind.RelativeOrAbsolute);
+                bitmapImage.EndInit();
+            }
+            CapturedImage.Source = bitmapImage;
+
+
             if (lvSchedules.SelectedItem is Schedule selectedSchedule)
             {
                 isSelect = true;
@@ -95,7 +112,7 @@ namespace Agricultural_Distributor.GUI
             }
             catch (Exception ex)
             {
-                MessageBox.Show("Không thể tải hình ảnh: " + ex.Message);
+                //MessageBox.Show("Không thể tải hình ảnh: " + ex.Message);
             }
         }
         private void btnAddEmployee_Click(object sender, RoutedEventArgs e)
@@ -140,21 +157,16 @@ namespace Agricultural_Distributor.GUI
 
             var selectedEmployees = employees.Where(emp => emp.IsSelected).ToList();
 
-
             ScheduleDAO dao = new ScheduleDAO();
 
             foreach (var emp in selectedEmployees)
             {
-                dao.InsertSchedule(new Schedule
-                {
-                    EmployeeId = emp.EmployeeId,
-                    EmployeeName = emp.EmployeeName,
-                    DayWork = dayWork,
-                    TimeCheckIn = new DateTime(dayWork.Year, dayWork.Month, dayWork.Day,
+                Schedule sch = new Schedule(emp.EmployeeId, dayWork, new DateTime(dayWork.Year, dayWork.Month, dayWork.Day,
                                                timeCheckIn.Hours, timeCheckIn.Minutes, 0).TimeOfDay,
-                    TimeCheckOut = new DateTime(dayWork.Year, dayWork.Month, dayWork.Day,
-                                                timeCheckOut.Hours, timeCheckOut.Minutes, 0).TimeOfDay
-                });
+                                               new DateTime(dayWork.Year, dayWork.Month, dayWork.Day,
+                                                timeCheckOut.Hours, timeCheckOut.Minutes, 0).TimeOfDay,
+                                               "");
+                dao.InsertSchedule(sch);
             }
 
             LoadSchedule(load_date);
@@ -168,7 +180,8 @@ namespace Agricultural_Distributor.GUI
 
             if (date.Date == DateTime.Now.Date)
             {
-                schedule.updateSchedule(empId, date, timeCheckIn, timeCheckOut);
+                if (timeCheckOut >= timeCheckIn) schedule.updateSchedule(empId, date, timeCheckIn, timeCheckOut);
+                else MessageBox.Show("Checkin hoặc Checkout không hợp lệ!");
             }
             else
             {
