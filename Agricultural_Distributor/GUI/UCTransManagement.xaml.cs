@@ -42,52 +42,130 @@ namespace Agricultural_Distributor.GUI
             return transactionsDAO.LoadTrans(typeOfReceipt, dt);
         }
 
+        //private void lv_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        //{
+        //    if (sender is ListView listview && listview.SelectedItem is Transactions selectedItem)
+        //    {
+        //        lvDetail.ItemsSource = null;
+        //        int receiptId = selectedItem.ReceiptId;
+        //        int transId = selectedItem.TransactionId;
+        //        transIdSelect = transId;
+        //        ReceiptDAO receiptDAO = new ReceiptDAO();
+        //        lvDetail.ItemsSource = receiptDAO.GetReceiptDetailList(receiptId);
+        //        Receipt receipt = receiptDAO.GetReceipt(receiptId);
+        //        priceTotalSelect = receipt.PriceTotal;
+        //        tblDis.Text = receipt.Discount.ToString() + "%";
+        //        if (receipt != null && receipt.Note != null)
+        //        {
+        //            tblNote.Text = receipt.Note;
+        //        }
+        //        else
+        //        {
+        //            tblNote.Text = ""; // hoặc "Không có ghi chú"
+        //        }
+        //        // tblNote.Text = receipt.Note.ToString();
+
+        //        double priceTotal = receipt.PriceTotal;
+
+        //        TransactionsDAO transactionDAO = new TransactionsDAO();
+        //        int repay = transactionDAO.GetRepayment(transId);
+        //        if (repay == priceTotal)
+        //        {
+        //            tblStatusTrans.Text = "Đã thanh toán";
+        //            tblStatusTrans.Foreground = (Brush)new BrushConverter().ConvertFromString("#FF2E8068");
+        //            tblPaid.Text = FormatCurrencyVN(priceTotal.ToString());
+        //            tblLeft.Text = FormatCurrencyVN("0");
+        //            btnConfirmTrans.IsEnabled = false;
+        //            btnConfirmTrans.Background = Brushes.Transparent;
+        //            btnConfirmTrans.Foreground = (Brush)new BrushConverter().ConvertFromString("#FF2E8068");
+        //        }
+        //        else
+        //        {
+        //            tblStatusTrans.Text = "Chưa thanh toán";
+        //            tblStatusTrans.Foreground = new SolidColorBrush(Colors.Red);
+        //            tblPaid.Text = FormatCurrencyVN(repay.ToString());
+        //            tblLeft.Text = FormatCurrencyVN((priceTotal - repay).ToString());
+        //            btnConfirmTrans.IsEnabled = true;
+        //            btnConfirmTrans.Background = (Brush)new BrushConverter().ConvertFromString("#FF2E8068");
+        //            btnConfirmTrans.Foreground = (Brush)new BrushConverter().ConvertFromString("#FFFFFF");
+        //        }
+        //    }
+        //}
         private void lv_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
-            if (sender is ListView listview && listview.SelectedItem is Transactions selectedItem)
+            if (sender is ListView currentListView)
             {
-                lvDetail.ItemsSource = null;
-                int receiptId = selectedItem.ReceiptId;
-                int transId = selectedItem.TransactionId;
-                transIdSelect = transId;
-                ReceiptDAO receiptDAO = new ReceiptDAO();
-                lvDetail.ItemsSource = receiptDAO.GetReceiptDetailList(receiptId);
-                Receipt receipt = receiptDAO.GetReceipt(receiptId);
-                priceTotalSelect = receipt.PriceTotal;
-                tblDis.Text = receipt.Discount.ToString() + "%";
-                if (receipt != null && receipt.Note != null)
+                if (currentListView.SelectedItem != null)
                 {
-                    tblNote.Text = receipt.Note;
+                    if (currentListView == lvPur)
+                    {
+                        if (lvSell.SelectedItem != null)
+                        {
+                            lvSell.SelectedItem = null;
+                        }
+                    }
+                    else if (currentListView == lvSell)
+                    {
+                        if (lvPur.SelectedItem != null)
+                        {
+                            lvPur.SelectedItem = null;
+                        }
+                    }
+                }
+
+                if (currentListView.SelectedItem is Transactions selectedItem)
+                {
+                    lvDetail.ItemsSource = null;
+
+                    int receiptId = selectedItem.ReceiptId;
+                    int transId = selectedItem.TransactionId;
+                    transIdSelect = transId;
+
+                    ReceiptDAO receiptDAO = new ReceiptDAO();
+                    lvDetail.ItemsSource = receiptDAO.GetReceiptDetailList(receiptId);
+                    Receipt receipt = receiptDAO.GetReceipt(receiptId);
+
+                    priceTotalSelect = receipt.PriceTotal;
+                    tblDis.Text = receipt.Discount.ToString() + "%";
+                    tblNote.Text = (receipt != null && receipt.Note != null) ? receipt.Note : "";
+
+                    double priceTotal = receipt.PriceTotal;
+
+                    TransactionsDAO transactionDAO = new TransactionsDAO();
+                    int repay = transactionDAO.GetRepayment(transId);
+
+                    if (repay == priceTotal)
+                    {
+                        tblStatusTrans.Text = "Đã thanh toán";
+                        tblStatusTrans.Foreground = (Brush)new BrushConverter().ConvertFromString("#FF2E8068");
+                        tblPaid.Text = FormatCurrencyVN(priceTotal.ToString());
+                        tblLeft.Text = FormatCurrencyVN("0");
+                        btnConfirmTrans.IsEnabled = false;
+                        btnConfirmTrans.Background = Brushes.Transparent;
+                        btnConfirmTrans.Foreground = (Brush)new BrushConverter().ConvertFromString("#FF2E8068");
+                    }
+                    else
+                    {
+                        tblStatusTrans.Text = "Chưa thanh toán";
+                        tblStatusTrans.Foreground = new SolidColorBrush(Colors.Red);
+                        tblPaid.Text = FormatCurrencyVN(repay.ToString());
+                        tblLeft.Text = FormatCurrencyVN((priceTotal - repay).ToString());
+                        btnConfirmTrans.IsEnabled = true;
+                        btnConfirmTrans.Background = (Brush)new BrushConverter().ConvertFromString("#FF2E8068");
+                        btnConfirmTrans.Foreground = (Brush)new BrushConverter().ConvertFromString("#FFFFFF");
+                    }
                 }
                 else
                 {
-                    tblNote.Text = ""; // hoặc "Không có ghi chú"
-                }
-                // tblNote.Text = receipt.Note.ToString();
-
-                double priceTotal = receipt.PriceTotal;
-
-                TransactionsDAO transactionDAO = new TransactionsDAO();
-                int repay = transactionDAO.GetRepayment(transId);
-                if (repay == priceTotal)
-                {
-                    tblStatusTrans.Text = "Đã thanh toán";
-                    tblStatusTrans.Foreground = (Brush)new BrushConverter().ConvertFromString("#FF2E8068");
-                    tblPaid.Text = FormatCurrencyVN(priceTotal.ToString());
-                    tblLeft.Text = FormatCurrencyVN("0");
+                    lvDetail.ItemsSource = null;
+                    tblDis.Text = "";
+                    tblNote.Text = "";
+                    tblStatusTrans.Text = "";
+                    tblPaid.Text = "";
+                    tblLeft.Text = "";
                     btnConfirmTrans.IsEnabled = false;
                     btnConfirmTrans.Background = Brushes.Transparent;
                     btnConfirmTrans.Foreground = (Brush)new BrushConverter().ConvertFromString("#FF2E8068");
-                }
-                else
-                {
-                    tblStatusTrans.Text = "Chưa thanh toán";
-                    tblStatusTrans.Foreground = new SolidColorBrush(Colors.Red);
-                    tblPaid.Text = FormatCurrencyVN(repay.ToString());
-                    tblLeft.Text = FormatCurrencyVN((priceTotal - repay).ToString());
-                    btnConfirmTrans.IsEnabled = true;
-                    btnConfirmTrans.Background = (Brush)new BrushConverter().ConvertFromString("#FF2E8068");
-                    btnConfirmTrans.Foreground = (Brush)new BrushConverter().ConvertFromString("#FFFFFF");
                 }
             }
         }
@@ -122,7 +200,7 @@ namespace Agricultural_Distributor.GUI
                 TransactionsDAO transactionsDAO = new TransactionsDAO();
                 if (transactionsDAO.ConfirmTrans(transIdSelect, priceTotalSelect))
                 {
-                    tblStatusTrans.Text = "Đa thanh toán";
+                    tblStatusTrans.Text = "Đã thanh toán";
                     tblPaid.Text = priceTotalSelect.ToString();
                     tblLeft.Text = 0 + " nvđ";
                 }
