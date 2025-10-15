@@ -55,41 +55,21 @@ EXCEPTION
         RAISE_APPLICATION_ERROR(-20002, 'Không tìm thấy sản phẩm hoặc hóa đơn hợp lệ để kiểm tra tồn kho.');
 END;
 /
-CREATE OR REPLACE TRIGGER TG_ADD_ACCOUNT_INSERT
+create or replace TRIGGER TG_ADD_ACCOUNT_INSERT
 AFTER INSERT ON Employee
 FOR EACH ROW
 DECLARE
     v_username     VARCHAR2(50);
     v_password     VARCHAR2(50);
-    v_sql          VARCHAR2(4000);
 BEGIN
     -- Chỉ tạo tài khoản nếu là nhân viên (position = 1)
     IF :NEW.position = 1 THEN
         v_username := 'nhanvien' || :NEW.employeeId;
         v_password := :NEW.employeeId || '@mypass';
 
-        -- Tạo tài khoản trong bảng Account
+        -- Chỉ thêm vào bảng Account (KHÔNG tạo Oracle USER ở đây)
         INSERT INTO Account(username, pass, email, ID)
         VALUES (v_username, v_password, :NEW.email, :NEW.employeeId);
-
-        -- Tạo USER trong Oracle
-        BEGIN
-            EXECUTE IMMEDIATE 'CREATE USER ' || v_username ||
-                              ' IDENTIFIED BY "' || v_password || '"';
-        EXCEPTION
-            WHEN OTHERS THEN
-                -- Nếu user đã tồn tại thì đổi mật khẩu
-                EXECUTE IMMEDIATE 'ALTER USER ' || v_username ||
-                                  ' IDENTIFIED BY "' || v_password || '"';
-        END;
-
-        -- Gán role MANAGER (giả sử role này đã tồn tại)
-        BEGIN
-            EXECUTE IMMEDIATE 'GRANT Manager TO ' || v_username;
-        EXCEPTION
-            WHEN OTHERS THEN
-                DBMS_OUTPUT.PUT_LINE('Không thể cấp quyền: ' || SQLERRM);
-        END;
     END IF;
 END;
 
