@@ -68,8 +68,6 @@ namespace Agricultural_Distributor
         private void btnSave_Click(object sender, RoutedEventArgs e)
         {
 
-            
-
             if (!ValidInput(out string error))
             {
                 MessageBox.Show(error, "LỖI", MessageBoxButton.OK, MessageBoxImage.Warning);
@@ -95,7 +93,6 @@ namespace Agricultural_Distributor
             try
             {
                 productDAO.UpdateProduct(selectedProduct);
-                //MessageBox.Show("CHỈNH SỬA THÀNH CÔNG!!!");
 
                 UCManageProduct uc = new UCManageProduct(wDHome);
                 wDHome.GetUC(uc);
@@ -137,13 +134,10 @@ namespace Agricultural_Distributor
 
         private void btnDelete_Click(object sender, RoutedEventArgs e)
         {
-           // try
-            //{
                 var result = MessageBox.Show("BẠN CÓ CHẮC CHẮN MUỐN XOÁ SẢN PHẨM NÀY KHÔNG?","Thông báo", MessageBoxButton.YesNo, MessageBoxImage.Question);
                 if (result == MessageBoxResult.Yes) {
                     ProductDAO productDAO = new ProductDAO();
                     productDAO.DeleteProduct(selectedProduct.ProductId);
-
                     
                     UCManageProduct uc = new UCManageProduct(wDHome);
                     wDHome.GetUC(uc);
@@ -152,14 +146,6 @@ namespace Agricultural_Distributor
                 {
                     LoadProductInfo();
                 }
-                
-            //}
-            //catch (Exception ex)
-            //{
-            //    {
-            //        MessageBox.Show(ex.Message);
-            //    }
-            //}
         }
 
         private void btnExit_Click(object sender, RoutedEventArgs e)

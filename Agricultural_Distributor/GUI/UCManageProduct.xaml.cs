@@ -43,7 +43,6 @@ namespace Agricultural_Distributor
             //LoadSearchContainer();
             LoadProductList();
 
-
             var searchBox = new UCSearchProduct(this, uc, wDHome);
             SearchContainer.Children.Clear();
             SearchContainer.Children.Add(searchBox);
@@ -84,57 +83,6 @@ namespace Agricultural_Distributor
             wDHome.GetUC(uCAddProduct);
         }
 
-        //private void LoadSearchContainer()
-        //{
-        //    UCSearchProduct searchBox = new UCSearchProduct(this, uc, wDHome);
-        //    searchBox.Margin = new Thickness(10, 0, 0, 0);
-        //    searchBox.VerticalAlignment = VerticalAlignment.Center;
-        //  //  searchBox.SearchSubmitted += SearchBox_SearchSummited;
-
-        //    SearchContainer.Children.Add(searchBox);
-
-        //}
-
-        //private void SearchBox_SearchSummited(ProductDTO productDTO)
-        //{
-        //    currentPage = 0;
-        //    ProductGrid.Items.Clear();
-        //    ProductDAO productDAO = new ProductDAO();
-        //    allProducts = productDAO.SearchProduct(productDTO.Name);
-
-        //    int start = currentPage * pageSize;
-        //    int end = Math.Min(start + pageSize, allProducts.Count);
-
-        //    for (int i = start; i < end; i++)
-        //    {
-        //        var product = allProducts[i];
-        //        product.Name = product.Name.ToUpper();
-        //        var uc = new UCProductInfo(wDHome);
-        //        uc.DataContext = product;
-
-        //        ProductGrid.Items.Add(uc);
-        //    }
-        //    currentPage++;
-
-        //}
-        //private void txtSearch_GotFocus(object sender, RoutedEventArgs e)
-        //{
-        //    if (txtSearch.Text == "Nhập tên nông sản cần tìm ...")
-        //    {
-        //        txtSearch.Text = "";
-        //        txtSearch.Foreground = Brushes.Black;
-        //        LoadSearchContainer();
-        //    }
-        //}
-
-        //private void txtSearch_LostFocus(object sender, RoutedEventArgs e)
-        //{
-        //    if (string.IsNullOrWhiteSpace(txtSearch.Text))
-        //    {
-        //        txtSearch.Text = "Nhập tên nông sản cần tìm ...";
-        //        txtSearch.Foreground = Brushes.Gray;
-        //    }
-        //}
         public void DisplayProducts(List<ProductDTO> products)
         {
             ProductGrid.Items.Clear();

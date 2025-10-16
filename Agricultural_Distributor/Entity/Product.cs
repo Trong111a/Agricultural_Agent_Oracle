@@ -19,6 +19,7 @@ namespace Agricultural_Distributor.Entity
         private int quantity; 
         private string measurementUnit;
         private byte[] photo;
+        private int isActive;
 
         public int QuantitySelect { get; set; }
         public bool IsSelected { get; set; }
@@ -34,6 +35,8 @@ namespace Agricultural_Distributor.Entity
         public int Quantity { get => quantity; set => quantity = value; }
         public string MeasurementUnit { get => measurementUnit; set => measurementUnit = value; }
         public byte[] Photo { get => photo; set => photo = value; }
+
+        public int IsActive { get => isActive; set => isActive = value; }
 
         public Product(int productId, string name, string qualityStandard, double purchasePrice, double sellingPrice, int quantity, string measurementUnit)
         {

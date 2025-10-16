@@ -59,36 +59,83 @@ namespace Agricultural_Distributor.GUI
             }
         }
 
-        private void btnLogin_Click(object sender, RoutedEventArgs e)
-        {
-            string username = txtUsername.Text;
-            string password = (passwordBox.Visibility == Visibility.Visible) ? passwordBox.Password : txtPasswordVisible.Text;
+        // private void btnLogin_Click(object sender, RoutedEventArgs e)
+        // {
+        //     string username = txtUsername.Text;
+        //     string password = (passwordBox.Visibility == Visibility.Visible) ? passwordBox.Password : txtPasswordVisible.Text;
 
-            AccountDAO accountDAO = new AccountDAO();
-            bool isLoggedIn = accountDAO.CheckLogin(username, password);
+        //     AccountDAO accountDAO = new AccountDAO();
+        //     bool isLoggedIn = accountDAO.CheckLogin(username, password);
 
-            if (isLoggedIn)
-            {
-                var loggedAccount = accountDAO.GetLoggedInAccount();
+        //     if (isLoggedIn)
+        //     {
+        //         var loggedAccount = accountDAO.GetLoggedInAccount();
 
-                SessionManager.Username = loggedAccount.Username;
-                SessionManager.IsAdmin = loggedAccount.IsAdmin;
-                SessionManager.AccountId = loggedAccount.Id;
+        //         SessionManager.Username = loggedAccount.Username;
+        //         SessionManager.IsAdmin = loggedAccount.IsAdmin;
+        //         SessionManager.AccountId = loggedAccount.Id;
 
-                MessageBox.Show($"Xin chào {loggedAccount.Username}!", "Thành công", MessageBoxButton.OK, MessageBoxImage.Information);
+        //         MessageBox.Show($"Xin chào {loggedAccount.Username}!", "Thành công", MessageBoxButton.OK, MessageBoxImage.Information);
 
-                WDHome home = new WDHome();
-                UCManageProduct uCManageProduct = new UCManageProduct(home);
-                home.GetUC(uCManageProduct);
-                home.Show();
-                this.Hide();
-            }
-            else
-            {
-                MessageBox.Show("Sai tên đăng nhập hoặc mật khẩu.", "Lỗi", MessageBoxButton.OK, MessageBoxImage.Error);
-            }
+        //         WDHome home = new WDHome();
+        //         UCManageProduct uCManageProduct = new UCManageProduct(home);
+        //         home.GetUC(uCManageProduct);
+        //         home.Show();
+        //         this.Hide();
+        //     }
+        //     else
+        //     {
+        //         MessageBox.Show("Sai tên đăng nhập hoặc mật khẩu.", "Lỗi", MessageBoxButton.OK, MessageBoxImage.Error);
+        //     }
 
-        }
+        // }
+
+         private void btnLogin_Click(object sender, RoutedEventArgs e)
+         {
+             string username = txtUsername.Text.Trim();
+             string password = (passwordBox.Visibility == Visibility.Visible)
+                                 ? passwordBox.Password
+                                 : txtPasswordVisible.Text;
+
+             try
+             {
+
+                var connect = new Connect(username, password);
+                connect.ConnectDB();
+
+                
+                 SessionManager.Username = username;
+                   
+             
+                 //SessionManager.IsAdmin = false; 
+                 SessionManager.Connect = connect;
+
+                var roles = RoleManager.GetUserRoles(connect);
+                SessionManager.Roles = roles;
+                if (roles.Contains("CHUDAILY"))
+                {
+                    
+                    SessionManager.IsAdmin = true;
+                }
+                else
+                {
+                    SessionManager.IsAdmin = false;
+                }
+
+
+                MessageBox.Show($"Xin chào {username}!", "Đăng nhập thành công", MessageBoxButton.OK, MessageBoxImage.Information);
+
+                 WDHome home = new WDHome();
+                 UCManageProduct uCManageProduct = new UCManageProduct(home);
+                 home.GetUC(uCManageProduct);
+                 home.Show();
+                 this.Hide();
+             }
+             catch (Exception ex)
+             {
+                 MessageBox.Show("❌ Sai tên đăng nhập hoặc mật khẩu.\n" + ex.Message, "Lỗi đăng nhập", MessageBoxButton.OK, MessageBoxImage.Error);
+             }
+ }
 
         private void btnForgot_Click(object sender, RoutedEventArgs e)
         {

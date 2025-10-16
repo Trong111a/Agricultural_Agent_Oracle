@@ -1,4 +1,5 @@
-﻿using Agricultural_Distributor.DTO;
+﻿using Agricultural_Distributor.Common;
+using Agricultural_Distributor.DTO;
 using Agricultural_Distributor.Entity;
 using Microsoft.Win32;
 using Oracle.ManagedDataAccess.Client;
@@ -260,42 +261,49 @@ namespace Agricultural_Distributor.DAO
 
         public void UpdateProduct(Product product)
         {
-            try
+            if (product.IsActive == 0)
             {
-                connectOracle.Connect();
-                OracleCommand oraCmd = new("proc_UpdateProduct", connectOracle.oraCon);
+                try
                 {
-                    oraCmd.CommandType = CommandType.StoredProcedure;
-
-                    oraCmd.Parameters.Add("p_productId", OracleDbType.Int32).Value = product.ProductId;
-                    oraCmd.Parameters.Add("p_productName", OracleDbType.NVarchar2).Value = product.Name;
-                    oraCmd.Parameters.Add("p_purchasePrice", OracleDbType.Double).Value = product.PurchasePrice;
-                    oraCmd.Parameters.Add("p_sellingPrice", OracleDbType.Double).Value = product.SellingPrice;
-                    oraCmd.Parameters.Add("p_qualityStandard", OracleDbType.NVarchar2).Value = product.QualityStandard;
-                    oraCmd.Parameters.Add("p_quantityInStock", OracleDbType.Int32).Value = product.Quantity;
-
-
-                    if (product.Photo != null)
+                    connectOracle.Connect();
+                    OracleCommand oraCmd = new("proc_UpdateProduct", connectOracle.oraCon);
                     {
-                        oraCmd.Parameters.Add("p_photo", OracleDbType.Blob).Value = product.Photo;
+                        oraCmd.CommandType = CommandType.StoredProcedure;
+
+                        oraCmd.Parameters.Add("p_productId", OracleDbType.Int32).Value = product.ProductId;
+                        oraCmd.Parameters.Add("p_productName", OracleDbType.NVarchar2).Value = product.Name;
+                        oraCmd.Parameters.Add("p_purchasePrice", OracleDbType.Double).Value = product.PurchasePrice;
+                        oraCmd.Parameters.Add("p_sellingPrice", OracleDbType.Double).Value = product.SellingPrice;
+                        oraCmd.Parameters.Add("p_qualityStandard", OracleDbType.NVarchar2).Value = product.QualityStandard;
+                        oraCmd.Parameters.Add("p_quantityInStock", OracleDbType.Int32).Value = product.Quantity;
+
+
+                        if (product.Photo != null)
+                        {
+                            oraCmd.Parameters.Add("p_photo", OracleDbType.Blob).Value = product.Photo;
+                        }
+                        else
+                        {
+                            oraCmd.Parameters.Add("p_photo", OracleDbType.Blob).Value = DBNull.Value;
+                        }
+                        oraCmd.Parameters.Add("p_measurementUnit", OracleDbType.NVarchar2).Value = product.MeasurementUnit;
+                        oraCmd.ExecuteNonQuery();
+                        MessageBox.Show("CHỈNH SỬA THÀNH CÔNG!!!");
                     }
-                    else
-                    {
-                        oraCmd.Parameters.Add("p_photo", OracleDbType.Blob).Value = DBNull.Value;
-                    }
-                    oraCmd.Parameters.Add("p_measurementUnit", OracleDbType.NVarchar2).Value = product.MeasurementUnit;
-                    oraCmd.ExecuteNonQuery();
-                    MessageBox.Show("CHỈNH SỬA THÀNH CÔNG!!!");
+
                 }
-
+                catch (Exception ex)
+                {
+                    MessageBox.Show(ex.Message);
+                }
+                finally
+                {
+                    connectOracle.Close();
+                }
             }
-            catch (Exception ex)
+            else
             {
-                MessageBox.Show(ex.Message);
-            }
-            finally
-            {
-                connectOracle.Close();
+                MessageBox.Show("Sản phẩm này không còn hoạt động.", "Cảnh báo", MessageBoxButton.OK,MessageBoxImage.Warning );
             }
         }
         public double GetTotal(string typeOfReceipt)
@@ -316,24 +324,27 @@ namespace Agricultural_Distributor.DAO
             return 0;
         }
 
+
         //public void DeleteProduct(int productId)
         //{
         //    try
         //    {
         //        connectOracle.Connect();
-        //        OracleCommand oraCmd = new("DELETE FROM Product WHERE ProductId = :productId", connectOracle.oraCon);
-        //        {
-        //            oraCmd.CommandType = CommandType.Text;
-        //            oraCmd.Parameters.Add("productId", OracleDbType.Int32).Value = productId;
+        //        OracleCommand oraCmd = new OracleCommand("proc_DeleteProduct", connectOracle.oraCon);
+        //        oraCmd.CommandType = CommandType.StoredProcedure;
 
-        //            oraCmd.ExecuteNonQuery();
-        //            MessageBox.Show("XOÁ SẢN PHẨM THÀNH CÔNG.");
-        //        }
+        //        oraCmd.Parameters.Add("p_productId", OracleDbType.Int32).Value = productId;
+
+        //        oraCmd.ExecuteNonQuery();
+        //        MessageBox.Show("Xoá sản phẩm thành công khỏi hệ thống.");
+        //    }
+        //    catch (OracleException ex)
+        //    {
+        //        MessageBox.Show("Lỗi Oracle: " + ex.Message);
         //    }
         //    catch (Exception ex)
         //    {
-        //        MessageBox.Show("Lỗi khi xoá " + ex.Message);
-        //        //MessageBox.Show("LỖI KHI XOÁ SẢN PHẨM");
+        //        MessageBox.Show("Lỗi khác: " + ex.Message);
         //    }
         //    finally
         //    {
@@ -342,16 +353,27 @@ namespace Agricultural_Distributor.DAO
         //}
         public void DeleteProduct(int productId)
         {
+            
             try
             {
-                connectOracle.Connect();
-                OracleCommand oraCmd = new OracleCommand("proc_DeleteProduct", connectOracle.oraCon);
+                var connect = SessionManager.Connect;
+                //connectOracle.Connect();
+                if (connect == null)
+                    MessageBox.Show("Chưa đăng nhập, kết nối = null");
+                connect.ConnectDB();
+                
+                OracleCommand oraCmd = new OracleCommand("AGRICULTURAL_AGENT.proc_DeleteProduct", connect.oraCon);
                 oraCmd.CommandType = CommandType.StoredProcedure;
 
                 oraCmd.Parameters.Add("p_productId", OracleDbType.Int32).Value = productId;
 
+                OracleParameter outParam = new OracleParameter("p_result", OracleDbType.Varchar2, 200);
+                outParam.Direction = ParameterDirection.Output;
+                oraCmd.Parameters.Add(outParam);
+ 
                 oraCmd.ExecuteNonQuery();
-                MessageBox.Show("Xoá sản phẩm thành công khỏi hệ thống.");
+                string resultMsg = outParam.Value.ToString();
+                MessageBox.Show(resultMsg);
             }
             catch (OracleException ex)
             {
@@ -366,7 +388,6 @@ namespace Agricultural_Distributor.DAO
                 connectOracle.Close();
             }
         }
-
 
         public List<Product> SearchProduct(string sql, string keyword)
         {
