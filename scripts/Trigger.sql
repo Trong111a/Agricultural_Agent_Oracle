@@ -55,6 +55,7 @@ EXCEPTION
         RAISE_APPLICATION_ERROR(-20002, 'Không tìm thấy sản phẩm hoặc hóa đơn hợp lệ để kiểm tra tồn kho.');
 END;
 /
+
 create or replace TRIGGER TG_ADD_ACCOUNT_INSERT
 AFTER INSERT ON Employee
 FOR EACH ROW
@@ -72,5 +73,6 @@ BEGIN
         VALUES (v_username, v_password, :NEW.email, :NEW.employeeId);
     END IF;
 END;
+
 
 
