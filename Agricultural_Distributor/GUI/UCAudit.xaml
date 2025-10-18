@@ -1,0 +1,22 @@
+﻿<UserControl x:Class="Agricultural_Distributor.GUI.UCAudit"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:local="clr-namespace:Agricultural_Distributor.GUI"
+             mc:Ignorable="d" 
+             d:DesignHeight="600" d:DesignWidth="960">
+    <Grid Background="White">
+        <TextBlock FontSize="30">CHI TIẾT THAY ĐỔI TRÊN NÔNG SẢN</TextBlock>
+        <ListView x:Name="listviewLogs" Margin="0,50,0,0">
+            <ListView.View>
+                <GridView>
+                    <GridViewColumn Header="Tên tài khoản" DisplayMemberBinding="{Binding [DB_USER]}" />
+                    <GridViewColumn Header="Nội dung" DisplayMemberBinding="{Binding [AUDIT_DESCRIPTION]}" />
+                    <GridViewColumn Header="Dữ liệu cũ" DisplayMemberBinding="{Binding [DATA_LOG]}" />
+                    <GridViewColumn Header="Thời gian" DisplayMemberBinding="{Binding [AUDIT_TIME]}" />
+                </GridView>
+            </ListView.View>
+        </ListView>
+    </Grid>
+</UserControl>

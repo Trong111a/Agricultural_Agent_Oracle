@@ -37,8 +37,8 @@ namespace Agricultural_Distributor.GUI
         private UCManageProduct parentControl;
         private Product selectedProduct;
 
-        private string sqlSame = "SELECT p.*, w.QUANTITY, w.MEASUREMENTUNIT FROM PRODUCT p JOIN WAREHOUSEINFO w ON p.PRODUCTID = w.PRODUCTID WHERE p.PRODUCTNAME = :Keyword";
-        private string sql = "SELECT p.*, w.QUANTITY, w.MEASUREMENTUNIT FROM PRODUCT p JOIN WAREHOUSEINFO w ON p.PRODUCTID = w.PRODUCTID WHERE UPPER(p.PRODUCTNAME) LIKE UPPER(:Keyword)";
+        private string sqlSame = "SELECT p.*, w.QUANTITY, w.MEASUREMENTUNIT FROM AGRICULTURAL_AGENT.PRODUCT p JOIN AGRICULTURAL_AGENT.WAREHOUSEINFO w ON p.PRODUCTID = w.PRODUCTID WHERE p.PRODUCTNAME = :Keyword";
+        private string sql = "SELECT p.*, w.QUANTITY, w.MEASUREMENTUNIT FROM AGRICULTURAL_AGENT.PRODUCT p JOIN AGRICULTURAL_AGENT.WAREHOUSEINFO w ON p.PRODUCTID = w.PRODUCTID WHERE UPPER(p.PRODUCTNAME) LIKE UPPER(:Keyword)";
         public UCSearchProduct(UCManageProduct parent, UCUpdateProduct uc, WDHome wDHome)
         {
             InitializeComponent();
@@ -70,23 +70,7 @@ namespace Agricultural_Distributor.GUI
                 txtSearch.Foreground = Brushes.Gray;
             }
         }
-        //private void txtSearch_KeyDown(object sender, KeyEventArgs e)
-        //{
 
-        //    //if (e.Key == Key.Down)
-        //    //{
-        //    //    if (lstSuggestions.Items.Count > 0)
-        //    //    {
-        //    //        lstSuggestions.SelectedIndex = 0;
-        //    //        var item = lstSuggestions.ItemContainerGenerator.ContainerFromIndex(0) as ListBoxItem;
-        //    //        item?.BringIntoView();
-
-        //    //        e.Handled = true;
-        //    //    }
-        //    //}
-
-
-        //}
         private void txtSearch_KeyDown(object sender, KeyEventArgs e)
         {
             if (e.Key == Key.Enter)
@@ -97,7 +81,6 @@ namespace Agricultural_Distributor.GUI
                     SearchProduct(keyword, false);
                     
                     popupSuggestions.IsOpen = false;
-                    //List<Product> list = new ProductDAO().SearchProduct(sql, keyword);
                    
                 }
             }
@@ -155,33 +138,12 @@ namespace Agricultural_Distributor.GUI
                            
         }
 
-        //private void lstSuggestions_KeyDown(object sender, KeyEventArgs e)
-        //{
-        //    if (e.Key == Key.Enter && lstSuggestions.SelectedItem is Product selected)
-        //    {
-        //        MessageBox.Show(selected.Name + " " + selected.ProductId);
-        //        selectedProduct = selected;
-        //        popupSuggestions.IsOpen = false;
-                
-        //        //List<Product> productList = new ProductDAO().SearchProduct(sqlSame, selected.Name);
-        //        //for (int i = 0; i < productList.Count; i++)
-        //        //{
-        //        //    productList[i] = new ProductDAO().GetProductByID(selected.ProductId);
-        //        //}
-        //    }
-        //    else
-        //    {
-        //        lstSuggestions.Focus();
-        //        popupSuggestions.IsOpen = false;
-        //    }
-        //}
         private void txtSearch_PreviewKeyDown(object sender, KeyEventArgs e)
         {
             if (popupSuggestions.IsOpen)
             {
                 if (e.Key == Key.Enter)
                 {
-                    //MessageBox.Show(parentControl.ProductGrid.Items.Count.ToString());
                     List<Product> lsPro = new List<Product>();
                     foreach (var suggestion in lstSuggestions.Items)
                     {
@@ -208,32 +170,7 @@ namespace Agricultural_Distributor.GUI
                 }
             }
         }
-
-        private List<ProductDTO> ConvertToDTO(List<Product> products)
-        {
-            return products.Select(p => ProductDTO.FromProduct(p)).ToList();
-        }
-        //private void lstSuggestions_MouseLeftButtonUp(object sender, MouseButtonEventArgs e)
-        //{
-        //    if (lstSuggestions.SelectedItem is Product selected)
-        //    {
-        //        selectedProduct = selected;
-
-        //        txtSearch.Text = selected.Name;
-        //        popupSuggestions.IsOpen = false;
-
-        //        SearchProduct(selected.Name, true);
-
-        //        List<Product>productList = new ProductDAO().SearchProduct(sqlSame, selected.Name);
-        //        var productDTOList = ConvertToDTO(productList);
-        //        parentControl.DisplayProducts(productDTOList);
-
-        //        //for (int i = 0; i < productList.Count; i++)
-        //        //{
-        //        //    productList[i] = new ProductDAO().GetProductByID(selected.ProductId);
-        //        //}
-        //    }
-        //}
+     
 
         private void lstSuggestions_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
@@ -247,11 +184,6 @@ namespace Agricultural_Distributor.GUI
                     popupSuggestions.IsOpen = false;
 
                     List<Product> lsPro = new ProductDAO().SearchProduct(sql, selectedProduct.Name);
-                    //foreach (var suggestion in lstSuggestions.Items)
-                    //{
-                    //    Product pro = suggestion as Product;
-                    //    lsPro.Add(pro);
-                    //}
 
                     List<UCProductInfo> lsUcProInfor = new List<UCProductInfo>();
                     foreach (var item in lsPro)

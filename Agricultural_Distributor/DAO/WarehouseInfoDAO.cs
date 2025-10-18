@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Data;
+using Agricultural_Distributor.Common;
 using Agricultural_Distributor.Entity;
 using Oracle.ManagedDataAccess.Client;
 
@@ -7,21 +8,22 @@ namespace Agricultural_Distributor.DAO
 {
     internal class WarehouseInfoDAO
     {
-        ConnectOracle connectOracle = new();
+        //connect connect = new();
+        Connect connect = SessionManager.Connect;
 
         public WarehouseInfoDAO() { }
         public WarehouseInfo GetInfoProduct(int productId)
         {
             WarehouseInfo warehouseInfo = new();
-            connectOracle.Connect();
+            connect.ConnectDB();
 
             OracleCommand oraCmd = new();
             oraCmd.CommandType = CommandType.Text;
-            oraCmd.CommandText = "SELECT quantity, measurementUnit FROM WarehouseInfo WHERE productId = :proId";
+            oraCmd.CommandText = "SELECT quantity, measurementUnit FROM AGRICULTURAL_AGENT.WarehouseInfo WHERE productId = :proId";
 
             oraCmd.Parameters.Add(":proId", OracleDbType.Int32).Value = productId;
 
-            oraCmd.Connection = connectOracle.oraCon;
+            oraCmd.Connection = connect.oraCon;
 
             try
             {
@@ -43,7 +45,7 @@ namespace Agricultural_Distributor.DAO
             }
             finally
             {
-                connectOracle.Close();
+                connect.Close();
             }
 
             return warehouseInfo;
@@ -52,9 +54,9 @@ namespace Agricultural_Distributor.DAO
 
         public DataTable GetInventoryReport()
         {
-            connectOracle.Connect();
+            connect.ConnectDB();
 
-            OracleCommand cmd = new("proc_InventoryReport", connectOracle.oraCon);
+            OracleCommand cmd = new("AGRICULTURAL_AGENT.proc_InventoryReport", connect.oraCon);
             cmd.CommandType = CommandType.StoredProcedure;
 
             cmd.Parameters.Add("p_report_cursor", OracleDbType.RefCursor).Direction = ParameterDirection.Output;
@@ -73,7 +75,7 @@ namespace Agricultural_Distributor.DAO
             }
             finally
             {
-                connectOracle.Close();
+                connect.Close();
             }
         }
     }

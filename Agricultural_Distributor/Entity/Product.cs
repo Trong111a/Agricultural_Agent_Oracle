@@ -61,6 +61,15 @@ namespace Agricultural_Distributor.Entity
             Photo = photo;
         }
 
+        public Product(int productId, string name, string qualityStandard, double purchasePrice, double sellingPrice)
+        {
+            ProductId = productId;
+            Name = name;
+            QualityStandard = qualityStandard;
+            PurchasePrice = purchasePrice;
+            SellingPrice = sellingPrice;
+        }
+
         public Product()
         {
 

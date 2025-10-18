@@ -26,7 +26,7 @@ namespace Agricultural_Distributor.GUI
         internal string result = "";
 
         WDHome wDHome;
-
+        int selectedPosition = -1;
         public UCManageEmployee(WDHome wDHome)
         {
             InitializeComponent();
@@ -42,6 +42,8 @@ namespace Agricultural_Distributor.GUI
                 cbPosition.Visibility = Visibility.Hidden;
                 lbPosition.Visibility = Visibility.Hidden;
                 delete.Visibility = Visibility.Hidden;
+                unlock.Visibility = Visibility.Hidden;
+
             }
 
             LoadEmployee();
@@ -73,24 +75,12 @@ namespace Agricultural_Distributor.GUI
                 txtAddress.Text = selectedEmployee.EmployeeAddress;
                 txtPhoneNumber.Text = selectedEmployee.PhoneNumber;
                 txtEmail.Text = selectedEmployee.Email;
+                selectedPosition = selectedEmployee.Position;
                 if (selectedEmployee.Position == 1) cbPosition.Text = "Quản lý";
                 else cbPosition.Text = "Nhân viên";
             }
         }
-        private void CheckBox_Checked(object sender, RoutedEventArgs e)
-        {
-            // Xử lý khi checkbox được check
-        }
-        private void CheckBox_Unchecked(object sender, RoutedEventArgs e)
-        {
-            // Xử lý khi checkbox bị bỏ chọn
-        }
-
-        private void TextBox_TextChanged()
-        {
-
-        }
-
+        
         private void Button_Click(object sender, RoutedEventArgs e)
         {
             Employee em = new Employee(empId, txtEmployeeName.Text, txtBirthday.SelectedDate.Value, txtSex.Text, txtAddress.Text, txtPhoneNumber.Text, txtEmail.Text);
@@ -113,6 +103,57 @@ namespace Agricultural_Distributor.GUI
             employeeDAO.deleteEmployee(empId);
             employeeDAO.deleteAccount(empId);
             LoadEmployee();
+        }
+
+        private void unlock_Click(object sender, RoutedEventArgs e)
+        {
+            if (empId == -1)
+            {
+                MessageBox.Show("Vui lòng chọn một nhân viên để mở khóa.", "Cảnh báo", MessageBoxButton.OK, MessageBoxImage.Warning);
+                return;
+            }
+
+            if (selectedPosition != 1)
+            {
+                MessageBox.Show("Chức năng mở khóa chỉ được áp dụng cho tài khoản Quản lý.", "Lỗi ủy quyền", MessageBoxButton.OK, MessageBoxImage.Error);
+                return;
+            }
+
+            MessageBoxResult result = MessageBox.Show(
+                $"Bạn có chắc chắn muốn mở khóa tài khoản Quản lý ID: {empId} không?",
+                "Xác nhận Mở Khóa",
+                MessageBoxButton.YesNo,
+                MessageBoxImage.Question);
+
+            if (result == MessageBoxResult.Yes)
+            {
+                try
+                {
+                    EmployeeDAO employeeDAO = new EmployeeDAO();
+
+                    employeeDAO.UnlockAccount(empId);
+
+                    LoadEmployee();
+                    ClearForm();
+                }
+                catch (Exception ex)
+                {
+                    MessageBox.Show("Không thể mở khóa tài khoản: " + ex.Message, "Lỗi", MessageBoxButton.OK, MessageBoxImage.Error);
+                }
+            }
+        }
+        private void ClearForm()
+        {
+            empId = -1;
+            selectedPosition = -1;
+            txtEmployeeName.Text = string.Empty;
+            txtSex.Text = string.Empty;
+            txtBirthday.SelectedDate = null;
+            txtAddress.Text = string.Empty;
+            txtPhoneNumber.Text = string.Empty;
+            txtEmail.Text = string.Empty;
+            cbPosition.Text = string.Empty;
+            lvProducts.SelectedItem = null;
         }
     }
 }

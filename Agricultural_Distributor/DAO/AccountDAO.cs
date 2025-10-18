@@ -3,15 +3,15 @@ using System;
 using System.Collections.Generic;
 using System.Data;
 using Oracle.ManagedDataAccess.Client;
-using System.Windows; 
+using System.Windows;
+using Agricultural_Distributor.Common;
 
 namespace Agricultural_Distributor.DAO
 {
     internal class AccountDAO
     {
-        private ConnectOracle connectOracle = new ConnectOracle();
+        private ConnectOracle connectOracle = new();
         private Account account;
-
         public AccountDAO(Account account)
         {
             this.account = account;
@@ -31,7 +31,7 @@ namespace Agricultural_Distributor.DAO
                     oraCmd.CommandType = CommandType.Text;
 
                     oraCmd.CommandText = @"
-                        SELECT * FROM ACCOUNT
+                        SELECT * FROM AGRICULTURAL_AGENT.ACCOUNT
                         WHERE TRIM(LOWER(USERNAME)) = LOWER(:username)
                           AND TRIM(PASS) = :pass
                           AND ISACTIVE = 1";
@@ -90,7 +90,7 @@ namespace Agricultural_Distributor.DAO
                 {
                     oraCmd.Connection = connectOracle.oraCon;
                     oraCmd.CommandType = CommandType.Text;
-                    oraCmd.CommandText = "UPDATE Account SET pass = :newPassword WHERE email = :email AND IsActive = 1";
+                    oraCmd.CommandText = "UPDATE AGRICULTURAL_AGENT.Account SET pass = :newPassword WHERE email = :email AND IsActive = 1";
 
                     oraCmd.Parameters.Add("newPassword", OracleDbType.Varchar2).Value = newPassword;
                     oraCmd.Parameters.Add("email", OracleDbType.Varchar2).Value = email;
@@ -120,7 +120,7 @@ namespace Agricultural_Distributor.DAO
                 {
                     oraCmd.Connection = connectOracle.oraCon;
                     oraCmd.CommandType = CommandType.Text;
-                    oraCmd.CommandText = "SELECT COUNT(*) FROM Account WHERE email = :email AND IsActive = 1";
+                    oraCmd.CommandText = "SELECT COUNT(*) FROM AGRICULTURAL_AGENT.Account WHERE email = :email AND IsActive = 1";
 
                     oraCmd.Parameters.Add("email", OracleDbType.Varchar2).Value = email;
 
@@ -152,7 +152,7 @@ namespace Agricultural_Distributor.DAO
                 {
                     oraCmd.Connection = connectOracle.oraCon;
                     oraCmd.CommandType = CommandType.Text;
-                    oraCmd.CommandText = "SELECT email FROM Account WHERE IsAdmin = 1 AND IsActive = 1";
+                    oraCmd.CommandText = "SELECT email FROM AGRICULTURAL_AGENT.Account WHERE IsAdmin = 1 AND IsActive = 1";
 
                     using (OracleDataReader reader = oraCmd.ExecuteReader())
                     {

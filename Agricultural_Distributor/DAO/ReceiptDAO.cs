@@ -1,4 +1,5 @@
-﻿using Agricultural_Distributor.Entity;
+﻿using Agricultural_Distributor.Common;
+using Agricultural_Distributor.Entity;
 using Oracle.ManagedDataAccess.Client;
 using Oracle.ManagedDataAccess.Types;
 using System;
@@ -13,7 +14,8 @@ namespace Agricultural_Distributor.DAO
 {
     internal class ReceiptDAO
     {
-        ConnectOracle connectOracle = new();
+        // connect connect = new();
+        Connect connect = SessionManager.Connect;
         Receipt receipt;
 
         public ReceiptDAO() { }
@@ -26,9 +28,9 @@ namespace Agricultural_Distributor.DAO
         public int? CreateReceipt(Receipt receipt)
         {
             int receiptIdValue = 0;
-            connectOracle.Connect();
+            connect.ConnectDB();
 
-            OracleCommand oraCmd = new("proc_CreateOrder", connectOracle.oraCon);
+            OracleCommand oraCmd = new("AGRICULTURAL_AGENT.proc_CreateOrder", connect.oraCon);
             oraCmd.CommandType = CommandType.StoredProcedure;
 
             oraCmd.Parameters.Add("p_priceTotal", OracleDbType.Double).Value = receipt.PriceTotal;
@@ -57,25 +59,25 @@ namespace Agricultural_Distributor.DAO
                     OracleDecimal oracleDecimalValue = (OracleDecimal)outputReceiptId.Value;
                     receiptIdValue = oracleDecimalValue.ToInt32();
                 }
-                connectOracle.Disconnect();
+                connect.Disconnect();
 
                 return receiptIdValue > 0 ? (int?)receiptIdValue : null;
             }
             catch (Exception ex)
             {
                 MessageBox.Show(ex.Message);
-                connectOracle.Disconnect();
+                connect.Disconnect();
                 return null;
             }
         }
 
         public bool AddReceiptDetail(ReceiptDetail receiptDetail)
         {
-            connectOracle.Connect();
+            connect.ConnectDB();
             OracleCommand oraCmd = new();
             oraCmd.CommandType = CommandType.Text;
 
-            oraCmd.CommandText = "INSERT INTO ReceiptDetail VALUES(:receiptId, :productId, :productName, :quantity, :unitPrice)";
+            oraCmd.CommandText = "INSERT INTO AGRICULTURAL_AGENT.ReceiptDetail VALUES(:receiptId, :productId, :productName, :quantity, :unitPrice)";
 
             oraCmd.Parameters.Add("receiptId", receiptDetail.ReceiptId);
             oraCmd.Parameters.Add("productId", receiptDetail.ProductId);
@@ -83,16 +85,16 @@ namespace Agricultural_Distributor.DAO
             oraCmd.Parameters.Add("quantity", receiptDetail.Quantity);
             oraCmd.Parameters.Add("unitPrice", receiptDetail.UnitPrice);
 
-            oraCmd.Connection = connectOracle.oraCon;
+            oraCmd.Connection = connect.oraCon;
             try
             {
                 int result = oraCmd.ExecuteNonQuery();
-                connectOracle.Disconnect();
+                connect.Disconnect();
                 return result > 0;
             }
             catch (Exception)
             {
-                connectOracle.Disconnect();
+                connect.Disconnect();
                 return false;
             }
         }
@@ -100,14 +102,14 @@ namespace Agricultural_Distributor.DAO
         public List<ReceiptDetail> GetReceiptDetailList(int receiptId)
         {
             List<ReceiptDetail> receiptDetails = new();
-            connectOracle.Connect();
+            connect.ConnectDB();
 
             OracleCommand oraCmd = new();
             oraCmd.CommandType = CommandType.Text;
-            oraCmd.CommandText = "SELECT receiptId, productId, productName, quantity, unitPrice FROM ReceiptDetail WHERE receiptId = :receiptId";
+            oraCmd.CommandText = "SELECT receiptId, productId, productName, quantity, unitPrice FROM AGRICULTURAL_AGENT.ReceiptDetail WHERE receiptId = :receiptId";
 
             oraCmd.Parameters.Add("receiptId", receiptId);
-            oraCmd.Connection = connectOracle.oraCon;
+            oraCmd.Connection = connect.oraCon;
 
             OracleDataReader reader = oraCmd.ExecuteReader();
             while (reader.Read())
@@ -122,21 +124,21 @@ namespace Agricultural_Distributor.DAO
                 receiptDetails.Add(receiptDetail);
             }
             reader.Close();
-            connectOracle.Disconnect();
+            connect.Disconnect();
             return receiptDetails;
         }
 
         public Receipt GetReceipt(int receiptId)
         {
             Receipt receipt = new();
-            connectOracle.Connect();
+            connect.ConnectDB();
 
             OracleCommand oraCmd = new();
             oraCmd.CommandType = CommandType.Text;
-            oraCmd.CommandText = "SELECT receiptId, typeOfReceipt, priceTotal, discount, note FROM Receipt WHERE receiptId = :receiptId";
+            oraCmd.CommandText = "SELECT receiptId, typeOfReceipt, priceTotal, discount, note FROM AGRICULTURAL_AGENT.Receipt WHERE receiptId = :receiptId";
 
             oraCmd.Parameters.Add("receiptId", receiptId);
-            oraCmd.Connection = connectOracle.oraCon;
+            oraCmd.Connection = connect.oraCon;
 
             OracleDataReader reader = oraCmd.ExecuteReader();
             if (reader.Read())
@@ -155,15 +157,15 @@ namespace Agricultural_Distributor.DAO
                 receipt.Discount = dis;
             }
             reader.Close();
-            connectOracle.Disconnect();
+            connect.Disconnect();
             return receipt;
         }
 
         public DataTable GetDailyRevenueReport(DateTime date)
         {
-            connectOracle.Connect();
+            connect.ConnectDB();
 
-            OracleCommand cmd = new("proc_DailyRevenueReport", connectOracle.oraCon);
+            OracleCommand cmd = new("AGRICULTURAL_AGENT.proc_DailyRevenueReport", connect.oraCon);
             cmd.CommandType = CommandType.StoredProcedure;
 
             cmd.Parameters.Add("p_ReportDate", OracleDbType.Date).Value = date;
@@ -172,15 +174,15 @@ namespace Agricultural_Distributor.DAO
             OracleDataAdapter adapter = new(cmd);
             DataTable dt = new();
             adapter.Fill(dt);
-            connectOracle.Disconnect();
+            connect.Disconnect();
             return dt;
         }
 
         public DataTable GetDailyExpenseReport(DateTime date)
         {
-            connectOracle.Connect();
+            connect.ConnectDB();
 
-            OracleCommand cmd = new("proc_DailyExpenseReport", connectOracle.oraCon);
+            OracleCommand cmd = new("AGRICULTURAL_AGENT.proc_DailyExpenseReport", connect.oraCon);
             cmd.CommandType = CommandType.StoredProcedure;
 
             cmd.Parameters.Add("p_ReportDate", OracleDbType.Date).Value = date;
@@ -189,15 +191,15 @@ namespace Agricultural_Distributor.DAO
             OracleDataAdapter adapter = new(cmd);
             DataTable dt = new();
             adapter.Fill(dt);
-            connectOracle.Disconnect();
+            connect.Disconnect();
             return dt;
         }
 
         public DataTable GetDailyDebtReportReport(DateTime date)
         {
-            connectOracle.Connect();
+            connect.ConnectDB();
 
-            OracleCommand cmd = new("proc_DailyDebtReport", connectOracle.oraCon);
+            OracleCommand cmd = new("AGRICULTURAL_AGENT.proc_DailyDebtReport", connect.oraCon);
             cmd.CommandType = CommandType.StoredProcedure;
 
             cmd.Parameters.Add("p_ReportDate", OracleDbType.Date).Value = date;
@@ -206,7 +208,7 @@ namespace Agricultural_Distributor.DAO
             OracleDataAdapter adapter = new(cmd);
             DataTable dt = new();
             adapter.Fill(dt);
-            connectOracle.Disconnect();
+            connect.Disconnect();
             return dt;
         }
     }

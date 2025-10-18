@@ -43,12 +43,13 @@
     <Grid Background="#FF2E8068">
         <Button Style="{StaticResource StyleButton}" Name="btnProductManage" FontWeight="Bold" Content="QUẢN LÝ NÔNG SẢN" HorizontalAlignment="Left" Margin="0,37,0,0" VerticalAlignment="Top" Height="36" Width="209" Click="btnProductManage_Click"/>
         <Button Style="{StaticResource StyleButton}" Name="btnCreateOrder" FontWeight="Bold" Content="TẠO ĐƠN HÀNG" HorizontalAlignment="Left" Margin="0,95,0,0" VerticalAlignment="Top" Height="36" Width="209" Click="btnCreateOrder_Click"/>
-        <Button Style="{StaticResource StyleButton}" Name="btnTransManage" FontWeight="Bold" Content="QUẢN LÝ PHIÊN GIAO DỊCH" HorizontalAlignment="Left" Margin="0,450,0,0" VerticalAlignment="Top" Height="36" Width="209" Click="btnTransManage_Click"/>
+        <Button Style="{StaticResource StyleButton}" Name="btnTransManage" FontWeight="Bold" Content="QUẢN LÝ PHIÊN GIAO DỊCH" HorizontalAlignment="Left" Margin="0,445,0,0" VerticalAlignment="Top" Height="36" Width="209" Click="btnTransManage_Click"/>
         <Button Style="{StaticResource StyleButton}" Name="btnCustomerManage" FontWeight="Bold" Content="QUẢN LÝ KHÁCH HÀNG" HorizontalAlignment="Left" Margin="0,153,0,0" VerticalAlignment="Top" Height="36" Width="209" Click="btnCustomerManage_Click"/>
         <Button Style="{StaticResource StyleButton}" Name="btnEmployeeManage" FontWeight="Bold" Content="QUẢN LÝ NHÂN VIÊN" HorizontalAlignment="Left" Margin="0,211,0,0" VerticalAlignment="Top" Height="36" Width="209" Click="btnEmployeeManage_Click"/>
         <Button Style="{StaticResource StyleButton}" Name="btnViewRevenue" FontWeight="Bold" Content="XEM DOANH THU" HorizontalAlignment="Left" Margin="0,390,0,0" VerticalAlignment="Top" Height="36" Width="209" Click="btnViewRevenue_Click"/>
         <Button Style="{StaticResource StyleButton}" x:Name="btnLogOut" Foreground="Red" FontWeight="Bold" Content="ĐĂNG XUẤT" HorizontalAlignment="Left" Margin="0,550,0,0" VerticalAlignment="Top" Height="36" Width="209" Click="btnLogOut_Click"/>
         <Button Style="{StaticResource StyleButton}" x:Name="btnStatistic" FontWeight="Bold" Content="THỐNG KÊ VÀ DỰ ĐOÁN" HorizontalAlignment="Left" Margin="0,270,0,0" VerticalAlignment="Top" Height="36" Width="209" Click="btnStatistic_Click"/>
         <Button Style="{StaticResource StyleButton}" x:Name="btnViewTimekeeping" FontWeight="Bold" Content="XEM LỊCH PHÂN CÔNG" HorizontalAlignment="Left" Margin="0,330,0,0" VerticalAlignment="Top" Height="36" Width="209" Click="btnViewTimekeeping_Click" />
+        <Button Style="{StaticResource StyleButton}" x:Name="btnAudit" FontWeight="Bold" Content="GIÁM SÁT CHỈNH SỬA" HorizontalAlignment="Left" Margin="0,500,0,0" VerticalAlignment="Top" Height="36" Width="209" Click="btnAudit_Click"/>
     </Grid>
 </UserControl>

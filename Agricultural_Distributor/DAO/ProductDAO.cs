@@ -8,6 +8,7 @@ using System.Collections.Generic;
 using System.Data;
 using System.Diagnostics;
 using System.Linq;
+using System.Runtime.CompilerServices;
 using System.Text.RegularExpressions;
 using System.Windows;
 using System.Windows.Controls;
@@ -16,9 +17,10 @@ namespace Agricultural_Distributor.DAO
 {
     internal class ProductDAO
     {
-        ConnectOracle connectOracle = new();
+        //ConnectOracle connectOracle = new();
         Product product;
         private byte[]? imageBytes = null;
+        Connect connect = SessionManager.Connect;
 
         public ProductDAO(Product product)
         {
@@ -33,15 +35,18 @@ namespace Agricultural_Distributor.DAO
 
         public List<Product> LoadProduct()
         {
+            
             List<Product> products = new();
-            connectOracle.Connect();
+            //connectOracle.Connect();
+            connect.ConnectDB();
 
             OracleCommand oraCmd = new();
             oraCmd.CommandType = CommandType.Text;
             oraCmd.CommandText = "SELECT p.ProductId, p.productName, p.qualityStandard, p.purchasePrice, p.sellingPrice, w.quantity, w.measurementUnit " +
-                                 "FROM Product p JOIN WarehouseInfo w ON p.ProductId = w.productId WHERE p.IsActive = 1 ORDER BY productName";
+                                 "FROM AGRICULTURAL_AGENT.Product p JOIN AGRICULTURAL_AGENT.WarehouseInfo w ON p.ProductId = w.productId WHERE p.IsActive = 1 ORDER BY productName";
 
-            oraCmd.Connection = connectOracle.oraCon;
+            //oraCmd.Connection = connectOracle.oraCon;
+            oraCmd.Connection = connect.oraCon;
 
             OracleDataReader reader = oraCmd.ExecuteReader();
             while (reader.Read())
@@ -58,20 +63,23 @@ namespace Agricultural_Distributor.DAO
                 products.Add(product);
             }
             reader.Close();
-            connectOracle.Disconnect();
+            //connectOracle.Disconnect();
+            connect.Disconnect();
             return products;
         }
 
         public List<Product> GetProductList()
         {
             List<Product> products = new();
-            connectOracle.Connect();
+            //connectOracle.Connect();
+            connect.ConnectDB();
 
             OracleCommand oraCmd = new();
             oraCmd.CommandType = CommandType.Text;
             oraCmd.CommandText = "SELECT p.ProductId, p.productName, p.qualityStandard, p.purchasePrice, p.sellingPrice, p.photo, w.quantity, w.measurementUnit " +
-                                 "FROM Product p JOIN WarehouseInfo w ON p.ProductId = w.productId WHERE p.IsActive = 1";
-            oraCmd.Connection = connectOracle.oraCon;
+                                 "FROM AGRICULTURAL_AGENT.Product p JOIN AGRICULTURAL_AGENT.WarehouseInfo w ON p.ProductId = w.productId WHERE p.IsActive = 1";
+            //oraCmd.Connection = connectOracle.oraCon;
+            oraCmd.Connection = connect.oraCon;
 
             try
             {
@@ -107,7 +115,8 @@ namespace Agricultural_Distributor.DAO
             }
             finally
             {
-                connectOracle.Close();
+                //connectOracle.Close();
+                connect.Close();
             }
             return products;
         }
@@ -137,9 +146,10 @@ namespace Agricultural_Distributor.DAO
             int? proId = null;
             try
             {
-                connectOracle.Connect();
+                //connectOracle.Connect();
+                connect.ConnectDB();
 
-                OracleCommand oraCmd = new("PROC_ADDPRODUCT", connectOracle.oraCon)
+                OracleCommand oraCmd = new("AGRICULTURAL_AGENT.PROC_ADDPRODUCT", connect.oraCon)
                 {
                     CommandType = CommandType.StoredProcedure,
                     BindByName = true
@@ -185,7 +195,8 @@ namespace Agricultural_Distributor.DAO
             }
             finally
             {
-                connectOracle.Close();
+                //connectOracle.Close();
+                connect.Close();
             }
         }
 
@@ -194,12 +205,13 @@ namespace Agricultural_Distributor.DAO
             Product product = new();
             try
             {
-                connectOracle.Connect();
-                OracleCommand oraCmd = new("proc_GetProductById", connectOracle.oraCon);
+                //connectOracle.Connect();
+                connect.ConnectDB();
+                OracleCommand oraCmd = new("AGRICULTURAL_AGENT.proc_GetProductById", connect.oraCon);
                 {
                     oraCmd.CommandType = CommandType.Text;
                     oraCmd.CommandText = "SELECT p.productName, p.purchasePrice, p.sellingPrice, p.qualityStandard, w.measurementUnit, w.quantity, p.photo " +
-                                         "FROM Product p JOIN WarehouseInfo w ON p.ProductId = w.productId WHERE p.ProductId = :ProductId";
+                                         "FROM AGRICULTURAL_AGENT.Product p JOIN AGRICULTURAL_AGENT.WarehouseInfo w ON p.ProductId = w.productId WHERE p.ProductId = :ProductId";
                     oraCmd.Parameters.Clear();
 
                     oraCmd.Parameters.Add("ProductId", OracleDbType.Int32).Value = productId;
@@ -234,7 +246,8 @@ namespace Agricultural_Distributor.DAO
             }
             finally
             {
-                connectOracle.Close();
+                //connectOracle.Close();
+                connect.Close();
             }
             return product;
         }
@@ -265,8 +278,9 @@ namespace Agricultural_Distributor.DAO
             {
                 try
                 {
-                    connectOracle.Connect();
-                    OracleCommand oraCmd = new("proc_UpdateProduct", connectOracle.oraCon);
+                    //connectOracle.Connect();
+                    connect.ConnectDB();
+                    OracleCommand oraCmd = new("AGRICULTURAL_AGENT.proc_UpdateProduct", connect.oraCon);
                     {
                         oraCmd.CommandType = CommandType.StoredProcedure;
 
@@ -298,7 +312,7 @@ namespace Agricultural_Distributor.DAO
                 }
                 finally
                 {
-                    connectOracle.Close();
+                    connect.Close();
                 }
             }
             else
@@ -354,30 +368,78 @@ namespace Agricultural_Distributor.DAO
         public void DeleteProduct(int productId)
         {
             
+            //try
+            //{
+            //    var connect = SessionManager.Connect;
+            //    //connectOracle.Connect();
+            //    if (connect == null)
+            //        MessageBox.Show("Chưa đăng nhập, kết nối = null");
+            //    connect.ConnectDB();
+
+            //    OracleCommand oraCmd = new OracleCommand("AGRICULTURAL_AGENT.proc_DeleteProduct", connect.oraCon);
+            //    oraCmd.CommandType = CommandType.StoredProcedure;
+
+            //    oraCmd.Parameters.Add("p_productId", OracleDbType.Int32).Value = productId;
+
+            //    OracleParameter outParam = new OracleParameter("p_result", OracleDbType.Varchar2, 200);
+            //    outParam.Direction = ParameterDirection.Output;
+            //    oraCmd.Parameters.Add(outParam);
+
+            //    oraCmd.ExecuteNonQuery();
+            //    string resultMsg = outParam.Value.ToString();
+            //    MessageBox.Show(resultMsg);
+            //}
+            //catch (OracleException ex)
+            //{
+            //    MessageBox.Show("Lỗi Oracle: " + ex.Message);
+            //}
+            //catch (Exception ex)
+            //{
+            //    MessageBox.Show("Lỗi khác: " + ex.Message);
+            //}
+            //finally
+            //{
+            //    connectOracle.Close();
+            //}
+           
             try
             {
-                var connect = SessionManager.Connect;
-                //connectOracle.Connect();
-                if (connect == null)
-                    MessageBox.Show("Chưa đăng nhập, kết nối = null");
+                //var connect = SessionManager.Connect;
                 connect.ConnectDB();
-                
-                OracleCommand oraCmd = new OracleCommand("AGRICULTURAL_AGENT.proc_DeleteProduct", connect.oraCon);
-                oraCmd.CommandType = CommandType.StoredProcedure;
+                OracleCommand oraCmd = new OracleCommand("DELETE FROM AGRICULTURAL_AGENT.Product WHERE PRODUCTID = :productId", connect.oraCon);
+                oraCmd.Parameters.Add(":productId", OracleDbType.Int32).Value = productId;
 
-                oraCmd.Parameters.Add("p_productId", OracleDbType.Int32).Value = productId;
+                int rowsAffected = oraCmd.ExecuteNonQuery();
 
-                OracleParameter outParam = new OracleParameter("p_result", OracleDbType.Varchar2, 200);
-                outParam.Direction = ParameterDirection.Output;
-                oraCmd.Parameters.Add(outParam);
- 
-                oraCmd.ExecuteNonQuery();
-                string resultMsg = outParam.Value.ToString();
-                MessageBox.Show(resultMsg);
+
+                if (rowsAffected > 0)
+                {
+                    MessageBox.Show("Sản phẩm đã được xóa thành công.");
+                }
+                else
+                {
+                    OracleCommand updateCmd = new OracleCommand("UPDATE AGRICULTURAL_AGENT.Product SET ISACTIVE = 0 WHERE PRODUCTID = :id",connect.oraCon);
+                    updateCmd.Parameters.Add(":id", OracleDbType.Int32).Value = productId;
+                    updateCmd.ExecuteNonQuery();
+
+                    MessageBox.Show("Sản phẩm được đánh dấu là ngừng bán.");
+                }
             }
+
             catch (OracleException ex)
             {
-                MessageBox.Show("Lỗi Oracle: " + ex.Message);
+                if (ex.Message.Contains("ORA-01031"))  // Thiếu quyền
+                {
+                    MessageBox.Show("Bạn không có quyền xóa sản phẩm.");
+                }
+                else if (ex.Message.Contains("ORA-02292"))  // Vi phạm ràng buộc khóa ngoại
+                {
+                    MessageBox.Show("Sản phẩm được đánh dấu là ngừng bán.");
+                }
+                else
+                {
+                    MessageBox.Show("Lỗi Oracle: " + ex.Message);
+                }
             }
             catch (Exception ex)
             {
@@ -385,8 +447,9 @@ namespace Agricultural_Distributor.DAO
             }
             finally
             {
-                connectOracle.Close();
+                connect.Close();
             }
+
         }
 
         public List<Product> SearchProduct(string sql, string keyword)
@@ -394,8 +457,8 @@ namespace Agricultural_Distributor.DAO
             List<Product> products = new();
             try
             {
-                connectOracle.Connect();
-                OracleCommand oraCommand = new(sql, connectOracle.oraCon);
+                connect.ConnectDB();
+                OracleCommand oraCommand = new(sql, connect.oraCon);
                 {
                     oraCommand.CommandType = CommandType.Text;
 
@@ -450,7 +513,7 @@ namespace Agricultural_Distributor.DAO
             }
             finally
             {
-                connectOracle.Close();
+                connect.Close();
             }
             return products;
         }
@@ -458,21 +521,21 @@ namespace Agricultural_Distributor.DAO
         public List<QuanMonth> GetQuanMonth(int productId)
         {
             List<QuanMonth> quanMonths = new();
-            connectOracle.Connect();
+            connect.ConnectDB();
 
             OracleCommand oraCmd = new();
             oraCmd.CommandType = CommandType.Text;
 
             oraCmd.CommandText = "SELECT TO_CHAR(t.DateOfImplementation, 'YYYY-MM') AS \"Month\", SUM(rd.quantity) " +
-                                 "FROM Transactions t " +
-                                 "JOIN Receipt r ON r.receiptId = t.receiptId " +
-                                 "JOIN ReceiptDetail rd ON rd.receiptId = r.receiptId " +
+                                 "FROM AGRICULTURAL_AGENT.Transactions t " +
+                                 "JOIN AGRICULTURAL_AGENT.Receipt r ON r.receiptId = t.receiptId " +
+                                 "JOIN AGRICULTURAL_AGENT.ReceiptDetail rd ON rd.receiptId = r.receiptId " +
                                  "WHERE rd.productId = :proId AND r.typeOfReceipt = 'Bán' " +
                                  "GROUP BY TO_CHAR(t.DateOfImplementation, 'YYYY-MM') ORDER BY \"Month\"";
 
             oraCmd.Parameters.Add("proId", OracleDbType.Int32).Value = productId;
 
-            oraCmd.Connection = connectOracle.oraCon;
+            oraCmd.Connection = connect.oraCon;
 
             OracleDataReader reader = oraCmd.ExecuteReader();
             while (reader.Read())
@@ -487,7 +550,7 @@ namespace Agricultural_Distributor.DAO
                 quanMonths.Add(quanMonth);
             }
             reader.Close();
-            connectOracle.Disconnect();
+            connect.Disconnect();
             return quanMonths;
         }
 
@@ -495,8 +558,8 @@ namespace Agricultural_Distributor.DAO
         {
             try
             {
-                connectOracle.Connect();
-                OracleCommand oraCmd = new("proc_UpdateQuanPurPriceProduct", connectOracle.oraCon);
+                connect.ConnectDB();
+                OracleCommand oraCmd = new("AGRICULTURAL_AGENT.proc_UpdateQuanPurPriceProduct", connect.oraCon);
                 {
                     oraCmd.CommandType = CommandType.StoredProcedure;
 
@@ -513,7 +576,7 @@ namespace Agricultural_Distributor.DAO
             }
             finally
             {
-                connectOracle.Close();
+                connect.Close();
             }
         }
     }

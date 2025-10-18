@@ -48,6 +48,11 @@ namespace Agricultural_Distributor
             if (oraCon != null && oraCon.State == ConnectionState.Open)
                 oraCon.Close();
         }
+
+        public void Close()
+        {
+            this.Disconnect();
+        }
     }
 }
 

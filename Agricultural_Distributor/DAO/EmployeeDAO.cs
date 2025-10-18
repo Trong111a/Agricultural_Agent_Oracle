@@ -7,12 +7,14 @@ using System.Threading.Tasks;
 using Agricultural_Distributor.Entity;
 using System.Windows;
 using Oracle.ManagedDataAccess.Client;
+using Agricultural_Distributor.Common;
 
 namespace Agricultural_Distributor.DAO
 {
     internal class EmployeeDAO
     {
-        ConnectOracle connectOracle = new();
+        //connect connect = new();
+        Connect connect = SessionManager.Connect;
         Employee employee;
 
         public EmployeeDAO() { }
@@ -25,7 +27,8 @@ namespace Agricultural_Distributor.DAO
         public List<Employee> LoadEmployee()
         {
             List<Employee> employees = new();
-            connectOracle.Connect();
+            //connect.Connect();
+            connect.ConnectDB();
 
             OracleCommand oraCmd = new();
             oraCmd.CommandType = CommandType.Text;
@@ -33,11 +36,10 @@ namespace Agricultural_Distributor.DAO
    
             //oraCmd.CommandText = "SELECT employeeId, employeeName, birthday, sex, employeeAddress, phoneNumber, email, IsActive, position " +
             //                     "FROM Employee WHERE IsActive = 1 AND employeeId <> 1";
-            oraCmd.CommandText = "SELECT employeeId, employeeName, birthday, sex, employeeAddress, phoneNumber, email, IsActive, position " +
-                                 "FROM Employee WHERE employeeId <> 1";
+            oraCmd.CommandText = "SELECT employeeId, employeeName, birthday, sex, employeeAddress, phoneNumber, email, IsActive, position FROM AGRICULTURAL_AGENT.Employee WHERE employeeId <> 1";
 
 
-            oraCmd.Connection = connectOracle.oraCon;
+            oraCmd.Connection = connect.oraCon;
 
             OracleDataReader reader = oraCmd.ExecuteReader();
             while (reader.Read())
@@ -59,7 +61,7 @@ namespace Agricultural_Distributor.DAO
                 employee.IsActive = isActive;
             }
             reader.Close();
-            connectOracle.Disconnect();
+            connect.Disconnect();
             return employees;
         }
 
@@ -77,15 +79,15 @@ namespace Agricultural_Distributor.DAO
                     return false;
                 }
 
-                connectOracle.Connect();
+                connect.ConnectDB();
 
                 OracleCommand oraCmd = new();
                 oraCmd.CommandType = CommandType.Text;
 
-                oraCmd.CommandText = "INSERT INTO Employee (employeeName, birthday, sex, employeeAddress, phoneNumber, email, isActive, position) " +
+                oraCmd.CommandText = "INSERT INTO AGRICULTURAL_AGENT.Employee (employeeName, birthday, sex, employeeAddress, phoneNumber, email, isActive, position) " +
                                      "VALUES (:employeeName, :birthday, :sex, :employeeAddress, :phoneNumber, :email, :isActive, :position)";
 
-                oraCmd.Connection = connectOracle.oraCon;
+                oraCmd.Connection = connect.oraCon;
                 oraCmd.Parameters.Add("employeeName", employee.EmployeeName);
                 oraCmd.Parameters.Add("birthday", employee.Birthday);
                 oraCmd.Parameters.Add("sex", employee.Sex);
@@ -98,7 +100,7 @@ namespace Agricultural_Distributor.DAO
                 oraCmd.Parameters.Add("position", positionValue);
 
                 int rowsAffected = oraCmd.ExecuteNonQuery();
-                connectOracle.Disconnect();
+                connect.Disconnect();
 
                 MessageBox.Show("Thêm nhân viên thành công");
                 return rowsAffected > 0;
@@ -106,7 +108,7 @@ namespace Agricultural_Distributor.DAO
             catch (Exception ex)
             {
                 MessageBox.Show("Lỗi khi thêm nhân viên: " + ex.Message);
-                connectOracle.Disconnect();
+                connect.Disconnect();
                 return false;
             }
         }
@@ -126,9 +128,9 @@ namespace Agricultural_Distributor.DAO
                     return false;
                 }
 
-                connectOracle.Connect();
+                connect.ConnectDB();
 
-                string query = "UPDATE Employee SET " +
+                string query = "UPDATE AGRICULTURAL_AGENT.Employee SET " +
                                "employeeName = :EmployeeName, " +
                                "birthday = :Birthday, " +
                                "sex = :Sex, " +
@@ -138,7 +140,7 @@ namespace Agricultural_Distributor.DAO
                                //"isActive" = "1"+
                                "WHERE employeeId = :EmployeeId";
 
-                OracleCommand oraCmd = new(query, connectOracle.oraCon);
+                OracleCommand oraCmd = new(query, connect.oraCon);
 
                 //oraCmd.Parameters.Add("EmployeeId", Convert.ToInt32(employee.EmployeeId));
                 //oraCmd.Parameters.Add("EmployeeName", employee.EmployeeName);
@@ -158,7 +160,7 @@ namespace Agricultural_Distributor.DAO
 
 
                 int rowsAffected = oraCmd.ExecuteNonQuery();
-                connectOracle.Disconnect();
+                connect.Disconnect();
 
                 MessageBox.Show("Cập nhật thông tin nhân viên thành công");
                 return rowsAffected > 0;
@@ -166,7 +168,7 @@ namespace Agricultural_Distributor.DAO
             catch (Exception ex)
             {
                 MessageBox.Show("Lỗi khi cập nhật nhân viên: " + ex.Message, "Lỗi", MessageBoxButton.OK, MessageBoxImage.Error);
-                connectOracle.Disconnect();
+                connect.Disconnect();
                 return false;
             }
         }
@@ -175,51 +177,209 @@ namespace Agricultural_Distributor.DAO
         {
             try
             {
-                connectOracle.Connect();
+                connect.ConnectDB();
 
-                string query = "UPDATE Employee SET IsActive = 0 WHERE employeeId = :employeeId";
+                string query = "UPDATE AGRICULTURAL_AGENT.Employee SET IsActive = 0 WHERE employeeId = :employeeId";
 
-                using (OracleCommand oraCmd = new(query, connectOracle.oraCon))
+                using (OracleCommand oraCmd = new(query, connect.oraCon))
                 {
                     oraCmd.Parameters.Add("employeeId", employeeId);
 
           
                     int rowsAffected = oraCmd.ExecuteNonQuery();
-                    connectOracle.Disconnect();
+                    connect.Disconnect();
                     return rowsAffected > 0;
                 }
             }
             catch (Exception ex)
             {
                 MessageBox.Show("Lỗi khi cập nhật trạng thái nhân viên: " + ex.Message);
-                connectOracle.Disconnect();
+                connect.Disconnect();
                 return false;
             }
         }
 
+        //public bool deleteAccount(int id)
+        //{
+        //    try
+        //    {
+        //        connect.ConnectDB();
+
+        //        string query = "UPDATE AGRICULTURAL_AGENT.Account SET IsActive = 0 WHERE Id = :id";
+
+        //        using (OracleCommand oraCmd = new(query, connect.oraCon))
+        //        {
+        //            oraCmd.Parameters.Add("Id", id);
+
+
+        //            int rowsAffected = oraCmd.ExecuteNonQuery();
+        //            connect.Disconnect();
+        //            return rowsAffected > 0;
+        //        }
+        //    }
+        //    catch (Exception ex)
+        //    {
+        //        MessageBox.Show("Lỗi khi cập nhật trạng thái tài khoản: " + ex.Message);
+        //        connect.Disconnect();
+        //        return false;
+        //    }
+        //}
         public bool deleteAccount(int id)
         {
+            string username = null;
+            OracleConnection oraCon = connect.oraCon;
+            OracleTransaction transaction = null;
+
             try
             {
-                connectOracle.Connect();
+                connect.ConnectDB();
+                transaction = oraCon.BeginTransaction();
 
-                string query = "UPDATE Account SET IsActive = 0 WHERE Id = :id";
-
-                using (OracleCommand oraCmd = new(query, connectOracle.oraCon))
+                string querySelect = "SELECT username FROM AGRICULTURAL_AGENT.Account WHERE Id = :id";
+                using (OracleCommand cmdSelect = new OracleCommand(querySelect, oraCon))
                 {
-                    oraCmd.Parameters.Add("Id", id);
-
-
-                    int rowsAffected = oraCmd.ExecuteNonQuery();
-                    connectOracle.Disconnect();
-                    return rowsAffected > 0;
+                    cmdSelect.Transaction = transaction;
+                    cmdSelect.Parameters.Add("id", id);
+                    object result = cmdSelect.ExecuteScalar();
+                    if (result != null)
+                    {
+                        username = result.ToString();
+                    }
                 }
+
+                string queryUpdate = "UPDATE AGRICULTURAL_AGENT.Account SET IsActive = 0 WHERE Id = :id";
+                int rowsAffected = 0;
+                using (OracleCommand cmdUpdate = new OracleCommand(queryUpdate, oraCon))
+                {
+                    cmdUpdate.Transaction = transaction;
+                    cmdUpdate.Parameters.Add("id", id);
+                    rowsAffected = cmdUpdate.ExecuteNonQuery();
+                }
+
+
+                if (!string.IsNullOrEmpty(username))
+                {
+                    string lockQuery = "BEGIN AGRICULTURAL_AGENT.LockUserAccount(:p_username); END;";
+                    using (OracleCommand cmdLock = new OracleCommand(lockQuery, oraCon))
+                    {
+                        cmdLock.Transaction = transaction;
+                        cmdLock.Parameters.Add("p_username", username.ToUpper());
+                        cmdLock.CommandType = CommandType.Text;
+                        cmdLock.ExecuteNonQuery();
+                    }
+                }
+
+
+                transaction.Commit();
+                return true;
             }
             catch (Exception ex)
             {
-                MessageBox.Show("Lỗi khi cập nhật trạng thái tài khoản: " + ex.Message);
-                connectOracle.Disconnect();
+                if (transaction != null)
+                {
+                    try
+                    {
+                        transaction.Rollback();
+                    }
+                    catch (Exception exRollback)
+                    {
+                        MessageBox.Show("Lỗi khi Rollback giao dịch: " + exRollback.Message);
+                    }
+                }
+                MessageBox.Show("Lỗi khi vô hiệu hóa tài khoản và khóa Oracle: " + ex.Message);
                 return false;
+            }
+            finally
+            {
+                connect.Disconnect();
+            }
+        }
+
+
+
+        public bool UnlockAccount(int id)
+        {
+            string username = null;
+            OracleConnection oraCon = null;
+            OracleTransaction transaction = null;
+
+            try
+            {
+                connect.ConnectDB();
+                oraCon = connect.oraCon;
+
+                if (oraCon == null || oraCon.State != ConnectionState.Open)
+                {
+                    throw new Exception("Không thể thiết lập kết nối cơ sở dữ liệu (Kết nối null hoặc chưa mở).");
+                }
+
+                transaction = oraCon.BeginTransaction();
+
+                string querySelect = "SELECT username FROM AGRICULTURAL_AGENT.Account WHERE Id = :id";
+                using (OracleCommand cmdSelect = new OracleCommand(querySelect, oraCon))
+                {
+                    cmdSelect.Transaction = transaction;
+                    cmdSelect.Parameters.Add("id", id);
+                    object result = cmdSelect.ExecuteScalar();
+                    if (result != null)
+                    {
+                        username = result.ToString();
+                    }
+                }
+
+                if (string.IsNullOrEmpty(username))
+                {
+                    throw new Exception("Không tìm thấy tài khoản để mở khóa.");
+                }
+
+                string queryUpdateEmployee = "UPDATE AGRICULTURAL_AGENT.Employee SET IsActive = 1 WHERE employeeId = :id";
+                using (OracleCommand cmdUpdateEmployee = new OracleCommand(queryUpdateEmployee, oraCon))
+                {
+                    cmdUpdateEmployee.Transaction = transaction;
+                    cmdUpdateEmployee.Parameters.Add("id", id);
+                    cmdUpdateEmployee.ExecuteNonQuery();
+                }
+
+                string queryUpdateAccount = "UPDATE AGRICULTURAL_AGENT.Account SET IsActive = 1 WHERE Id = :id";
+                using (OracleCommand cmdUpdateAccount = new OracleCommand(queryUpdateAccount, oraCon))
+                {
+                    cmdUpdateAccount.Transaction = transaction;
+                    cmdUpdateAccount.Parameters.Add("id", id);
+                    cmdUpdateAccount.ExecuteNonQuery();
+                }
+
+                string unlockQuery = "BEGIN AGRICULTURAL_AGENT.UnlockUserAccount(:p_username); END;";
+                using (OracleCommand cmdUnlock = new OracleCommand(unlockQuery, oraCon))
+                {
+                    cmdUnlock.Transaction = transaction;
+                    cmdUnlock.Parameters.Add("p_username", username.ToUpper());
+                    cmdUnlock.CommandType = CommandType.Text;
+                    cmdUnlock.ExecuteNonQuery();
+                }
+
+                transaction.Commit();
+                MessageBox.Show("Mở khóa tài khoản thành công.", "Thành công", MessageBoxButton.OK, MessageBoxImage.Information);
+                return true;
+            }
+            catch (Exception ex)
+            {
+                if (transaction != null)
+                {
+                    try
+                    {
+                        transaction.Rollback();
+                    }
+                    catch (Exception exRollback)
+                    {
+                        MessageBox.Show("Lỗi khi Rollback giao dịch mở khóa: " + exRollback.Message, "Lỗi", MessageBoxButton.OK, MessageBoxImage.Error);
+                    }
+                }
+
+                throw new Exception("Lỗi khi mở khóa tài khoản và Oracle: " + ex.Message);
+            }
+            finally
+            {
+                connect.Disconnect();
             }
         }
     }

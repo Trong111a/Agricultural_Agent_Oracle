@@ -8,12 +8,14 @@ using System.Windows;
 using Oracle.ManagedDataAccess.Client;
 using Oracle.ManagedDataAccess.Types;
 using System.Data;
+using Agricultural_Distributor.Common;
 
 namespace Agricultural_Distributor.DAO
 {
     internal class RevenueDAO
     {
-        ConnectOracle connectOracle = new();
+        //connect connect = new();
+        Connect connect = SessionManager.Connect;
         Revenue revenue;
 
         public RevenueDAO() { }
@@ -29,13 +31,13 @@ namespace Agricultural_Distributor.DAO
 
             try
             {
-                connectOracle.Connect();
+                connect.ConnectDB();
 
                 string query = @"
                     SELECT DISTINCT product.productId, product.productName, product.purchasePrice, product.sellingPrice
-                    FROM Product product";
+                    FROM AGRICULTURAL_AGENT.Product product";
 
-                using (OracleCommand cmd = new(query, connectOracle.oraCon))
+                using (OracleCommand cmd = new(query, connect.oraCon))
                 using (OracleDataReader reader = cmd.ExecuteReader())
                 {
                     while (reader.Read())
@@ -60,7 +62,7 @@ namespace Agricultural_Distributor.DAO
             }
             finally
             {
-                connectOracle.Close();
+                connect.Close();
             }
 
             return productList;
@@ -71,23 +73,23 @@ namespace Agricultural_Distributor.DAO
             List<List<float>> revenueByYear = new();
             try
             {
-                connectOracle.Connect();
+                connect.ConnectDB();
 
                 string query = $@"
                 SELECT 
                     p.productName,
                     EXTRACT(MONTH FROM t.DateOfImplementation) AS Monthly,
                     SUM((p.sellingPrice - p.purchasePrice) * rd.quantity) AS Revenue
-                FROM Transactions t
-                JOIN Receipt r ON t.receiptId = r.receiptId
-                JOIN ReceiptDetail rd ON r.receiptId = rd.receiptId
-                JOIN Product p ON rd.productId = p.productId
+                FROM AGRICULTURAL_AGENT.Transactions t
+                JOIN AGRICULTURAL_AGENT.Receipt r ON t.receiptId = r.receiptId
+                JOIN AGRICULTURAL_AGENT.ReceiptDetail rd ON r.receiptId = rd.receiptId
+                JOIN AGRICULTURAL_AGENT.Product p ON rd.productId = p.productId
                 WHERE TO_CHAR(t.DateOfImplementation, 'YYYY') = :year 
                     AND p.productName IN ({string.Join(",", listProducts.Select((_, i) => $":p{i}"))})
                 GROUP BY p.productName, EXTRACT(MONTH FROM t.DateOfImplementation)
                 ORDER BY Monthly";
 
-                using (OracleCommand cmd = new(query, connectOracle.oraCon))
+                using (OracleCommand cmd = new(query, connect.oraCon))
                 {
                     cmd.Parameters.Add(":year", OracleDbType.Char).Value = year;
 
@@ -126,7 +128,7 @@ namespace Agricultural_Distributor.DAO
             }
             finally
             {
-                connectOracle.Close();
+                connect.Close();
             }
 
             return revenueByYear;
@@ -140,7 +142,7 @@ namespace Agricultural_Distributor.DAO
 
             try
             {
-                connectOracle.Connect();
+                connect.ConnectDB();
 
                 string query = $@"
                 SELECT 
@@ -148,14 +150,14 @@ namespace Agricultural_Distributor.DAO
                     EXTRACT(YEAR FROM t.DateOfImplementation) AS Yearly,
                     SUM((p.sellingPrice - p.purchasePrice) * rd.quantity) AS revenue
                 FROM Transactions t
-                    JOIN Receipt r ON t.receiptId = r.receiptId
-                    JOIN ReceiptDetail rd ON r.receiptId = rd.receiptId
-                    JOIN Product p ON rd.productId = p.productId
+                    JOIN AGRICULTURAL_AGENT.Receipt r ON t.receiptId = r.receiptId
+                    JOIN AGRICULTURAL_AGENT.ReceiptDetail rd ON r.receiptId = rd.receiptId
+                    JOIN AGRICULTURAL_AGENT.Product p ON rd.productId = p.productId
                 WHERE p.productName IN ({string.Join(",", productNames.Select((_, i) => $":p{i}"))})
                 GROUP BY p.productName, EXTRACT(YEAR FROM t.DateOfImplementation)
                 ORDER BY p.productName, Yearly";
 
-                using (OracleCommand cmd = new(query, connectOracle.oraCon))
+                using (OracleCommand cmd = new(query, connect.oraCon))
                 {
                     for (int i = 0; i < productNames.Count; i++)
                     {
@@ -203,7 +205,7 @@ namespace Agricultural_Distributor.DAO
             }
             finally
             {
-                connectOracle.Close();
+                connect.Close();
             }
 
             return allRevenues;

@@ -1,4 +1,5 @@
-﻿using Agricultural_Distributor.Entity;
+﻿using Agricultural_Distributor.Common;
+using Agricultural_Distributor.Entity;
 using Oracle.ManagedDataAccess.Client;
 using System.Data;
 using System.Windows;
@@ -7,7 +8,8 @@ namespace Agricultural_Distributor.DAO
 {
     internal class TransactionsDAO
     {
-        ConnectOracle connectOracle = new();
+        // connect connect = new();
+        Connect connect = SessionManager.Connect;
         Transactions transactions;
 
         public TransactionsDAO() { }
@@ -19,30 +21,30 @@ namespace Agricultural_Distributor.DAO
 
         public bool CreateTrans()
         {
-            connectOracle.Connect();
+            connect.ConnectDB();
             OracleCommand oraCmd = new();
             oraCmd.CommandType = CommandType.Text;
-            oraCmd.CommandText = "INSERT INTO Transactions(employeeId, receiptId, customerId, deliveryAddress, DateOfImplementation, repayment) " +
+            oraCmd.CommandText = "INSERT INTO AGRICULTURAL_AGENT.Transactions(employeeId, receiptId, customerId, deliveryAddress, DateOfImplementation, repayment) " +
                 "VALUES (:employeeId, :receiptId, :customerId, :deliveryAddress, SYSDATE, :repayment)";
 
-            oraCmd.Parameters.Add(":employeeId", OracleDbType.Varchar2).Value = transactions.EmployeeId;
-            oraCmd.Parameters.Add(":receiptId", OracleDbType.Varchar2).Value = transactions.ReceiptId;
-            oraCmd.Parameters.Add(":customerId", OracleDbType.Varchar2).Value = transactions.CustomerId;
+            oraCmd.Parameters.Add(":employeeId", OracleDbType.Int32).Value = transactions.EmployeeId;
+            oraCmd.Parameters.Add(":receiptId", OracleDbType.Int32).Value = transactions.ReceiptId;
+            oraCmd.Parameters.Add(":customerId", OracleDbType.Int32).Value = transactions.CustomerId;
             oraCmd.Parameters.Add(":deliveryAddress", OracleDbType.Varchar2).Value = transactions.DeliveryAddress;
             oraCmd.Parameters.Add(":repayment", OracleDbType.Int32).Value = transactions.Repayment;
 
-            oraCmd.Connection = connectOracle.oraCon;
+            oraCmd.Connection = connect.oraCon;
 
             try
             {
                 int result = oraCmd.ExecuteNonQuery();
-                connectOracle.Close();
+                connect.Close();
                 return result > 0;
             }
             catch (Exception ex)
             {
                 MessageBox.Show(ex.Message);
-                connectOracle.Close();
+                connect.Close();
                 return false;
             }
         }
@@ -52,14 +54,14 @@ namespace Agricultural_Distributor.DAO
             if (dt == null)
             {
                 List<Transactions> transactionsList = new();
-                connectOracle.Connect();
+                connect.ConnectDB();
                 OracleCommand oraCmd = new();
                 oraCmd.CommandType = CommandType.Text;
-                oraCmd.CommandText = "SELECT t.TRANSACTIONID, t.EMPLOYEEID, t.RECEIPTID, t.CUSTOMERID FROM TRANSACTIONS t " +
-                 "JOIN RECEIPT r ON r.RECEIPTID = t.RECEIPTID WHERE r.TYPEOFRECEIPT = :typeOfReceipt ORDER BY DATEOFIMPLEMENTATION DESC";
+                oraCmd.CommandText = "SELECT t.TRANSACTIONID, t.EMPLOYEEID, t.RECEIPTID, t.CUSTOMERID FROM AGRICULTURAL_AGENT.TRANSACTIONS t " +
+                 "JOIN AGRICULTURAL_AGENT.RECEIPT r ON r.RECEIPTID = t.RECEIPTID WHERE r.TYPEOFRECEIPT = :typeOfReceipt ORDER BY DATEOFIMPLEMENTATION DESC";
 
                 oraCmd.Parameters.Add("typeOfReceipt", OracleDbType.NVarchar2).Value = typeOfReceipt;
-                oraCmd.Connection = connectOracle.oraCon;
+                oraCmd.Connection = connect.oraCon;
 
                 OracleDataReader reader = oraCmd.ExecuteReader();
                 while (reader.Read())
@@ -74,24 +76,24 @@ namespace Agricultural_Distributor.DAO
                     transactionsList.Add(trans);
                 }
                 reader.Close();
-                connectOracle.Close();
+                connect.Close();
                 return transactionsList;
             }
             else
             {
                 List<Transactions> transactionsList = new();
-                connectOracle.Connect();
+                connect.ConnectDB();
                 OracleCommand oraCmd = new();
                 oraCmd.CommandType = CommandType.Text;
 
 
-                oraCmd.CommandText = "SELECT t.TRANSACTIONID, t.EMPLOYEEID, t.RECEIPTID, t.CUSTOMERID FROM TRANSACTIONS t " +
-                "JOIN RECEIPT r ON r.RECEIPTID = t.RECEIPTID WHERE TRUNC(t.DATEOFIMPLEMENTATION) = TRUNC(:p_date) AND r.TYPEOFRECEIPT = :typeOfReceipt ORDER BY DATEOFIMPLEMENTATION DESC";
+                oraCmd.CommandText = "SELECT t.TRANSACTIONID, t.EMPLOYEEID, t.RECEIPTID, t.CUSTOMERID FROM AGRICULTURAL_AGENT.TRANSACTIONS t " +
+                "JOIN AGRICULTURAL_AGENT.RECEIPT r ON r.RECEIPTID = t.RECEIPTID WHERE TRUNC(t.DATEOFIMPLEMENTATION) = TRUNC(:p_date) AND r.TYPEOFRECEIPT = :typeOfReceipt ORDER BY DATEOFIMPLEMENTATION DESC";
                 oraCmd.Parameters.Add("p_date", OracleDbType.Date).Value = dt.Value.Date;
                 oraCmd.Parameters.Add("typeOfReceipt", OracleDbType.NVarchar2).Value = typeOfReceipt;
 
 
-                oraCmd.Connection = connectOracle.oraCon;
+                oraCmd.Connection = connect.oraCon;
 
                 OracleDataReader reader = oraCmd.ExecuteReader();
                 while (reader.Read())
@@ -106,7 +108,7 @@ namespace Agricultural_Distributor.DAO
                     transactionsList.Add(trans);
                 }
                 reader.Close();
-                connectOracle.Close();
+                connect.Close();
                 return transactionsList;
             }
 
@@ -115,46 +117,47 @@ namespace Agricultural_Distributor.DAO
         public int GetRepayment(int transId)
         {
             int repay = 0;
-            connectOracle.Connect();
+            connect.ConnectDB();
             OracleCommand oraCmd = new();
             oraCmd.CommandType = CommandType.Text;
-            oraCmd.CommandText = "SELECT repayment FROM Transactions WHERE transactionId = :transId";
+            oraCmd.CommandText = "SELECT repayment FROM AGRICULTURAL_AGENT.Transactions WHERE transactionId = :transId";
 
             oraCmd.Parameters.Add(":transId", OracleDbType.Int32).Value = transId;
-            oraCmd.Connection = connectOracle.oraCon;
+            oraCmd.Connection = connect.oraCon;
 
             OracleDataReader reader = oraCmd.ExecuteReader();
             if (reader.Read()) repay = reader.GetInt32(0);
             reader.Close();
-            connectOracle.Close();
+            connect.Close();
             return repay;
         }
 
         public bool ConfirmTrans(int transId, double repay)
         {
-            connectOracle.Connect();
+            connect.ConnectDB();
             OracleCommand oraCmd = new();
             oraCmd.CommandType = CommandType.Text;
-            oraCmd.CommandText = "UPDATE Transactions SET repayment = :repay WHERE transactionId = :transId";
+            oraCmd.CommandText = "UPDATE AGRICULTURAL_AGENT.Transactions SET repayment = :repay WHERE transactionId = :transId";
 
 
             oraCmd.Parameters.Add(":repay", OracleDbType.Double).Value = repay;
             oraCmd.Parameters.Add(":transId", OracleDbType.Int32).Value = transId;
 
-            oraCmd.Connection = connectOracle.oraCon;
+            oraCmd.Connection = connect.oraCon;
 
             try
             {
                 int result = oraCmd.ExecuteNonQuery();
-                connectOracle.Close();
+                connect.Close();
                 return result > 0;
             }
             catch (Exception ex)
             {
                 MessageBox.Show(ex.Message);
-                connectOracle.Close();
+                connect.Close();
                 return false;
             }
         }
+
     }
 }

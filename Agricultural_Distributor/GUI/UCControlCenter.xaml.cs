@@ -1,5 +1,11 @@
-﻿using System;
+﻿using Agricultural_Distributor.Common;
+using Agricultural_Distributor.DAO;
+using Agricultural_Distributor.Entity;
+using Agricultural_Distributor.GUI;
+using Oracle.ManagedDataAccess.Client;
+using System;
 using System.Collections.Generic;
+using System.Data;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -12,10 +18,6 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
-using Agricultural_Distributor.Common;
-using Agricultural_Distributor.DAO;
-using Agricultural_Distributor.Entity;
-using Agricultural_Distributor.GUI;
 
 namespace Agricultural_Distributor
 {
@@ -35,8 +37,9 @@ namespace Agricultural_Distributor
             LoadControlCenter();
             if (SessionManager.IsAdmin == false)
             {
-                btnViewRevenue.Visibility = Visibility.Collapsed;
-                btnTransManage.Visibility = Visibility.Collapsed;
+                //btnViewRevenue.Visibility = Visibility.Collapsed;
+                btnAudit.Visibility = Visibility.Collapsed;
+                //btnTransManage.Visibility = Visibility.Collapsed;
             } 
         }
 
@@ -121,6 +124,12 @@ namespace Agricultural_Distributor
         {
             UCCheckWorkSchedule uCCreateOrder = new UCCheckWorkSchedule(wDHome);
             wDHome.GetUC(uCCreateOrder);
+        }
+
+        private void btnAudit_Click(object sender, RoutedEventArgs e)
+        {
+            UCAudit audit = new UCAudit(wDHome);
+            wDHome.GetUC(audit);
         }
     }
 }

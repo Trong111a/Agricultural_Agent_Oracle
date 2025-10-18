@@ -7,34 +7,35 @@ using System.Threading.Tasks;
 using Agricultural_Distributor.Entity;
 using System.Windows;
 using Oracle.ManagedDataAccess.Client;
+using Agricultural_Distributor.Common;
 
 namespace Agricultural_Distributor.DAO
 {
 
     internal class ReceiptDetailDAO
     {
-        ConnectOracle connectOracle = new();
-
+        //connect connect = new();
+        Connect connect = SessionManager.Connect;
         public ReceiptDetailDAO() { }
 
         public bool CheckProductExist(int productId)
         {
-            connectOracle.Connect();
+            connect.ConnectDB();
             OracleCommand oraCmd = new();
             oraCmd.CommandType = CommandType.Text;
-            oraCmd.CommandText = "SELECT productId FROM ReceiptDetail WHERE productId = :productId";
+            oraCmd.CommandText = "SELECT productId FROM AGRICULTURAL_AGENT.ReceiptDetail WHERE productId = :productId";
 
             oraCmd.Parameters.Add("productId", productId);
-            oraCmd.Connection = connectOracle.oraCon;
+            oraCmd.Connection = connect.oraCon;
 
             OracleDataReader reader = oraCmd.ExecuteReader();
             if (reader.Read())
             {
                 reader.Close();
-                connectOracle.Disconnect();
+                connect.Disconnect();
                 return true;
             }
-            connectOracle.Disconnect();
+            connect.Disconnect();
             return false;
         }
 
@@ -42,8 +43,8 @@ namespace Agricultural_Distributor.DAO
         //{
         //    try
         //    {
-        //        connectOracle.Connect();
-        //        using (OracleCommand oraCmd = new("proc_UpdateQuanReceiptDetail", connectOracle.oraCon))
+        //        connect.Connect();
+        //        using (OracleCommand oraCmd = new("proc_UpdateQuanReceiptDetail", connect.oraCon))
         //        {
         //            oraCmd.CommandType = CommandType.StoredProcedure;
 
@@ -60,7 +61,7 @@ namespace Agricultural_Distributor.DAO
         //    }
         //    finally
         //    {
-        //        connectOracle.Close();
+        //        connect.Close();
         //    }
         //}
     }

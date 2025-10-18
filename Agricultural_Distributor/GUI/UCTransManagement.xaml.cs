@@ -1,4 +1,7 @@
-﻿using System;
+﻿using Agricultural_Distributor.Common;
+using Agricultural_Distributor.DAO;
+using Agricultural_Distributor.Entity;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -12,8 +15,6 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
-using Agricultural_Distributor.DAO;
-using Agricultural_Distributor.Entity;
 
 namespace Agricultural_Distributor.GUI
 {
@@ -194,17 +195,28 @@ namespace Agricultural_Distributor.GUI
 
         private void btnConfirmTrans_Click(object sender, RoutedEventArgs e)
         {
-            MessageBoxResult result = MessageBox.Show("Bạn không thể thay đổi lại trạng thái của hóa đơn!", "Xác nhận", MessageBoxButton.OKCancel, MessageBoxImage.Warning);
-            if (result == MessageBoxResult.OK)
-            {
-                TransactionsDAO transactionsDAO = new TransactionsDAO();
-                if (transactionsDAO.ConfirmTrans(transIdSelect, priceTotalSelect))
+
+                if (SessionManager.IsAdmin == false)
                 {
-                    tblStatusTrans.Text = "Đã thanh toán";
-                    tblPaid.Text = priceTotalSelect.ToString();
-                    tblLeft.Text = 0 + " nvđ";
+                    MessageBox.Show("Bạn không có quyền thay đổi trạng thái phiên giao dịch.");
                 }
-            }
+                else
+
+                {
+                    MessageBoxResult result = MessageBox.Show("Bạn không thể thay đổi lại trạng thái của hóa đơn!", "Xác nhận", MessageBoxButton.OKCancel, MessageBoxImage.Warning);
+                    if(result == MessageBoxResult.OK)
+                    {
+                        TransactionsDAO transactionsDAO = new TransactionsDAO();
+                        if (transactionsDAO.ConfirmTrans(transIdSelect, priceTotalSelect))
+                        {
+                            tblStatusTrans.Text = "Đã thanh toán";
+                            tblPaid.Text = priceTotalSelect.ToString();
+                            tblLeft.Text = 0 + " nvđ";
+                        }
+                    }
+                    
+                }
+                   
         }
     }
 }
