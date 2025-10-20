@@ -19,31 +19,83 @@ namespace Agricultural_Distributor.DAO
 
         public AccountDAO() { }
 
-        public bool CheckLogin(string username, string password)
+        //public bool CheckLogin(string username, string password)
+        //{
+        //    try
+        //    {
+        //        connectOracle.Connect();
+
+        //        using (OracleCommand oraCmd = new OracleCommand())
+        //        {
+        //            oraCmd.Connection = connectOracle.oraCon;
+        //            oraCmd.CommandType = CommandType.Text;
+
+        //            oraCmd.CommandText = @"
+        //                SELECT * FROM AGRICULTURAL_AGENT.ACCOUNT
+        //                WHERE TRIM(LOWER(USERNAME)) = LOWER(:username)
+        //                  AND TRIM(PASS) = :pass
+        //                  AND ISACTIVE = 1";
+
+
+        //            oraCmd.Parameters.Add("username", OracleDbType.Varchar2, 50).Value = username.Trim();
+        //            oraCmd.Parameters.Add("pass", OracleDbType.Varchar2, 50).Value = password.Trim();
+
+        //            using (OracleDataReader reader = oraCmd.ExecuteReader())
+        //            {
+        //                bool isValid = reader.HasRows;
+        //                if (isValid && reader.Read())
+        //                {
+        //                    account = new Account
+        //                    {
+        //                        Username = reader.GetString(reader.GetOrdinal("USERNAME")),
+        //                        Pass = reader.GetString(reader.GetOrdinal("PASS")),
+        //                        Email = reader["EMAIL"] is DBNull ? null : reader["EMAIL"].ToString(),
+        //                        IsActive = reader["ISACTIVE"] is DBNull ? (bool?)null : Convert.ToBoolean(reader["ISACTIVE"]),
+        //                        IsAdmin = reader["ISADMIN"] is DBNull ? (bool?)null : Convert.ToBoolean(reader["ISADMIN"]),
+        //                        Id = reader["ID"] is DBNull ? (int?)null : Convert.ToInt32(reader["ID"])
+        //                    };
+        //                }
+        //                return isValid;
+        //            }
+        //        }
+        //    }
+        //    catch (Exception ex)
+        //    {
+        //        MessageBox.Show($"Lỗi kết nối hoặc truy vấn: {ex.Message}", "Lỗi Đăng Nhập", MessageBoxButton.OK, MessageBoxImage.Error);
+        //        return false;
+        //    }
+        //    finally
+        //    {
+        //        connectOracle.Disconnect();
+        //    }
+        //}
+        public Account CheckLogin(string username, Connect userConnect)
         {
+            OracleConnection connection = userConnect.oraCon;
+            Account account = null;
+
             try
             {
-                connectOracle.Connect();
+                if (connection.State != ConnectionState.Open)
+                {
+                    return null;
+                }
 
                 using (OracleCommand oraCmd = new OracleCommand())
                 {
-                    oraCmd.Connection = connectOracle.oraCon;
+                    oraCmd.Connection = connection;
                     oraCmd.CommandType = CommandType.Text;
 
                     oraCmd.CommandText = @"
-                        SELECT * FROM AGRICULTURAL_AGENT.ACCOUNT
-                        WHERE TRIM(LOWER(USERNAME)) = LOWER(:username)
-                          AND TRIM(PASS) = :pass
-                          AND ISACTIVE = 1";
+                 SELECT ID, USERNAME, PASS, EMAIL, ISACTIVE, ISADMIN 
+                 FROM AGRICULTURAL_AGENT.ACCOUNT
+                 WHERE TRIM(LOWER(USERNAME)) = LOWER(:username)";
 
-          
                     oraCmd.Parameters.Add("username", OracleDbType.Varchar2, 50).Value = username.Trim();
-                    oraCmd.Parameters.Add("pass", OracleDbType.Varchar2, 50).Value = password.Trim();
 
                     using (OracleDataReader reader = oraCmd.ExecuteReader())
                     {
-                        bool isValid = reader.HasRows;
-                        if (isValid && reader.Read())
+                        if (reader.Read())
                         {
                             account = new Account
                             {
@@ -55,19 +107,14 @@ namespace Agricultural_Distributor.DAO
                                 Id = reader["ID"] is DBNull ? (int?)null : Convert.ToInt32(reader["ID"])
                             };
                         }
-                        return isValid;
                     }
                 }
             }
             catch (Exception ex)
             {
-                MessageBox.Show($"Lỗi kết nối hoặc truy vấn: {ex.Message}", "Lỗi Đăng Nhập", MessageBoxButton.OK, MessageBoxImage.Error);
-                return false;
+                MessageBox.Show($"Lỗi truy vấn chi tiết tài khoản: {ex.Message}", "Lỗi Truy Vấn", MessageBoxButton.OK, MessageBoxImage.Error);
             }
-            finally
-            {
-                connectOracle.Disconnect();
-            }
+            return account;
         }
 
 

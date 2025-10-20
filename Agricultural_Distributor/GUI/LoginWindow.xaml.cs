@@ -90,45 +90,87 @@ namespace Agricultural_Distributor.GUI
 
         // }
 
+        //private void btnLogin_Click(object sender, RoutedEventArgs e)
+        //{
+        //    string username = txtUsername.Text.Trim();
+        //    string password = (passwordBox.Visibility == Visibility.Visible)
+        //                        ? passwordBox.Password
+        //                        : txtPasswordVisible.Text;
+
+        //    try
+        //    {
+
+        //        var connect = new Connect(username, password);
+        //        connect.ConnectDB();
+        //        AccountDAO accountDAO = new AccountDAO();
+        //        bool isLoggedIn = accountDAO.CheckLogin(username, password);
+
+        //        SessionManager.Username = username;
+
+
+        //        //SessionManager.IsAdmin = false; 
+        //        SessionManager.Connect = connect;
+
+        //        var roles = RoleManager.GetUserRoles(connect);
+        //        SessionManager.Roles = roles;
+        //        if (roles.Contains("CHUDAILY"))
+        //        {
+
+        //            SessionManager.IsAdmin = true;
+        //        }
+        //        else
+        //        {
+        //            SessionManager.IsAdmin = false;
+        //        }
+        //        if (isLoggedIn)
+        //        {
+        //            var loggedAccount = accountDAO.GetLoggedInAccount();
+
+        //            SessionManager.Username = loggedAccount.Username;
+        //            SessionManager.IsAdmin = loggedAccount.IsAdmin;
+        //            SessionManager.AccountId = loggedAccount.Id;
+
+        //            MessageBox.Show($"Xin chào {username}!", "Đăng nhập thành công", MessageBoxButton.OK, MessageBoxImage.Information);
+
+        //            WDHome home = new WDHome();
+        //            UCManageProduct uCManageProduct = new UCManageProduct(home);
+        //            home.GetUC(uCManageProduct);
+        //            home.Show();
+        //            this.Hide();
+        //        }
+        //    }
+        //    catch (Exception ex) 
+        //    {
+        //        MessageBox.Show("❌ Sai tên đăng nhập hoặc mật khẩu.\n" +ex.Message, "Lỗi đăng nhập", MessageBoxButton.OK, MessageBoxImage.Error);
+        //    }
+        //}
         private void btnLogin_Click(object sender, RoutedEventArgs e)
         {
             string username = txtUsername.Text.Trim();
             string password = (passwordBox.Visibility == Visibility.Visible)
-                                ? passwordBox.Password
-                                : txtPasswordVisible.Text;
+                                  ? passwordBox.Password
+                                  : txtPasswordVisible.Text;
+
+            Connect connect = null;
 
             try
             {
-
-                var connect = new Connect(username, password);
+                connect = new Connect(username, password);
                 connect.ConnectDB();
-                AccountDAO accountDAO = new AccountDAO();
-                bool isLoggedIn = accountDAO.CheckLogin(username, password);
 
-                SessionManager.Username = username;
-
-
-                //SessionManager.IsAdmin = false; 
                 SessionManager.Connect = connect;
 
-                var roles = RoleManager.GetUserRoles(connect);
-                SessionManager.Roles = roles;
-                if (roles.Contains("CHUDAILY"))
-                {
+                AccountDAO accountDAO = new AccountDAO();
+                var loggedAccount = accountDAO.CheckLogin(username, connect);
 
-                    SessionManager.IsAdmin = true;
-                }
-                else
+                if (loggedAccount != null)
                 {
-                    SessionManager.IsAdmin = false;
-                }
-                if (isLoggedIn)
-                {
-                    var loggedAccount = accountDAO.GetLoggedInAccount();
-
                     SessionManager.Username = loggedAccount.Username;
-                    SessionManager.IsAdmin = loggedAccount.IsAdmin;
                     SessionManager.AccountId = loggedAccount.Id;
+
+                    var roles = RoleManager.GetUserRoles(connect);
+                    SessionManager.Roles = roles;
+                    SessionManager.IsAdmin = roles.Contains("CHUDAILY") || loggedAccount.IsAdmin == true;
 
                     MessageBox.Show($"Xin chào {username}!", "Đăng nhập thành công", MessageBoxButton.OK, MessageBoxImage.Information);
 
@@ -138,13 +180,36 @@ namespace Agricultural_Distributor.GUI
                     home.Show();
                     this.Hide();
                 }
+                else
+                {
+                    MessageBox.Show("❌ Lỗi hệ thống: Không tìm thấy chi tiết tài khoản.", "Lỗi đăng nhập", MessageBoxButton.OK, MessageBoxImage.Error);
+                    connect.Disconnect();
+                }
             }
-            catch (Exception ex) 
+            catch (Oracle.ManagedDataAccess.Client.OracleException oraEx)
             {
-                MessageBox.Show("❌ Sai tên đăng nhập hoặc mật khẩu.\n" +ex.Message, "Lỗi đăng nhập", MessageBoxButton.OK, MessageBoxImage.Error);
+                string message = "❌ Sai tên đăng nhập hoặc mật khẩu.";
+
+                if (oraEx.Number == 28000)
+                {
+                    message = "❌ Tài khoản của bạn đã **bị khóa**. Vui lòng liên hệ Quản trị viên để mở khóa.";
+                }
+                else if (oraEx.Number == 28001)
+                {
+                    message = "❌ Mật khẩu đã hết hạn. Vui lòng thay đổi mật khẩu.";
+                }
+
+                MessageBox.Show(message, "Lỗi đăng nhập", MessageBoxButton.OK, MessageBoxImage.Error);
+
+                connect?.Disconnect();
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show("❌ Lỗi hệ thống: " + ex.Message, "Lỗi đăng nhập", MessageBoxButton.OK, MessageBoxImage.Error);
+                connect?.Disconnect();
             }
         }
- 
+
 
         private void btnForgot_Click(object sender, RoutedEventArgs e)
         {

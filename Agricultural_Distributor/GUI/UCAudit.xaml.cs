@@ -77,7 +77,10 @@ namespace Agricultural_Distributor.GUI
 
                     string description = GenerateFriendlyAuditDescription(sqlText, sqlBind);
                     row["AUDIT_DESCRIPTION"] = description;
-                    Product? prod = GetProdLog(GetIdProdLog(sqlText, sqlBind));
+                    MessageBox.Show("id pro nwe : " + GetIdProdLog(sqlText, sqlBind).ToString());
+                    Product prod = GetProdLog(GetIdProdLog(sqlText, sqlBind));
+                    MessageBox.Show("pro: " + prod.Name + " " + prod.ProductId);
+
                     string dataLog = $"Sản phẩm ID {prod.ProductId}: Tên = '{prod.Name}', Giá mua = {prod.PurchasePrice}, Giá bán = {prod.SellingPrice}, Tiêu chuẩn = '{prod.QualityStandard}'";
                     row["DATA_LOG"] = dataLog;
                 }
@@ -126,7 +129,7 @@ namespace Agricultural_Distributor.GUI
             }
         }
 
-        private int? GetIdProdLog(string sqlText, string sqlBind)
+        private int GetIdProdLog(string sqlText, string sqlBind)
         {
             try
             {
@@ -154,15 +157,15 @@ namespace Agricultural_Distributor.GUI
 
                 // Có thể xử lý thêm các bảng khác nếu cần
 
-                return null;
+                return -1;
             }
             catch
             {
-                return null;
+                return -1;
             }
         }
 
-        private Product? GetProdLog(int? Id)
+        private Product GetProdLog(int Id)
         {
             connect.ConnectDB();
             OracleCommand oraCmd = new();
