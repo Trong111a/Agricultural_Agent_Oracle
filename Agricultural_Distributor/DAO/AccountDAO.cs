@@ -10,7 +10,9 @@ namespace Agricultural_Distributor.DAO
 {
     internal class AccountDAO
     {
-        private ConnectOracle connectOracle = new();
+        //private connect connect = new();
+
+        Connect connect = SessionManager.Connect;
         private Account account;
         public AccountDAO(Account account)
         {
@@ -81,11 +83,11 @@ namespace Agricultural_Distributor.DAO
             int rowsAffected = 0;
             try
             {
-                connectOracle.Connect();
+                connect.ConnectDB();
 
                 using (OracleCommand oraCmd = new OracleCommand())
                 {
-                    oraCmd.Connection = connectOracle.oraCon;
+                    oraCmd.Connection = connect.oraCon;
                     oraCmd.CommandType = CommandType.Text;
                     oraCmd.CommandText = "UPDATE AGRICULTURAL_AGENT.Account SET pass = :newPassword WHERE email = :email AND IsActive = 1";
 
@@ -101,7 +103,7 @@ namespace Agricultural_Distributor.DAO
             }
             finally
             {
-                connectOracle.Disconnect();
+                connect.Disconnect();
             }
             return rowsAffected > 0;
         }
@@ -111,11 +113,11 @@ namespace Agricultural_Distributor.DAO
         {
             try
             {
-                connectOracle.Connect();
+                connect.ConnectDB();
 
                 using (OracleCommand oraCmd = new OracleCommand())
                 {
-                    oraCmd.Connection = connectOracle.oraCon;
+                    oraCmd.Connection = connect.oraCon;
                     oraCmd.CommandType = CommandType.Text;
                     oraCmd.CommandText = "SELECT COUNT(*) FROM AGRICULTURAL_AGENT.Account WHERE email = :email AND IsActive = 1";
 
@@ -133,7 +135,7 @@ namespace Agricultural_Distributor.DAO
             }
             finally
             {
-                connectOracle.Disconnect();
+                connect.Disconnect();
             }
         }
 
@@ -143,11 +145,11 @@ namespace Agricultural_Distributor.DAO
             List<string> emails = new List<string>();
             try
             {
-                connectOracle.Connect();
+                connect.ConnectDB();
 
                 using (OracleCommand oraCmd = new OracleCommand())
                 {
-                    oraCmd.Connection = connectOracle.oraCon;
+                    oraCmd.Connection = connect.oraCon;
                     oraCmd.CommandType = CommandType.Text;
                     oraCmd.CommandText = "SELECT email FROM AGRICULTURAL_AGENT.Account WHERE IsAdmin = 1 AND IsActive = 1";
 
@@ -170,7 +172,7 @@ namespace Agricultural_Distributor.DAO
             }
             finally
             {
-                connectOracle.Disconnect();
+                connect.Disconnect();
             }
             return emails;
         }
