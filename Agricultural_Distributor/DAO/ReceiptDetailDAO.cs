@@ -38,31 +38,5 @@ namespace Agricultural_Distributor.DAO
             connect.Disconnect();
             return false;
         }
-
-        //public void UpdateQuanReceiptDetail(ReceiptDetail receiptDetail, int quan)
-        //{
-        //    try
-        //    {
-        //        connect.Connect();
-        //        using (OracleCommand oraCmd = new("proc_UpdateQuanReceiptDetail", connect.oraCon))
-        //        {
-        //            oraCmd.CommandType = CommandType.StoredProcedure;
-
-        //            oraCmd.Parameters.Add("recpId", OracleDbType.Varchar2).Value = receiptDetail.ReceiptId;
-        //            oraCmd.Parameters.Add("prodId", OracleDbType.Varchar2).Value = receiptDetail.ProductId;
-        //            oraCmd.Parameters.Add("quantity", OracleDbType.Int32).Value = quan;
-
-        //            oraCmd.ExecuteNonQuery();
-        //        }
-        //    }
-        //    catch (Exception ex)
-        //    {
-        //        MessageBox.Show(ex.Message);
-        //    }
-        //    finally
-        //    {
-        //        connect.Close();
-        //    }
-        //}
     }
 }

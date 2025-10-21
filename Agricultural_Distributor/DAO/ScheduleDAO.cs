@@ -8,12 +8,13 @@ using System.Threading.Tasks;
 using System.Windows;
 using Oracle.ManagedDataAccess.Client;
 using Oracle.ManagedDataAccess.Types;
+using Agricultural_Distributor.Common;
 
 namespace Agricultural_Distributor.DAO
 {
     internal class ScheduleDAO
     {
-        ConnectOracle connectOracle = new();
+        Connect connect = SessionManager.Connect;
         Schedule schedule;
 
         public ScheduleDAO() { }
@@ -26,10 +27,10 @@ namespace Agricultural_Distributor.DAO
         public List<Schedule> LoadSchedule(DateTime date)
         {
             List<Schedule> schedules = new();
-            connectOracle.Connect();
+            connect.ConnectDB();
 
             OracleCommand oraCmd = new();
-            oraCmd.Connection = connectOracle.oraCon; 
+            oraCmd.Connection = connect.oraCon; 
             oraCmd.CommandType = CommandType.Text;
 
             oraCmd.CommandText = @"
@@ -41,8 +42,8 @@ namespace Agricultural_Distributor.DAO
                     S.TIMECHECKIN, 
                     S.TIMECHECKOUT, 
                     S.LINKPICTURE 
-                FROM SCHEDULE S
-                INNER JOIN EMPLOYEE E ON S.EMPLOYEEID = E.EMPLOYEEID
+                FROM AGRICULTURAL_AGENT.SCHEDULE S
+                INNER JOIN AGRICULTURAL_AGENT.EMPLOYEE E ON S.EMPLOYEEID = E.EMPLOYEEID
                 WHERE TRUNC(S.DATEWORK) = TRUNC(:p_date)";
 
             oraCmd.Parameters.Add("p_date", OracleDbType.Date).Value = date.Date;
@@ -76,7 +77,7 @@ namespace Agricultural_Distributor.DAO
                 schedules.Add(schedule);
             }
             reader.Close();
-            connectOracle.Close();
+            connect.Close();
             return schedules;
         }
 
@@ -84,13 +85,13 @@ namespace Agricultural_Distributor.DAO
         {
             try
             {
-                connectOracle.Connect();
+                connect.ConnectDB();
 
                 DateTime today = DateTime.Today;
 
                 using (OracleCommand checkCmd = new(@"
-            SELECT COUNT(*) FROM Schedule 
-            WHERE employeeid = :employeeid AND TRUNC(datework) = TRUNC(:datework)", connectOracle.oraCon))
+            SELECT COUNT(*) FROM AGRICULTURAL_AGENT.Schedule 
+            WHERE employeeid = :employeeid AND TRUNC(datework) = TRUNC(:datework)", connect.oraCon))
                 {
                     checkCmd.Parameters.Add(":employeeid", OracleDbType.Int32).Value = schedule.EmployeeId;
                     checkCmd.Parameters.Add(":datework", OracleDbType.Date).Value = today;
@@ -103,8 +104,8 @@ namespace Agricultural_Distributor.DAO
                     }
                 }
                 using (OracleCommand cmd = new(@"
-                    INSERT INTO schedule (employeeid, datework, timecheckin, timecheckout, linkpicture)
-                    VALUES (:employeeid, :datework, :timecheckin, :timecheckout, :linkpicture)", connectOracle.oraCon))
+                    INSERT INTO AGRICULTURAL_AGENT.schedule (employeeid, datework, timecheckin, timecheckout, linkpicture)
+                    VALUES (:employeeid, :datework, :timecheckin, :timecheckout, :linkpicture)", connect.oraCon))
                 {
                     cmd.Parameters.Add(":employeeid", OracleDbType.Varchar2).Value = schedule.EmployeeId;
                     //cmd.Parameters.Add(":employeename", OracleDbType.Varchar2).Value = schedule.EmployeeName;
@@ -124,20 +125,20 @@ namespace Agricultural_Distributor.DAO
             }
             finally
             {
-                connectOracle.Close();
+                connect.Close();
             }
         }
 
 
         public void updateSchedule(int employeeId, DateTime dateWork, TimeSpan timeCheckIn, TimeSpan timeCheckOut)
         {
-            connectOracle.Connect();
+            connect.ConnectDB();
 
-            string query = @" UPDATE Schedule SET timecheckin = TO_DSINTERVAL(:timecheckin), timecheckout = TO_DSINTERVAL(:timecheckout) 
+            string query = @" UPDATE AGRICULTURAL_AGENT.Schedule SET timecheckin = TO_DSINTERVAL(:timecheckin), timecheckout = TO_DSINTERVAL(:timecheckout) 
                     WHERE employeeid = :employeeid AND TRUNC(datework) = TRUNC(:datework)";
 
 
-            using (OracleCommand cmd = new(query, connectOracle.oraCon))
+            using (OracleCommand cmd = new(query, connect.oraCon))
             {
                 //cmd.Parameters.Add(":timecheckin", OracleDbType.Varchar2).Value = timeCheckIn.ToString();
                 //cmd.Parameters.Add(":timecheckout", OracleDbType.Varchar2).Value = timeCheckOut.ToString();
@@ -149,7 +150,7 @@ namespace Agricultural_Distributor.DAO
 
                 cmd.ExecuteNonQuery();
             }
-            connectOracle.Close();
+            connect.Close();
         }
         string ToIntervalString(TimeSpan ts)
         {
@@ -159,13 +160,13 @@ namespace Agricultural_Distributor.DAO
 
         public void insertPicture(int employeeId, DateTime dateWork, string imagePath)
         {
-            connectOracle.Connect();
+            connect.ConnectDB();
 
-            string query = @"UPDATE Schedule 
+            string query = @"UPDATE AGRICULTURAL_AGENT.Schedule 
                     SET linkpicture = :linkpicture 
                     WHERE employeeid = :employeeid AND TRUNC(datework) = TRUNC(:datework)";
 
-            using (OracleCommand cmd = new(query, connectOracle.oraCon))
+            using (OracleCommand cmd = new(query, connect.oraCon))
             {
                 cmd.Parameters.Add(":linkpicture", OracleDbType.Varchar2).Value = imagePath;
                 cmd.Parameters.Add(":employeeid", OracleDbType.Int32).Value = employeeId;
@@ -173,7 +174,7 @@ namespace Agricultural_Distributor.DAO
 
                 cmd.ExecuteNonQuery();
             }
-            connectOracle.Close();
+            connect.Close();
         }
     }
 }

@@ -35,17 +35,6 @@ namespace Agricultural_Distributor.GUI
         }
         private void LoadAuditLogs()
         {
-            //string query = @"
-            //SELECT 
-            //    DB_USER,
-            //    OBJECT_NAME,
-            //    SQL_TEXT,
-            //    SQL_BIND,
-            //    STATEMENT_TYPE,
-            //    TO_CHAR(TIMESTAMP, 'YYYY-MM-DD HH24:MI:SS') AS AUDIT_TIME
-            //FROM 
-            //    DBA_FGA_AUDIT_TRAIL 
-            //ORDER BY TIMESTAMP DESC";
             string query = @"
             SELECT 
                 DB_USER,
@@ -66,7 +55,6 @@ namespace Agricultural_Distributor.GUI
                 DataTable dt = new DataTable();
                 adapter.Fill(dt);
 
-                // Add new column for user-friendly description
                 dt.Columns.Add("AUDIT_DESCRIPTION", typeof(string));
                 dt.Columns.Add("DATA_LOG", typeof(string));
 
@@ -77,9 +65,7 @@ namespace Agricultural_Distributor.GUI
 
                     string description = GenerateFriendlyAuditDescription(sqlText, sqlBind);
                     row["AUDIT_DESCRIPTION"] = description;
-                    MessageBox.Show("id pro nwe : " + GetIdProdLog(sqlText, sqlBind).ToString());
                     Product prod = GetProdLog(GetIdProdLog(sqlText, sqlBind));
-                    MessageBox.Show("pro: " + prod.Name + " " + prod.ProductId);
 
                     string dataLog = $"Sản phẩm ID {prod.ProductId}: Tên = '{prod.Name}', Giá mua = {prod.PurchasePrice}, Giá bán = {prod.SellingPrice}, Tiêu chuẩn = '{prod.QualityStandard}'";
                     row["DATA_LOG"] = dataLog;
@@ -97,10 +83,8 @@ namespace Agricultural_Distributor.GUI
         {
             try
             {
-                // Chỉ xử lý UPDATE sản phẩm
                 if (sqlText.Contains("UPDATE AGRICULTURAL_AGENT.PRODUCT", StringComparison.OrdinalIgnoreCase))
                 {
-                    // Tách SQL_BIND theo thứ tự :B1, :B2, ...
                     var binds = sqlBind.Split('#')
                         .Where(b => !string.IsNullOrWhiteSpace(b))
                         .Select(b =>
@@ -118,8 +102,6 @@ namespace Agricultural_Distributor.GUI
 
                     return $"Sản phẩm ID {productId}: Tên = '{name}', Giá mua = {purchase}, Giá bán = {selling}, Tiêu chuẩn = '{quality}'";
                 }
-
-                // Có thể xử lý thêm các bảng khác nếu cần
 
                 return "(Không xác định thay đổi)";
             }

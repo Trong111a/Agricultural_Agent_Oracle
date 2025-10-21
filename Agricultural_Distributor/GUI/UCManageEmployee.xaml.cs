@@ -83,6 +83,8 @@ namespace Agricultural_Distributor.GUI
         
         private void Button_Click(object sender, RoutedEventArgs e)
         {
+            
+            
             Employee em = new Employee(empId, txtEmployeeName.Text, txtBirthday.SelectedDate.Value, txtSex.Text, txtAddress.Text, txtPhoneNumber.Text, txtEmail.Text);
             EmployeeDAO employeeDAO = new EmployeeDAO();
             employeeDAO.addEmployee(em, cbPosition.Text);

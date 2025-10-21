@@ -27,15 +27,11 @@ namespace Agricultural_Distributor.DAO
         public List<Employee> LoadEmployee()
         {
             List<Employee> employees = new();
-            //connect.Connect();
             connect.ConnectDB();
 
             OracleCommand oraCmd = new();
             oraCmd.CommandType = CommandType.Text;
 
-   
-            //oraCmd.CommandText = "SELECT employeeId, employeeName, birthday, sex, employeeAddress, phoneNumber, email, IsActive, position " +
-            //                     "FROM Employee WHERE IsActive = 1 AND employeeId <> 1";
             oraCmd.CommandText = "SELECT employeeId, employeeName, birthday, sex, employeeAddress, phoneNumber, email, IsActive, position FROM AGRICULTURAL_AGENT.Employee WHERE employeeId <> 1";
 
 
@@ -141,14 +137,6 @@ namespace Agricultural_Distributor.DAO
                                "WHERE employeeId = :EmployeeId";
 
                 OracleCommand oraCmd = new(query, connect.oraCon);
-
-                //oraCmd.Parameters.Add("EmployeeId", Convert.ToInt32(employee.EmployeeId));
-                //oraCmd.Parameters.Add("EmployeeName", employee.EmployeeName);
-                //oraCmd.Parameters.Add("Birthday", employee.Birthday);
-                //oraCmd.Parameters.Add("Sex", employee.Sex);
-                //oraCmd.Parameters.Add("EmployeeAddress", employee.EmployeeAddress);
-                //oraCmd.Parameters.Add("PhoneNumber", employee.PhoneNumber);
-                //oraCmd.Parameters.Add("Email", employee.Email);
                 
                 oraCmd.Parameters.Add("EmployeeName", OracleDbType.NVarchar2).Value = employee.EmployeeName;
                 oraCmd.Parameters.Add("Birthday", OracleDbType.Date).Value = employee.Birthday;
@@ -199,31 +187,6 @@ namespace Agricultural_Distributor.DAO
             }
         }
 
-        //public bool deleteAccount(int id)
-        //{
-        //    try
-        //    {
-        //        connect.ConnectDB();
-
-        //        string query = "UPDATE AGRICULTURAL_AGENT.Account SET IsActive = 0 WHERE Id = :id";
-
-        //        using (OracleCommand oraCmd = new(query, connect.oraCon))
-        //        {
-        //            oraCmd.Parameters.Add("Id", id);
-
-
-        //            int rowsAffected = oraCmd.ExecuteNonQuery();
-        //            connect.Disconnect();
-        //            return rowsAffected > 0;
-        //        }
-        //    }
-        //    catch (Exception ex)
-        //    {
-        //        MessageBox.Show("Lỗi khi cập nhật trạng thái tài khoản: " + ex.Message);
-        //        connect.Disconnect();
-        //        return false;
-        //    }
-        //}
         public bool deleteAccount(int id)
         {
             string username = null;

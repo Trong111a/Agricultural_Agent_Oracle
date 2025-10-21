@@ -1,4 +1,5 @@
-﻿using Agricultural_Distributor.Entity;
+﻿using Agricultural_Distributor.Common;
+using Agricultural_Distributor.Entity;
 using Oracle.ManagedDataAccess.Client;
 using Oracle.ManagedDataAccess.Types;
 using System;
@@ -12,7 +13,8 @@ namespace Agricultural_Distributor.DAO
 {
     internal class CustomerDAO
     {
-        ConnectOracle connectOracle = new ConnectOracle();
+        //connect connect = new connect();
+        Connect connect = SessionManager.Connect;
         Customer customer;
 
         public CustomerDAO() { }
@@ -25,16 +27,16 @@ namespace Agricultural_Distributor.DAO
         public Customer? GetCustomer(string phone)
         {
             Customer customer = new();
-            connectOracle.Connect();
+            connect.ConnectDB();
 
             OracleCommand oraCmd = new();
             oraCmd.CommandType = CommandType.Text;
 
-            oraCmd.CommandText = "select customerId, customerName, customerAddress, phoneNumber, email from Customer where phoneNumber=:phoneNumber";
+            oraCmd.CommandText = "select customerId, customerName, customerAddress, phoneNumber, email from AGRICULTURAL_AGENT.Customer where phoneNumber=:phoneNumber";
 
             oraCmd.Parameters.Add("phoneNumber", phone);
 
-            oraCmd.Connection = connectOracle.oraCon;
+            oraCmd.Connection = connect.oraCon;
 
             OracleDataReader reader = oraCmd.ExecuteReader();
             if (reader.Read())
@@ -56,19 +58,19 @@ namespace Agricultural_Distributor.DAO
             }
             else customer = null;
             reader.Close();
-            connectOracle.Disconnect();
+            connect.Disconnect();
             return customer;
         }
 
         public int AddCustomer(Customer customer)
         {
-            connectOracle.Connect();
+            connect.ConnectDB();
 
             OracleCommand oraCmd = new();
             oraCmd.CommandType = CommandType.Text;
 
             oraCmd.CommandText =
-                "INSERT INTO Customer (customerName, customerAddress, phoneNumber, email) " +
+                "INSERT INTO AGRICULTURAL_AGENT.Customer (customerName, customerAddress, phoneNumber, email) " +
                 "VALUES (:name, :address, :phone, :email) RETURNING customerId INTO :customerId";
 
             oraCmd.Parameters.Add("name", OracleDbType.NVarchar2).Value =  customer.CustomerName;
@@ -79,7 +81,7 @@ namespace Agricultural_Distributor.DAO
             OracleParameter outputIdParam = new OracleParameter("customerId", OracleDbType.Decimal, ParameterDirection.Output);
             oraCmd.Parameters.Add(outputIdParam);
 
-            oraCmd.Connection = connectOracle.oraCon;
+            oraCmd.Connection = connect.oraCon;
 
             try
             {
@@ -91,44 +93,44 @@ namespace Agricultural_Distributor.DAO
                     newCustomerId = ((OracleDecimal)outputIdParam.Value).ToInt32();
                 }
 
-                connectOracle.Disconnect();
+                connect.Disconnect();
                 return newCustomerId; 
 
             }
             catch (OracleException ex)
             {
                 MessageBox.Show("Lỗi khi thêm khách hàng: " + ex.Message);
-                connectOracle.Disconnect();
+                connect.Disconnect();
                 return 0; 
             }
         }
 
         public bool UpdateCustomer(Customer customer)
         {
-            connectOracle.Connect();
+            connect.ConnectDB();
 
             OracleCommand oraCmd = new();
             oraCmd.CommandType = CommandType.Text;
-            oraCmd.CommandText = "update Customer set customerName = :name, customerAddress = :address, email = :email where customerId = :id";
+            oraCmd.CommandText = "update AGRICULTURAL_AGENT.Customer set customerName = :name, customerAddress = :address, email = :email where customerId = :id";
 
             oraCmd.Parameters.Add("name", customer.CustomerName);
             oraCmd.Parameters.Add("address", customer.CustomerAddress);
             oraCmd.Parameters.Add("email", customer.Email);
             oraCmd.Parameters.Add("id", customer.CustomerId);
 
-            oraCmd.Connection = connectOracle.oraCon;
+            oraCmd.Connection = connect.oraCon;
 
             try
             {
                 int result = oraCmd.ExecuteNonQuery();
-                connectOracle.Disconnect();
+                connect.Disconnect();
                 return result > 0;
             }
 
             catch (Exception ex)
             {
                 MessageBox.Show(ex.Message);
-                connectOracle.Disconnect();
+                connect.Disconnect();
                 return false;
             }
         }
@@ -136,12 +138,12 @@ namespace Agricultural_Distributor.DAO
         public List<Customer> LoadCustomer()
         {
             List<Customer> listCustomer = new List<Customer>();
-            connectOracle.Connect();
+            connect.ConnectDB();
 
             OracleCommand oraCmd = new();
             oraCmd.CommandType = CommandType.Text;
-            oraCmd.CommandText = "select customerId, customerName, customerAddress, phoneNumber, email from Customer";
-            oraCmd.Connection = connectOracle.oraCon;
+            oraCmd.CommandText = "select customerId, customerName, customerAddress, phoneNumber, email from AGRICULTURAL_AGENT.Customer";
+            oraCmd.Connection = connect.oraCon;
 
             OracleDataReader reader = oraCmd.ExecuteReader();
             while (reader.Read())
@@ -156,19 +158,19 @@ namespace Agricultural_Distributor.DAO
                 listCustomer.Add(customer);
             }
             reader.Close();
-            connectOracle.Disconnect();
+            connect.Disconnect();
             return listCustomer;
         }
 
         public Customer GetCustomerByID(int customerId) 
         {
             Customer customer = new Customer();
-            connectOracle.Connect();
+            connect.ConnectDB();
 
             OracleCommand oraCmd = new OracleCommand();
             oraCmd.CommandType = CommandType.Text;
-            oraCmd.CommandText = "select customerId, customerName, customerAddress, phoneNumber, email from Customer where customerId = :customerId";
-            oraCmd.Connection = connectOracle.oraCon;
+            oraCmd.CommandText = "select customerId, customerName, customerAddress, phoneNumber, email from AGRICULTURAL_AGENT.Customer where customerId = :customerId";
+            oraCmd.Connection = connect.oraCon;
             oraCmd.Parameters.Add("customerId", customerId);
 
             OracleDataReader reader = oraCmd.ExecuteReader();
@@ -187,7 +189,7 @@ namespace Agricultural_Distributor.DAO
                 customer.Email = email;
             }
             reader.Close();
-            connectOracle.Disconnect();
+            connect.Disconnect();
             return customer;
         }
 
@@ -217,11 +219,11 @@ namespace Agricultural_Distributor.DAO
 
         public string CheckExistPhone(Customer customer)
         {
-            connectOracle.Connect();
+            connect.ConnectDB();
             OracleCommand oraCmd = new OracleCommand();
             oraCmd.CommandType = CommandType.Text;
-            oraCmd.CommandText = "select count (*) from Customer where phoneNumber = :phone and customerId != :id";
-            oraCmd.Connection = connectOracle.oraCon;
+            oraCmd.CommandText = "select count (*) from AGRICULTURAL_AGENT.Customer where phoneNumber = :phone and customerId != :id";
+            oraCmd.Connection = connect.oraCon;
 
             oraCmd.Parameters.Add("phone", customer.PhoneNumber);
             oraCmd.Parameters.Add("id", customer.CustomerId);
@@ -229,7 +231,7 @@ namespace Agricultural_Distributor.DAO
             object result = oraCmd.ExecuteScalar();
             int count = Convert.ToInt32(result);
 
-            connectOracle.Disconnect();
+            connect.Disconnect();
             if (count > 0)
             {
                 return "Số điện thoại đã tồn tại cho 1 khách hàng khác";
@@ -241,11 +243,11 @@ namespace Agricultural_Distributor.DAO
         {
             if (customer.Email == null) return null; 
 
-            connectOracle.Connect();
+            connect.ConnectDB();
             OracleCommand oraCmd = new OracleCommand();
             oraCmd.CommandType = CommandType.Text;
-            oraCmd.CommandText = "select count (*) from Customer where email = :email and customerId != :id";
-            oraCmd.Connection = connectOracle.oraCon;
+            oraCmd.CommandText = "select count (*) from AGRICULTURAL_AGENT.Customer where email = :email and customerId != :id";
+            oraCmd.Connection = connect.oraCon;
 
             oraCmd.Parameters.Add("email", customer.Email);
             oraCmd.Parameters.Add("id", customer.CustomerId);
@@ -253,7 +255,7 @@ namespace Agricultural_Distributor.DAO
             object result = oraCmd.ExecuteScalar();
             int count = Convert.ToInt32(result);
 
-            connectOracle.Disconnect();
+            connect.Disconnect();
             if (count > 0)
             {
                 return "Email đã tồn tại cho 1 khách hàng khác";
@@ -267,18 +269,18 @@ namespace Agricultural_Distributor.DAO
             string searchParam = "%" + keyword.Trim() + "%";
 
             string sql =
-                "SELECT CUSTOMERID, CUSTOMERNAME, CUSTOMERADDRESS, PHONENUMBER, EMAIL FROM CUSTOMER " +
+                "SELECT CUSTOMERID, CUSTOMERNAME, CUSTOMERADDRESS, PHONENUMBER, EMAIL FROM AGRICULTURAL_AGENT.CUSTOMER " +
                 "WHERE UPPER(CUSTOMERNAME) LIKE UPPER(:keyword) " +
                 "OR PHONENUMBER LIKE :keyword " +
                 "OR CUSTOMERID = TO_NUMBER(CASE WHEN REGEXP_LIKE(:keyword, '^[0-9]+$') THEN :keyword ELSE '-1' END)";
 
             try
             {
-                connectOracle.Connect();
+                connect.ConnectDB();
 
                 using (OracleCommand oraCmd = new OracleCommand())
                 {
-                    oraCmd.Connection = connectOracle.oraCon;
+                    oraCmd.Connection = connect.oraCon;
                     oraCmd.CommandType = CommandType.Text;
                     oraCmd.CommandText = sql;
 
@@ -323,25 +325,25 @@ namespace Agricultural_Distributor.DAO
             }
             finally
             {
-                connectOracle.Close();
+                connect.Close();
             }
             return list;
         }
 
         public bool CheckExist(string email)
         {
-            connectOracle.Connect();
+            connect.ConnectDB();
 
             OracleCommand oraCmd = new OracleCommand();
             oraCmd.CommandType = CommandType.Text;
-            oraCmd.CommandText = "select 1 from Customer where email = :email";
+            oraCmd.CommandText = "select 1 from AGRICULTURAL_AGENT.Customer where email = :email";
             oraCmd.Parameters.Add("email", email);
-            oraCmd.Connection = connectOracle.oraCon;
+            oraCmd.Connection = connect.oraCon;
 
             OracleDataReader reader = oraCmd.ExecuteReader();
             bool exists = reader.Read();
             reader.Close();
-            connectOracle.Disconnect();
+            connect.Disconnect();
             return exists;
         }
     }
